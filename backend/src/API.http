@@ -1,0 +1,24 @@
+
+###
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+    "nombreUsuario" : "anaaaaa",
+    "nombre" : "bena",
+    "password" : "123",
+    "correo" : "biia3aeaeaaa@example.com",
+    "telefono" : "12345678",
+    "idRol" : 2 ,
+    "ci" : "8434667"
+}
+###
+
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "nombreUsuario": "ana",	
+    "password": "ana123"
+} 
+
