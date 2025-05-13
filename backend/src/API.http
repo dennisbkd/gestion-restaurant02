@@ -4,7 +4,7 @@ POST http://localhost:3000/auth/register
 Content-Type: application/json
 
 {
-    "nombreUsuario" : "anaaaaa",
+    "nombreUsuario" : "ana",
     "nombre" : "bena",
     "password" : "123",
     "correo" : "biia3aeaeaaa@example.com",
@@ -18,7 +18,15 @@ POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-    "nombreUsuario": "ana",	
-    "password": "ana123"
+    "nombreUsuario": "dennisbk",	
+    "password": "dennis123"
 } 
 
+###
+GET http://localhost:3000/auth/verificar
+
+###
+GET http://localhost:3000/auth/logout
+
+### 
+GET http://localhost:3000/admin/panelAdministrativo
