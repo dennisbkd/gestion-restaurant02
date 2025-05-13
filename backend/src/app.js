@@ -2,9 +2,9 @@ import express, { json } from 'express'
 import { PORT } from './config/config.js'
 import { db } from './connection.js'
 import { crearAuthRutas } from './routes/auth.js'
-import { crearProviderRutas } from './routes/provider.js'
+import { crearProveedorRutas } from './routes/provider.js'
 
-export const CreateApp = async ({ modeloAuth, modeloProvider }) => {
+export const CreateApp = async ({ modeloAuth, modeloProveedor }) => {
   const app = express()
   app.use(json())
   app.get('/', (req, res) => {
@@ -15,7 +15,7 @@ export const CreateApp = async ({ modeloAuth, modeloProvider }) => {
 
   app.use('/auth', crearAuthRutas({ modeloAuth }))
 
-  app.use('/provider', crearProviderRutas({ modeloProvider }))
+  app.use('/provider', crearProveedorRutas({ modeloProveedor }))
 
   app.listen(PORT, () => {
     console.log('servidor activo en el puerto:', PORT)

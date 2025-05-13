@@ -1,5 +1,5 @@
 import { CreateApp } from './app.js'
 import { ModeloAuth } from './models/auth.js'
-import { ModeloProvider } from './models/provider.js'
+import { ModeloProveedor } from './models/provider.js'
 
-CreateApp({ modeloAuth: ModeloAuth, modeloProvider: ModeloProvider })
+CreateApp({ modeloAuth: ModeloAuth, modeloProveedor: ModeloProveedor })

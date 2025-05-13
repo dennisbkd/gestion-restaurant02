@@ -1,22 +1,22 @@
 import { Router } from 'express'
-import { ControladorProvider } from '../controllers/provider.js'
+import { ControladorProveedor } from '../controllers/provider.js'
 
-export const crearProviderRutas = ({ modeloProvider }) => {
-  const Providerruta = Router()
-  const controladorProvider = new ControladorProvider({ modeloProvider })
+export const crearProveedorRutas = ({ modeloProveedor }) => {
+  const Proveedorruta = Router()
+  const controladorProveedor = new ControladorProveedor({ modeloProveedor })
   // Registrar proveedor
-  Providerruta.post('/register', controladorProvider.registerProvider)
+  Proveedorruta.post('/register', controladorProveedor.registrarProveedor)
 
   // Obtener proveedores
-  Providerruta.get('/get', controladorProvider.getProviders)
+  Proveedorruta.get('/get', controladorProveedor.obtenerProveedor)
 
   // Actualizar proveedor
-  Providerruta.put('/update', controladorProvider.updateProvider)
+  Proveedorruta.put('/update', controladorProveedor.actualizarProveedor)
 
   // Eliminar proveedor
-  Providerruta.delete('/delete', controladorProvider.deleteProvider)
+  Proveedorruta.delete('/delete', controladorProveedor.eliminarProveedor)
 
   // Restaurar proveedor
-  Providerruta.patch('/restore', controladorProvider.restoreProvider)
-  return Providerruta
+  Proveedorruta.patch('/restore', controladorProveedor.restaurarProveedor)
+  return Proveedorruta
 }

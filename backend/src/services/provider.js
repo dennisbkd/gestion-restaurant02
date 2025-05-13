@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize'
 
-const providerColumns = {
+const definicionProveedor = {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -29,4 +29,4 @@ const providerColumns = {
   }
 }
 
-export default providerColumns
+export default definicionProveedor

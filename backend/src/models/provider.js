@@ -1,25 +1,25 @@
 import sequelize from '../config/db/config.js'
 
-import providerColumns from '../services/provider.js'
+import definicionProveedor from '../services/provider.js'
 
-export class ModeloProvider {
-  static Provider = sequelize.define('Proveedor', providerColumns, {
+export class ModeloProveedor {
+  static Proveedor = sequelize.define('Proveedor', definicionProveedor, {
     timestamps: false,
     freezeTableName: true
   })
 
   // Funcion para registrar un nuevo proveedor
-  static registerProvider = async ({ input }) => {
+  static registrarProveedor = async ({ input }) => {
     const { nombre, telefono, correo, direccion } = input.data
     try {
-      const buscarProveedor = await this.Provider.findOne({
+      const buscarProveedor = await this.Proveedor.findOne({
         where: { nombre }
       })
       // si existe un proveedor con el mismo nombre no se puede registrar
       if (buscarProveedor) {
         return { error: 'El proveedor ya se encuentra registrado' }
       }
-      await this.Provider.create({ nombre, telefono, correo, direccion })
+      await this.Proveedor.create({ nombre, telefono, correo, direccion })
       // retornar el proveedor registrado
       return { provider: { nombre, telefono, correo, direccion } }
     } catch (error) {
@@ -31,10 +31,10 @@ export class ModeloProvider {
   }
 
   // Funcion para obtener a todos los proveedores
-  static getProviders = async () => {
+  static obtenerProveedor = async () => {
     try {
       // obtenemos los proveedores y ordenamos por nombre
-      const providers = await this.Provider.findAll({ order: [['nombre', 'ASC']] })
+      const providers = await this.Proveedor.findAll()
       // retornamos los proveedores
       return { providers }
     } catch (error) {
@@ -46,10 +46,10 @@ export class ModeloProvider {
   }
 
   // Funcion para actualizar un proveedor
-  static updateProvider = async ({ input }) => {
+  static actualizarProveedor = async ({ input }) => {
     const { id, nombre, telefono, correo, direccion } = input.data
     try {
-      const [updatedRows] = await this.Provider.update(
+      const [updatedRows] = await this.Proveedor.update(
         { nombre, telefono, correo, direccion },
         { where: { id } }
       )
@@ -72,9 +72,9 @@ export class ModeloProvider {
   }
 
   // Funcion para eliminar un proveedor
-  static deleteProvider = async (id) => {
+  static eliminarProveedor = async (id) => {
     try {
-      const updated = await this.Provider.update(
+      const updated = await this.Proveedor.update(
         { idEstado: 13 }, // "No disponible"
         { where: { id } }
       )
@@ -93,9 +93,9 @@ export class ModeloProvider {
   }
 
   // Funcion para volver activar un proveedor
-  static restoreProvider = async (id) => {
+  static restaurarProveedor = async (id) => {
     try {
-      const updated = await this.Provider.update(
+      const updated = await this.Proveedor.update(
         { idEstado: 3 }, // "Disponible"
         { where: { id } }
       )
