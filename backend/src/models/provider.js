@@ -34,7 +34,7 @@ export class ModeloProvider {
   static getProviders = async () => {
     try {
       // obtenemos los proveedores y ordenamos por nombre
-      const providers = await this.Provider.findAll()
+      const providers = await this.Provider.findAll({ order: [['nombre', 'ASC']] })
       // retornamos los proveedores
       return { providers }
     } catch (error) {
