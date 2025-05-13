@@ -10,8 +10,7 @@ import cookieParser from 'cookie-parser'
 import { PALABRA_SECRETA } from './config/authConfig.js'
 import { Token } from './utils/authToken.js'
 
-
-export const CreateApp = async ({ modeloAuth, modeloAdministrador, crearProveedorRutas }) => {
+export const CreateApp = async ({ modeloAuth, modeloAdministrador, modeloProveedor }) => {
   const app = express()
   const token = new Token(PALABRA_SECRETA)
 
@@ -25,7 +24,7 @@ export const CreateApp = async ({ modeloAuth, modeloAdministrador, crearProveedo
   app.use('/auth', crearAuthRutas({ modeloAuth }))
   app.use('/admin', crearRutaAdministrador({ modeloAdministrador, token }))
 
-  app.use('/provider', crearProveedorRutas({ modeloProveedor }))
+  app.use('/proveedor', crearProveedorRutas({ modeloProveedor }))
 
   app.listen(PORT, () => {
     console.log('servidor activo en el puerto:', PORT)

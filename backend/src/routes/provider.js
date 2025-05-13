@@ -5,18 +5,18 @@ export const crearProveedorRutas = ({ modeloProveedor }) => {
   const Proveedorruta = Router()
   const controladorProveedor = new ControladorProveedor({ modeloProveedor })
   // Registrar proveedor
-  Proveedorruta.post('/register', controladorProveedor.registrarProveedor)
+  Proveedorruta.post('/registrar', controladorProveedor.registrarProveedor)
 
   // Obtener proveedores
-  Proveedorruta.get('/get', controladorProveedor.obtenerProveedor)
+  Proveedorruta.get('/proveedores', controladorProveedor.obtenerProveedor)
 
   // Actualizar proveedor
-  Proveedorruta.put('/update', controladorProveedor.actualizarProveedor)
+  Proveedorruta.put('/actualizar', controladorProveedor.actualizarProveedor)
 
   // Eliminar proveedor
-  Proveedorruta.delete('/delete', controladorProveedor.eliminarProveedor)
+  Proveedorruta.delete('/eliminar', controladorProveedor.eliminarProveedor)
 
   // Restaurar proveedor
-  Proveedorruta.patch('/restore', controladorProveedor.restaurarProveedor)
+  Proveedorruta.patch('/restaurar', controladorProveedor.restaurarProveedor)
   return Proveedorruta
 }
