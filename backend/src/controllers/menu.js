@@ -12,16 +12,17 @@ export class ControladorMenu {
 
   // Editar un menú existente
   editarMenu = async (req, res) => {
-    const { idMenu } = req.params
-    const resultado = await this.ModeloMenu.editarMenu({ idMenu, input: req.body })
+    console.log('hola')
+    const { id } = req.params
+    const resultado = await this.ModeloMenu.editarMenu({ id, input: req.body })
     if (resultado.error) return res.status(400).json({ error: resultado.error, detalles: resultado.detalles })
     return res.status(200).json(resultado)
   }
 
   // Eliminar un menú
   eliminarMenu = async (req, res) => {
-    const { idMenu } = req.params
-    const resultado = await this.ModeloMenu.eliminarMenu(idMenu)
+    const { id } = req.params
+    const resultado = await this.ModeloMenu.eliminarMenu(id)
     if (resultado.error) return res.status(400).json({ error: resultado.error, detalles: resultado.detalles })
     return res.status(200).json(resultado)
   }

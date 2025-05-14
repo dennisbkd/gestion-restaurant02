@@ -5,45 +5,67 @@ import { definicionProducto } from '../services/product.js'
 import { definicionDetalleMenu } from '../services/detalleMenu.js'
 
 // Definición de modelos
-export const Menu = sequelize.define('Menu', definicionMenu, {
-  timestamps: false,
-  freezeTableName: true
-})
-
-export const Producto = sequelize.define('Producto', definicionProducto, {
-  timestamps: false,
-  freezeTableName: true
-})
-
-export const DetalleMenu = sequelize.define('DetalleMenu', definicionDetalleMenu, {
-  timestamps: false,
-  freezeTableName: true
-})
-
-// Relaciones
-Menu.hasMany(DetalleMenu, { foreignKey: 'idMenu' })
-Producto.hasMany(DetalleMenu, { foreignKey: 'idProducto' })
-
-DetalleMenu.belongsTo(Menu, { foreignKey: 'idMenu' })
-DetalleMenu.belongsTo(Producto, { foreignKey: 'idProducto' })
-
-// claseeee
 export class ModeloMenu {
+  static initModelos () {
+    this.Menu = sequelize.define('Menu', definicionMenu, {
+      timestamps: false,
+      freezeTableName: true
+    })
+
+    this.Producto = sequelize.define('Producto', definicionProducto, {
+      timestamps: false,
+      freezeTableName: true
+    })
+
+    this.DetalleMenu = sequelize.define('DetalleMenu', definicionDetalleMenu, {
+      timestamps: false,
+      freezeTableName: true
+    })
+  }
+
+  static asociar () {
+    // Verifica que los modelos estén definidos
+    if (!this.Menu || !this.Producto || !this.DetalleMenu) {
+      throw new Error('Primero debes llamar a initModelos()')
+    }
+
+    // Relaciones muchos a muchos
+    this.Menu.belongsToMany(this.Producto, {
+      through: this.DetalleMenu,
+      foreignKey: 'idMenu',
+      otherKey: 'idProducto'
+    })
+
+    this.Producto.belongsToMany(this.Menu, {
+      through: this.DetalleMenu,
+      foreignKey: 'idProducto',
+      otherKey: 'idMenu'
+    })
+
+    // Relaciones directas con DetalleMenu
+    this.DetalleMenu.belongsTo(this.Menu, { foreignKey: 'idMenu' })
+    this.DetalleMenu.belongsTo(this.Producto, { foreignKey: 'idProducto' })
+
+    this.Menu.hasMany(this.DetalleMenu, { foreignKey: 'idMenu' })
+    this.Producto.hasMany(this.DetalleMenu, { foreignKey: 'idProducto' })
+  }
+
   // Crear un nuevo menú
-  static crearMenu = async ({ input }) => {
-    const { dia, productos } = input.data
+  static async crearMenu ({ input }) {
+    ModeloMenu.initModelos()
+    ModeloMenu.asociar()
+    const { dia, productos } = input
 
     try {
-      const menuExistente = await Menu.findOne({ where: { dia } })
+      const menuExistente = await this.Menu.findOne({ where: { dia, idEstado: 3 } })
       if (menuExistente) return { error: `Ya existe un menú para el día ${dia}` }
 
-      const nuevoMenu = await Menu.create({ dia })
+      const nuevoMenu = await this.Menu.create({ dia, idEstado: 3 })
 
       for (const producto of productos) {
-        await DetalleMenu.create({
-          menuId: nuevoMenu.id,
-          productoId: producto.id,
-          cantidad: producto.cantidad
+        await this.DetalleMenu.create({
+          idMenu: nuevoMenu.id,
+          idProducto: producto.id
         })
       }
 
@@ -57,14 +79,17 @@ export class ModeloMenu {
   }
 
   // Obtener todos los menús con sus productos
-  static obtenerMenus = async () => {
+  static async obtenerMenus () {
+    ModeloMenu.initModelos()
+    ModeloMenu.asociar()
     try {
-      const menus = await Menu.findAll({
+      const menus = await this.Menu.findAll({
         include: {
-          model: DetalleMenu,
-          include: Producto
+          model: ModeloMenu.DetalleMenu,
+          include: this.Producto
         }
       })
+
       return { menus }
     } catch (error) {
       return {
@@ -75,13 +100,15 @@ export class ModeloMenu {
   }
 
   // Obtener todos los menús con sus productos por día
-  static obtenerMenuPorDia = async (dia) => {
+  static async obtenerMenuPorDia (dia) {
+    ModeloMenu.initModelos()
+    ModeloMenu.asociar()
     try {
-      const menu = await Menu.findOne({
+      const menu = await this.Menu.findAll({
         where: { dia },
         include: {
-          model: DetalleMenu,
-          include: Producto
+          model: this.DetalleMenu,
+          include: this.Producto
         }
       })
       if (!menu) return { error: 'Menú no encontrado para el día ' + dia }
@@ -95,22 +122,23 @@ export class ModeloMenu {
   }
 
   // Editar un menú
-  static editarMenu = async ({ idMenu, input }) => {
-    const { dia, productos } = input.data
+  static async editarMenu ({ id, input }) {
+    ModeloMenu.initModelos()
+    ModeloMenu.asociar()
+    const { dia, productos } = input
+    console.log(input)
     try {
-      const menu = await Menu.findByPk(idMenu)
+      const menu = await this.Menu.findByPk(id)
       if (!menu) return { error: 'Menú no encontrado' }
 
       menu.dia = dia
       await menu.save()
 
-      await DetalleMenu.destroy({ where: { menuId: idMenu } })
-
+      await this.DetalleMenu.destroy({ where: { idMenu: id } })
       for (const producto of productos) {
-        await DetalleMenu.create({
-          menuId: idMenu,
-          productoId: producto.id,
-          cantidad: producto.cantidad
+        await this.DetalleMenu.create({
+          idMenu: id,
+          idProducto: producto.id
         })
       }
 
@@ -124,13 +152,13 @@ export class ModeloMenu {
   }
 
   // Eliminar un menú
-  static eliminarMenu = async (idMenu) => {
+  static async eliminarMenu (id) {
+    ModeloMenu.initModelos()
+    ModeloMenu.asociar()
     try {
-      const menu = await Menu.findByPk(idMenu)
+      const menu = await this.Menu.findByPk(id)
       if (!menu) return { error: 'Menú no encontrado' }
-
-      await DetalleMenu.destroy({ where: { menuId: idMenu } })
-      await Menu.destroy({ where: { id: idMenu } })
+      await menu.update({ idEstado: 4 })
 
       return { message: 'Menú eliminado correctamente' }
     } catch (error) {
