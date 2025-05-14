@@ -80,6 +80,25 @@ export class ModeloInventario {
         }
     }
 
-    // Consultar productos que necesitan reorden
-    
+    // mostrar stock por id
+    // Consultar stock por ID específico
+    static async consultarStockPorId(id) {
+        try {
+            const [stock] = await sequelize.query(
+                'SELECT * FROM Stock WHERE id = :id',
+                {
+                    replacements: { id },
+                    type: sequelize.QueryTypes.SELECT
+                }
+            );
+
+            if (!stock) {
+                return { error: `No se encontró producto con ID ${id}` };
+            }
+
+            return { stock };
+        } catch (error) {
+            throw new Error('Error al consultar stock por ID: ' + error.message);
+        }
+    }
 }

@@ -81,3 +81,6 @@ Content-Type: application/json
   "idPermiso": 5,
     "newDescripcion": "Nuevo2"
 }
+
+###
+get http://localhost:3000/permisos/mostrarStock/2
