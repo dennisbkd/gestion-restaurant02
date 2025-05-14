@@ -1,5 +1,4 @@
 import { DataTypes } from 'sequelize'
-
 export const definicionProducto = {
   id: {
     type: DataTypes.INTEGER,
@@ -7,7 +6,7 @@ export const definicionProducto = {
     autoIncrement: true
   },
   nombre: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(100),
     allowNull: false,
     unique: true
   },
@@ -15,29 +14,8 @@ export const definicionProducto = {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false
   },
-  descripcion: {
-    type: DataTypes.TEXT, // VARCHAR(MAX) se mapea mejor como TEXT
-    allowNull: true
-  },
-  tiempoPreparacion: {
-    type: DataTypes.TIME,
-    allowNull: true
-  },
-
-  idCategoria: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'Categoria',
-      key: 'id'
-    }
-  },
-  idStock: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      model: 'Stock',
-      key: 'id'
-    }
-  }
+  descripcion: DataTypes.TEXT,
+  tiempoPreparacion: DataTypes.TIME,
+  idCategoria: DataTypes.INTEGER,
+  idStock: DataTypes.INTEGER
 }

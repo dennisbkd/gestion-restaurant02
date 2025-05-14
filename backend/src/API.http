@@ -50,3 +50,40 @@ GET http://localhost:3000/auth/logout
 
 ### 
 GET http://localhost:3000/admin/panelAdministrativo
+
+### 
+GET http://localhost:3000/menus/todos
+
+### 
+GET http://localhost:3000/menus/dia/Lunes
+
+### 
+PATCH http://localhost:3000/menus/eliminar/1
+
+### 
+PATCH http://localhost:3000/menus/editar/1
+Content-Type: application/json
+
+{
+     "dia": "Martes",
+     "productos": [
+        {"id": 2},
+        {"id": 3}
+     ]
+           
+  
+}
+
+### 
+POST http://localhost:3000/menus/crear
+Content-Type: application/json
+
+{
+     "dia": "Lunes",
+     "productos": [
+        {"id": 2},
+        {"id": 3}
+     ]
+           
+  
+}
