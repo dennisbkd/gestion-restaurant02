@@ -26,7 +26,7 @@ export class ValidacionDatosUsuario {
     return this.ReglasUser.partial().safeParse(user)
   }
 
-  static verificarEmpleado (data) {
+  static verificarDatosUsuario (data) {
     return this.ReglasUser.partial().safeParse(data)
   }
 }

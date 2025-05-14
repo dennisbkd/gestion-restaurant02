@@ -5,6 +5,7 @@ import { db } from './connection.js'
 import { crearAuthRutas } from './routes/auth.js'
 import { crearProveedorRutas } from './routes/provider.js'
 import { crearRutaAdministrador } from './routes/administrador.js'
+import { crearRutaUsuarios } from './routes/usuario.js'
 
 import { crearMenuRutas } from './routes/menu.js' //
 
@@ -12,7 +13,8 @@ import cookieParser from 'cookie-parser'
 import { PALABRA_SECRETA } from './config/authConfig.js'
 import { Token } from './utils/authToken.js'
 
-export const CreateApp = async ({ modeloAuth, modeloAdministrador, modeloProveedor, modeloMenu }) => { //
+export const CreateApp = async ({ modeloAuth, modeloAdministrador, modeloProveedor, modeloMenu, modeloUsuario }) => { //
+
   const app = express()
   const token = new Token(PALABRA_SECRETA)
 
@@ -24,6 +26,7 @@ export const CreateApp = async ({ modeloAuth, modeloAdministrador, modeloProveed
   modeloAuth.token = token
 
   app.use('/auth', crearAuthRutas({ modeloAuth }))
+  app.use('/user', crearRutaUsuarios({ modeloUsuario }))
   app.use('/admin', crearRutaAdministrador({ modeloAdministrador, token }))
 
   app.use('/proveedor', crearProveedorRutas({ modeloProveedor }))
