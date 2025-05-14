@@ -72,3 +72,12 @@ Content-Type: application/json
 {
   "descripcion": "Nuevo"
 }
+
+###
+Put http://localhost:3000/permisos/editar
+Content-Type: application/json
+
+{
+  "idPermiso": 5,
+    "newDescripcion": "Nuevo2"
+}

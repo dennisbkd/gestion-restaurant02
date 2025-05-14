@@ -12,6 +12,7 @@ import { crearRutasPermisos } from './routes/permisos.js'
 
 import { PALABRA_SECRETA } from './config/authConfig.js'
 import { Token } from './utils/authToken.js'
+import { crearRutasInventario } from './routes/inventario.js'
 
 export const CreateApp = async ({ modeloAuth, modeloAdministrador,modeloRol,modeloPermiso }) => {
   const app = express()
@@ -28,7 +29,7 @@ export const CreateApp = async ({ modeloAuth, modeloAdministrador,modeloRol,mode
   app.use('/auth', crearAuthRutas({ modeloAuth }))
   app.use('/admin', crearRutaAdministrador({ modeloAdministrador, token }))
   app.use('/roles', crearRutasRoles({ modeloRol }))
-  app.use('/permisos', crearRutasPermisos({ modeloPermiso })) 
+  app.use('/permisos', crearRutasInventario({ modeloInventario })) 
 
   app.listen(PORT, () => {
     console.log('servidor activo en el puerto:', PORT)

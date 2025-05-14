@@ -9,10 +9,10 @@ export class ModeloPermiso {
     })
 
   // Crear un nuevo permiso
-  static async crearPermiso({ input }) {
+  static async crearPermiso({ input })  {
     const { descripcion } = input;
     try {
-      const [result] = await sequelize.query(
+      const result = await sequelize.query(
         'DECLARE @newID INT, @mensaje VARCHAR(200); ' +
         'EXEC p_CrearPermiso @descripcion = :descripcion, @newID = @newID OUTPUT, @mensaje = @mensaje OUTPUT; ' +
         'SELECT @newID AS newID, @mensaje AS mensaje;',
@@ -46,13 +46,21 @@ export class ModeloPermiso {
   static async editarPermiso({ input }) {
     const { idPermiso, newDescripcion } = input;
     try {
-      const [result] = await sequelize.query(
-        'EXEC p_EditarPermiso @idPermiso = :idPermiso, @newDescripcion = :newDescripcion, @mensaje = OUTPUT',
-        {
-          replacements: { idPermiso, newDescripcion },
-          type: sequelize.QueryTypes.SELECT
-        }
-      );
+      const result = await sequelize.query(
+            `DECLARE @mensaje VARCHAR(200);
+             EXEC p_EditarPermiso 
+                @idPermiso = :idPermiso, 
+                @newDescripcion = :newDescripcion, 
+                @mensaje = @mensaje OUTPUT;
+             SELECT @mensaje AS mensaje;`,
+            {
+                replacements: { 
+                    idPermiso, 
+                    newDescripcion 
+                },
+                type: sequelize.QueryTypes.SELECT
+            }
+        );
 
       if (result.mensaje.includes('Error') || result.mensaje.includes('No existe')) {
         return { error: result.mensaje };
