@@ -26,7 +26,7 @@ export const CreateApp = async ({ modeloAuth, modeloAdministrador, modeloProveed
   app.use('/user', crearRutaUsuarios({ modeloUsuario }))
   app.use('/admin', crearRutaAdministrador({ modeloAdministrador, token }))
 
-  app.use('/provider', crearProveedorRutas({ modeloProveedor }))
+  app.use('/proveedor', crearProveedorRutas({ modeloProveedor }))
 
   app.listen(PORT, () => {
     console.log('servidor activo en el puerto:', PORT)
