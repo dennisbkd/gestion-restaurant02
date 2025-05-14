@@ -6,7 +6,7 @@ export const crearMenuRutas = ({ modeloMenu }) => {
   const controladorMenu = new ControladorMenu({ modeloMenu })
 
   // Crear menú
-  MenuRuta.post('/registrar', controladorMenu.crearMenu)
+  MenuRuta.post('/crear', controladorMenu.crearMenu)
 
   // Obtener todos los menús
   MenuRuta.get('/todos', controladorMenu.obtenerMenus)
@@ -15,10 +15,10 @@ export const crearMenuRutas = ({ modeloMenu }) => {
   MenuRuta.get('/dia/:dia', controladorMenu.obtenerMenuPorDia)
 
   // Editar menú
-  MenuRuta.put('/actualizar/:id', controladorMenu.editarMenu)
+  MenuRuta.patch('/editar/:id', controladorMenu.editarMenu)
 
   // Eliminar menú
-  MenuRuta.delete('/eliminar/:id', controladorMenu.eliminarMenu)
+  MenuRuta.patch('/eliminar/:id', controladorMenu.eliminarMenu)
 
   return MenuRuta
 }
