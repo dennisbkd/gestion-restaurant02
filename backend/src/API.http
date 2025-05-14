@@ -38,8 +38,8 @@ Content-Type: application/json
 
 {
     // --cuenta admin--
-    "nombreUsuario": "admin1",	
-    "password": "123"
+    "nombreUsuario": "dennisbk",	
+    "password": "dennis123"
 } 
 
 ###
