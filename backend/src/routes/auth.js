@@ -7,7 +7,6 @@ export const crearAuthRutas = ({ modeloAuth }) => {
   const middleware = autenticacion(modeloAuth.token)
   const controladorAuth = new ControladorAuth({ modeloAuth })
   Authruta.post('/login', controladorAuth.login)
-  Authruta.post('/register', controladorAuth.registrarEmpleado)
   Authruta.get('/logout', clearToken)
   Authruta.get('/verificar', middleware, controladorAuth.perfil)
   return Authruta
