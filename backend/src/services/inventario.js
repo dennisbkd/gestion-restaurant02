@@ -1,4 +1,5 @@
-import { DataTypes } from "sequelize";  
+import { DataTypes } from 'sequelize'
+
 export const definicionProducto = {
   id: {
     type: DataTypes.INTEGER,
