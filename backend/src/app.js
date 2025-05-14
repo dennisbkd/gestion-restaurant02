@@ -19,6 +19,7 @@ export const CreateApp = async ({ modeloAuth, modeloAdministrador,modeloRol,mode
 
   app.use(cookieParser())
   app.use(json())
+  app.use(express.json())
 
   db()
 

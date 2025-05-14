@@ -13,7 +13,9 @@ export class ModeloPermiso {
     const { descripcion } = input;
     try {
       const [result] = await sequelize.query(
-        'EXEC p_CrearPermiso @descripcion = :descripcion, @newID = OUTPUT, @mensaje = OUTPUT',
+        'DECLARE @newID INT, @mensaje VARCHAR(200); ' +
+        'EXEC p_CrearPermiso @descripcion = :descripcion, @newID = @newID OUTPUT, @mensaje = @mensaje OUTPUT; ' +
+        'SELECT @newID AS newID, @mensaje AS mensaje;',
         {
           replacements: { descripcion },
           type: sequelize.QueryTypes.SELECT
@@ -32,12 +34,13 @@ export class ModeloPermiso {
         mensaje: result.mensaje
       };
     } catch (error) {
+      console.error('Error detallado:', error); // Para debug
       return {
         error: 'Error al crear el permiso',
         detalles: error.message
       };
     }
-  }
+}
 
   // Editar o actualizar un permiso 
   static async editarPermiso({ input }) {
