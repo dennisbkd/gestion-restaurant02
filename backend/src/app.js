@@ -3,22 +3,30 @@ import { PORT } from './config/config.js'
 import { db } from './connection.js'
 
 import { crearAuthRutas } from './routes/auth.js'
+
+import { crearRutasRoles } from './routes/roles.js'
+import { crearRutasPermisos } from './routes/permisos.js'
+import { crearRutasInventario } from './routes/inventario.js'
 import { crearProveedorRutas } from './routes/provider.js'
 import { crearRutaAdministrador } from './routes/administrador.js'
 import { crearRutaUsuarios } from './routes/usuario.js'
 
 import { crearMenuRutas } from './routes/menu.js' //
 
+
 import cookieParser from 'cookie-parser'
 import { PALABRA_SECRETA } from './config/authConfig.js'
 import { Token } from './utils/authToken.js'
 
-export const CreateApp = async ({ modeloAuth, modeloAdministrador, modeloProveedor, modeloMenu, modeloUsuario }) => {
+
+
+export const CreateApp = async ({ modeloAuth, modeloAdministrador, modeloProveedor, modeloMenu, modeloUsuario,modeloRol,modeloPermiso,modeloInventario }) => {
   const app = express()
   const token = new Token(PALABRA_SECRETA)
 
   app.use(cookieParser())
   app.use(json())
+  app.use(express.json())
 
   db()
 
@@ -27,6 +35,8 @@ export const CreateApp = async ({ modeloAuth, modeloAdministrador, modeloProveed
   app.use('/auth', crearAuthRutas({ modeloAuth }))
   app.use('/user', crearRutaUsuarios({ modeloUsuario }))
   app.use('/admin', crearRutaAdministrador({ modeloAdministrador, token }))
+  app.use('/roles', crearRutasRoles({ modeloRol }))
+  app.use('/permisos', crearRutasInventario({ modeloInventario })) 
 
   app.use('/proveedor', crearProveedorRutas({ modeloProveedor }))
 

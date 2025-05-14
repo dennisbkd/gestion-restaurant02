@@ -51,6 +51,59 @@ GET http://localhost:3000/auth/logout
 ### 
 GET http://localhost:3000/admin/panelAdministrativo
 
+### Crear nuevo rol
+POST http://localhost:3000/roles/crear
+Content-Type: application/json
+
+{
+    "nombre": "p"
+}
+
+###
+Put http://localhost:3000/roles/editar
+Content-Type: application/json
+
+{
+    
+        "oldRol": "cardiologo2",
+        "newRol": "cardiologo_principal"
+    
+}
+
+### Eliminar rol por ID
+delete  http://localhost:3000/roles/eliminar
+Content-Type: application/json
+
+{
+    "nombre": "p"
+}
+
+
+### roles y permisos
+ GET http://localhost:3000/roles/permisos
+
+### permisos de un rol
+GET http://localhost:3000/roles/permisos
+
+### crear permiso
+POST http://localhost:3000/permisos/crear
+Content-Type: application/json
+
+{
+  "descripcion": "Nuevo"
+}
+
+###
+Put http://localhost:3000/permisos/editar
+Content-Type: application/json
+
+{
+  "idPermiso": 5,
+    "newDescripcion": "Nuevo2"
+}
+
+###
+get http://localhost:3000/permisos/mostrarStock/2
 ### 
 GET http://localhost:3000/menus/todos
 
@@ -83,7 +136,7 @@ Content-Type: application/json
      "productos": [
         {"id": 2},
         {"id": 3}
-     ]
-           
+     ]    
   
 }
+
