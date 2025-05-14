@@ -41,4 +41,17 @@ export class ModeloAuth {
       throw new Error('Error al loguearse')
     }
   }
+
+  static async perfil ({ input }) {
+    const id = input.id
+    const user = await this.Usuario.findByPk(id)
+    if (!user) return { error: 'Error: Usuario  no existente' }
+    return {
+      user: {
+        email: user.correo,
+        userName: user.nombreUsuario,
+        rol: user.idRol
+      }
+    }
+  }
 }
