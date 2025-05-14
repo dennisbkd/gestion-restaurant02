@@ -30,3 +30,11 @@ GET http://localhost:3000/auth/logout
 
 ### 
 GET http://localhost:3000/admin/panelAdministrativo
+
+### Crear nuevo rol
+POST http://localhost:3000/roles/crear
+Content-Type: application/json
+
+{
+    "nombre": "cardiologo",
+}
