@@ -33,10 +33,17 @@ export class ControladorMenu {
     return res.status(200).json(resultado)
   }
 
-  // Obtener un menú por su día
-  obtenerMenuPorDia = async (req, res) => {
-    const { dia } = req.params
-    const resultado = await this.ModeloMenu.obtenerMenuPorDia(dia)
+  // Obtener menú por día y estado
+  obtenerMenuPorDiaYEstado = async (req, res) => {
+    const { dia, idEstado } = req.params
+    const resultado = await this.ModeloMenu.obtenerMenuPorDiaYEstado(dia, parseInt(idEstado))
+    if (resultado.error) return res.status(404).json({ error: resultado.error, detalles: resultado.detalles })
+    return res.status(200).json(resultado)
+  }
+
+  // Obtener el menú activo del día actual
+  obtenerMenuPorDiaHoy = async (req, res) => {
+    const resultado = await this.ModeloMenu.obtenerMenuPorDiaHoy()
     if (resultado.error) return res.status(404).json({ error: resultado.error, detalles: resultado.detalles })
     return res.status(200).json(resultado)
   }

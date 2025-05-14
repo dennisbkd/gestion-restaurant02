@@ -31,18 +31,18 @@ DetalleMenu.belongsTo(Producto, { foreignKey: 'idProducto' })
 export class ModeloMenu {
   // Crear un nuevo menú
   static crearMenu = async ({ input }) => {
-    const { dia, productos } = input.data
+    const { dia, idEstado, productos } = input.data
 
     try {
-      const menuExistente = await Menu.findOne({ where: { dia } })
-      if (menuExistente) return { error: `Ya existe un menú para el día ${dia}` }
+      const menuExistente = await Menu.findOne({ where: { dia, idEstado } })
+      if (menuExistente) return { error: `Ya existe un menú para el día ${dia} con ese estado.` }
 
-      const nuevoMenu = await Menu.create({ dia })
+      const nuevoMenu = await Menu.create({ dia, idEstado })
 
       for (const producto of productos) {
         await DetalleMenu.create({
-          menuId: nuevoMenu.id,
-          productoId: producto.id,
+          idMenu: nuevoMenu.id,
+          idProducto: producto.id,
           cantidad: producto.cantidad
         })
       }
@@ -74,42 +74,49 @@ export class ModeloMenu {
     }
   }
 
-  // Obtener todos los menús con sus productos por día
-  static obtenerMenuPorDia = async (dia) => {
+  // Obtener todos los menús con sus productos por día y estado
+  static obtenerMenuPorDiaYEstado = async (dia, idEstado) => {
     try {
       const menu = await Menu.findOne({
-        where: { dia },
+        where: { dia, idEstado },
         include: {
           model: DetalleMenu,
           include: Producto
         }
       })
-      if (!menu) return { error: 'Menú no encontrado para el día ' + dia }
+      if (!menu) return { error: `No se encontró menú para el día ${dia} con el estado indicado.` }
       return { menu }
     } catch (error) {
       return {
-        error: 'Error al obtener el menú por día',
+        error: 'Error al obtener el menú por día y estado',
         detalles: error.message
       }
     }
   }
 
+  // Obtener el menú activo del día actual
+  static obtenerMenuPorDiaHoy = async () => {
+    const hoy = new Date().toISOString().split('T')[0]
+    return ModeloMenu.obtenerMenuPorDiaYEstado(hoy, 1) // Estado activo
+  }
+
   // Editar un menú
   static editarMenu = async ({ idMenu, input }) => {
-    const { dia, productos } = input.data
+    const { dia, idEstado, productos } = input.data
     try {
       const menu = await Menu.findByPk(idMenu)
       if (!menu) return { error: 'Menú no encontrado' }
 
       menu.dia = dia
+      menu.idEstado = idEstado
       await menu.save()
 
-      await DetalleMenu.destroy({ where: { menuId: idMenu } })
+      await DetalleMenu.destroy({ where: { idMenu } })
 
       for (const producto of productos) {
         await DetalleMenu.create({
-          menuId: idMenu,
-          productoId: producto.id,
+          idMenu,
+          idProducto: producto.id,
           cantidad: producto.cantidad
         })
       }
@@ -129,7 +136,7 @@ export class ModeloMenu {
       const menu = await Menu.findByPk(idMenu)
       if (!menu) return { error: 'Menú no encontrado' }
 
-      await DetalleMenu.destroy({ where: { menuId: idMenu } })
+      await DetalleMenu.destroy({ where: { idMenu } })
       await Menu.destroy({ where: { id: idMenu } })
 
       return { message: 'Menú eliminado correctamente' }

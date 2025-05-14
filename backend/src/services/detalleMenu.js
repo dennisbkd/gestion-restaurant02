@@ -1,12 +1,10 @@
 import { DataTypes } from 'sequelize'
 
-export const definicionDetalleMenu = {
-  cantidad: {
-    type: DataTypes.FLOAT,
-    allowNull: false
-  },
+const definicionDetalleMenu = {
   idMenu: {
     type: DataTypes.INTEGER,
+    primaryKey: true,
+    allowNull: false,
     references: {
       model: 'Menu',
       key: 'id'
@@ -14,9 +12,13 @@ export const definicionDetalleMenu = {
   },
   idProducto: {
     type: DataTypes.INTEGER,
+    primaryKey: true,
+    allowNull: false,
     references: {
       model: 'Producto',
       key: 'id'
     }
   }
 }
+
+export default definicionDetalleMenu

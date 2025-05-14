@@ -1,13 +1,13 @@
 import { DataTypes } from 'sequelize'
 
-export const definicionProducto = {
+const definicionProducto = {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
   nombre: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(100),
     allowNull: false,
     unique: true
   },
@@ -16,28 +16,21 @@ export const definicionProducto = {
     allowNull: false
   },
   descripcion: {
-    type: DataTypes.TEXT, // VARCHAR(MAX) se mapea mejor como TEXT
+    type: DataTypes.STRING,
     allowNull: true
   },
   tiempoPreparacion: {
     type: DataTypes.TIME,
     allowNull: true
   },
-
   idCategoria: {
     type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'Categoria',
-      key: 'id'
-    }
+    allowNull: false
   },
   idStock: {
     type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      model: 'Stock',
-      key: 'id'
-    }
+    allowNull: true
   }
 }
+
+export default definicionProducto

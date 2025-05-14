@@ -11,8 +11,11 @@ export const crearMenuRutas = ({ modeloMenu }) => {
   // Obtener todos los menús
   MenuRuta.get('/todos', controladorMenu.obtenerMenus)
 
-  // Obtener menú por día
-  MenuRuta.get('/dia/:dia', controladorMenu.obtenerMenuPorDia)
+  // Obtener menú por día y estado
+  MenuRuta.get('/dia/:dia/estado/:idEstado', controladorMenu.obtenerMenuPorDiaYEstado)
+
+  // Obtener el menú activo del día actual
+  MenuRuta.get('/hoy', controladorMenu.obtenerMenuPorDiaHoy)
 
   // Editar menú
   MenuRuta.put('/actualizar/:id', controladorMenu.editarMenu)
