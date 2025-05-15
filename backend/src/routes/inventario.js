@@ -10,9 +10,9 @@ export const crearRutasInventario = ({ modeloInventario }) => {
   InventarioRuta.get('/disminuir', controladorInventario.disminuirStock)
 
   InventarioRuta.patch('actualizar', controladorInventario.actualizarStock)
- 
-  InventarioRuta.get('/mostrarStock', controladorInventario.mostrarStocks)
-  InventarioRuta.get('/mostrarStock/:id', controladorInventario.mostrarStock)
+
+  InventarioRuta.get('/mostrarStocks', controladorInventario.mostrarStocks)
+  InventarioRuta.get('/mostrarStock/:id', controladorInventario.mostrarStockPorId)
 
   return InventarioRuta
 }

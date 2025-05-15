@@ -7,7 +7,7 @@ export const crearRutasRoles = ({ modeloRol }) => {
 
   router.post('/crear', controlador.crearRol);
   router.put('/editar', controlador.editarRol);
-  router.delete('/eliminar', controlador.eliminarRol); // Usar params para DELETE
+  router.delete('/eliminar', controlador.eliminarRol); 
   router.get('/permisos', controlador.mostrarRolesYPermisos);
 
   return router;

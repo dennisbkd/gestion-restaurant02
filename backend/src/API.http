@@ -38,8 +38,8 @@ Content-Type: application/json
 
 {
     // --cuenta admin--
-    "nombreUsuario": "admin1",	
-    "password": "123"
+    "nombreUsuario": "dennisbk",	
+    "password": "dennis123"
 } 
 
 ###
@@ -50,3 +50,138 @@ GET http://localhost:3000/auth/logout
 
 ### 
 GET http://localhost:3000/admin/panelAdministrativo
+
+<<<<<<<<< Temporary merge branch 1
+### 
+GET http://localhost:3000/menus/todos
+
+### 
+GET http://localhost:3000/menus/dia/Lunes
+
+### 
+PATCH http://localhost:3000/menus/eliminar/1
+
+### 
+PATCH http://localhost:3000/menus/editar/1
+Content-Type: application/json
+
+{
+     "dia": "Martes",
+     "productos": [
+        {"id": 2},
+        {"id": 3}
+     ]
+           
+  
+}
+
+### 
+POST http://localhost:3000/menus/crear
+Content-Type: application/json
+
+{
+     "dia": "Lunes",
+     "productos": [
+        {"id": 2},
+        {"id": 3}
+     ]
+           
+  
+}
+=========
+### Crear nuevo rol
+POST http://localhost:3000/roles/crear
+Content-Type: application/json
+
+{
+    "nombre": "p"
+}
+
+###
+Put http://localhost:3000/roles/editar
+Content-Type: application/json
+
+{
+    
+        "oldRol": "cardiologo2",
+        "newRol": "cardiologo_principal"
+    
+}
+
+### Eliminar rol por ID
+delete  http://localhost:3000/roles/eliminar
+Content-Type: application/json
+
+{
+    "nombre": "p"
+}
+
+
+### roles y permisos
+ GET http://localhost:3000/roles/permisos
+
+### permisos de un rol
+GET http://localhost:3000/roles/permisos
+
+### crear permiso
+POST http://localhost:3000/permisos/crear
+Content-Type: application/json
+
+{
+  "descripcion": "Nuevo"
+}
+
+###
+Put http://localhost:3000/permisos/editar
+Content-Type: application/json
+
+{
+  "idPermiso": 5,
+    "newDescripcion": "Nuevo2"
+}
+
+###
+get http://localhost:3000/permisos/mostrarStock/2
+
+###
+POST http://localhost:3000/reservas/crear
+Content-Type: application/json
+
+{
+  "fecha": "2023-12-15",
+  "hora": "14:00:00",
+  "idClienteWeb": 4,
+  "idEstado": 7
+}
+
+###
+PUT http://localhost:3000/reservas/editar
+Content-Type: application/json
+
+{
+  "id": 4,
+  "fecha": "2023-12-20",
+  "hora": "15:00",
+  "idClienteWeb": 4,
+  "idEstado": 6
+}
+
+###
+DELETE http://localhost:3000/reservas/eliminar
+Content-Type: application/json
+
+{"id": 1}
+
+
+###
+GET http://localhost:3000/reservas/mostrar
+
+###
+GET http://localhost:3000/reservas/mostrar
+Content-Type: application/json
+
+{
+  "nombre": "juan p rez"
+}
+###
+DELETE http://localhost:3000/reservas/eliminar/1
