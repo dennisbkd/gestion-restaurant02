@@ -1,4 +1,29 @@
-const ModalEdit = ({ onClose }) => {
+import { editUserRequest } from '../api/user'
+import { useState } from 'react'
+const ModalEdit = ({ onClose, user }) => {
+  const [userInput, setUserInput] = useState({
+    id: user.id,
+    nombreUsuario: user.nombreUsuario,
+    correo: user.correo,
+    telefono: user.telefono,
+    tipoUsuario: user.tipoUsuario
+  })
+  const handleInputChange = (event) => {
+    setUserInput({
+      ...userInput,
+      [event.target.name]: event.target.value
+    })
+  }
+  const handleSubmit = async () => {
+    event.preventDefault()
+    try {
+      console.log(userInput)
+      await editUserRequest(userInput)
+      onClose()
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <>
       {/* Fondo desenfocado sin opacidad negra */}
@@ -28,6 +53,9 @@ const ModalEdit = ({ onClose }) => {
               <input
                 type='text'
                 placeholder='Nombre'
+                name='nombreUsuario'
+                value={userInput.nombreUsuario}
+                onChange={handleInputChange}
                 className='mt-1 w-full p-2 border border-gray-300 rounded-md dark:bg-gray-600 dark:text-white'
               />
             </div>
@@ -37,7 +65,24 @@ const ModalEdit = ({ onClose }) => {
               </label>
               <input
                 type='email'
+                name='correo'
+                value={userInput.correo}
+                onChange={handleInputChange}
                 placeholder='Correo'
+                className='mt-1 w-full p-2 border border-gray-300 rounded-md dark:bg-gray-600 dark:text-white'
+              />
+            </div>
+            <div>
+              <label className='block text-sm font-medium text-gray-700 dark:text-white'>
+                Telefono
+              </label>
+              <input
+                type='tel'
+                name='telefono'
+                value={userInput.telefono}
+                onChange={handleInputChange}
+                pattern='[0-8]{8,8}' // Ajusta según tu formato requerido
+                placeholder='Telefono'
                 className='mt-1 w-full p-2 border border-gray-300 rounded-md dark:bg-gray-600 dark:text-white'
               />
             </div>
@@ -49,8 +94,11 @@ const ModalEdit = ({ onClose }) => {
                 Tipo de Usuario
               </label>
               <select
+                onChange={handleInputChange}
+                required
                 id='tipoUsuario'
                 name='tipoUsuario'
+                value={userInput.tipoUsuario}
                 className='mt-1 w-full p-2 border border-gray-300 rounded-md bg-white text-gray-700 dark:bg-gray-600 dark:border-gray-500 dark:text-white'
               >
                 <option value=''>Selecciona una opción</option>
@@ -63,6 +111,7 @@ const ModalEdit = ({ onClose }) => {
             <button
               type='submit'
               className='w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700'
+              onClick={handleSubmit}
             >
               Guardar Cambios
             </button>

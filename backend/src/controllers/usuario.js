@@ -6,9 +6,10 @@ export class ControladorUsuario {
   }
 
   editarUsuario = async (req, res) => {
+    const { id } = req.query
     const resultado = ValidacionDatosUsuario.verificarDatosUsuario(req.body)
     if (!resultado.success) return res.status(401).json({ error: resultado.error })
-    const usuario = await this.ModeloUsuario.editarUsuario({ input: resultado })
+    const usuario = await this.ModeloUsuario.editarUsuario({ id, input: resultado })
     if (usuario.error) return res.status(400).json({ error: usuario.error })
     return res.status(201).json(usuario.mensaje)
   }

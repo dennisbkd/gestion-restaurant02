@@ -6,6 +6,7 @@ const UserTable = () => {
   const [areAllChecked, setAllChecked] = useState(false)
   const [checkboxItems, setCheckboxItem] = useState({})
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
   // Cargar usuarios al montar el componente
   useEffect(() => {
     const fetchUsers = async () => {
@@ -121,7 +122,10 @@ const UserTable = () => {
                 <td className='text-right px-6 whitespace-nowrap'>
                   <button
                     className='py-2 px-3 font-medium text-indigo-600 hover:text-indigo-500 duration-150 hover:bg-gray-50 rounded-lg'
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => {
+                      setIsModalOpen(true)
+                      setCurrentUser(user)
+                    }}
                   >
                     Editar
                   </button>
@@ -135,7 +139,9 @@ const UserTable = () => {
         </table>
       </div>
       {/* Modal */}
-      {isModalOpen && <ModalEdit onClose={() => setIsModalOpen(false)} />}
+      {isModalOpen && (
+        <ModalEdit onClose={() => setIsModalOpen(false)} user={currentUser} />
+      )}
     </div>
   )
 }

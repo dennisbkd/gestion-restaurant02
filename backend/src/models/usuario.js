@@ -57,11 +57,11 @@ export class ModeloUsuario {
     }
   }
 
-
-  static async editarUsuario ({ input }) {
+  static async editarUsuario ({ id, input }) {
     const { ...datos } = input.data
+    console.log(datos)
     try {
-      const usuario = await this.Usuario.findByPk(4)
+      const usuario = await this.Usuario.findByPk(id)
 
       if (!usuario) {
         return { error: 'Error: Usuario no encontrado' }
