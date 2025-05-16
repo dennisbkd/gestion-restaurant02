@@ -51,7 +51,6 @@ GET http://localhost:3000/auth/logout
 ### 
 GET http://localhost:3000/admin/panelAdministrativo
 
-<<<<<<<<< Temporary merge branch 1
 ### 
 GET http://localhost:3000/menus/todos
 
@@ -88,7 +87,7 @@ Content-Type: application/json
            
   
 }
-=========
+
 ### Crear nuevo rol
 POST http://localhost:3000/roles/crear
 Content-Type: application/json
@@ -97,7 +96,7 @@ Content-Type: application/json
     "nombre": "p"
 }
 
-###
+### Editar rol
 Put http://localhost:3000/roles/editar
 Content-Type: application/json
 
@@ -109,52 +108,81 @@ Content-Type: application/json
 }
 
 ### Eliminar rol por ID
-delete  http://localhost:3000/roles/eliminar
-Content-Type: application/json
-
-{
-    "nombre": "p"
-}
-
+DELETE http://localhost:3000/roles/eliminar/3
 
 ### roles y permisos
- GET http://localhost:3000/roles/permisos
+GET http://localhost:3000/roles/permisos
 
 ### permisos de un rol
-GET http://localhost:3000/roles/permisos
+GET http://localhost:3000/roles/permisos/2
 
 ### crear permiso
 POST http://localhost:3000/permisos/crear
 Content-Type: application/json
 
 {
-  "descripcion": "Nuevo"
+  "descripcion": "Nuevo4"
 }
 
-###
+### Editar permiso
 Put http://localhost:3000/permisos/editar
 Content-Type: application/json
 
 {
-  "idPermiso": 5,
-    "newDescripcion": "Nuevo2"
+  "idPermiso": 8,
+    "newDescripcion": "p2"
 }
 
-###
-get http://localhost:3000/permisos/mostrarStock/2
+### Eliminar permiso
+DELETE http://localhost:3000/permisos/eliminar/6
 
-###
+### ASIGNAR PERMISO A ROL
+POST http://localhost:3000/permisos/asignar
+Content-Type: application/json
+
+{
+  "idRol": 9,
+  "idPermiso": 5
+}
+
+### Agregar stock
+POST http://localhost:3000/inventario/agregar
+Content-Type: application/json
+
+{
+  "descripcion": "nuevo producto2",
+  "stockActual": 100,
+  "stockMinimo": 5
+}
+
+### Editar stock o actualizar stock (Disminuir)
+PUT http://localhost:3000/inventario/actualizar
+Content-Type: application/json
+
+{
+  "id": 34,
+  "nuevoStockActual": 200,
+  "nuevoStockMinimo": 20
+}
+
+### mostrar stock
+GET http://localhost:3000/inventario/mostrarStocks
+
+### mostrar stock por id
+GET http://localhost:3000/inventario/mostrarStock/34
+
+### registrar reserva
 POST http://localhost:3000/reservas/crear
 Content-Type: application/json
 
 {
-  "fecha": "2023-12-15",
-  "hora": "14:00:00",
+  "fecha": "2025-12-15",
+  "hora": "17:50:00",
   "idClienteWeb": 4,
   "idEstado": 7
 }
 
-###
+### Actualizar reserva (Editar reserva)
 PUT http://localhost:3000/reservas/editar
 Content-Type: application/json
 
@@ -166,22 +194,13 @@ Content-Type: application/json
   "idEstado": 6
 }
 
-###
-DELETE http://localhost:3000/reservas/eliminar
+### Cancelar reserva
+DELETE http://localhost:3000/reservas/eliminar/6
 Content-Type: application/json
 
-{"id": 1}
-
-
-###
+### Mostrar reservas
 GET http://localhost:3000/reservas/mostrar
 
-###
-GET http://localhost:3000/reservas/mostrar
-Content-Type: application/json
+### Mostrar reservas por nombre de cliente
+GET http://localhost:3000/reservas/mostrar/juan p rez
 
-{
-  "nombre": "juan p rez"
-}
-###
-DELETE http://localhost:3000/reservas/eliminar/1

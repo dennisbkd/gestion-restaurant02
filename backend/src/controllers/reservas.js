@@ -25,9 +25,8 @@ export class ControladorReservas {
 //Cancelar Reserva
   eliminarReserva = async (req, res) => {
     try {
-      const { id } = req.params;
-      if (!id) return res.status(400).json({ error: 'ID de reserva no proporcionado' });
-      const reserva = await this.modeloReserva.eliminarReserva(id);
+      if (!req.params.id) return res.status(400).json({ error: 'ID de reserva no proporcionado' });
+      const reserva = await this.modeloReserva.eliminarReserva(req.params.id);
       if (reserva.error) return res.status(400).json({ error: reserva.error });
       return res.status(200).json(reserva);
     } catch (error) {
@@ -35,6 +34,7 @@ export class ControladorReservas {
     }
   }
 
+  // Mostrar todas las reservas
   mostrarReservas = async (req, res) => {
     try {
       const reservas = await this.modeloReserva.mostrarReservas();

@@ -33,6 +33,7 @@ export class ModeloInventario {
     }
   }
 
+  // Disminuir stock
   static async disminuirStock ({ id, cantidad }) {
     try {
       const [result] = await sequelize.query(
@@ -59,43 +60,46 @@ export class ModeloInventario {
   }
 
   // Actualizar producto en el inventario
-  static async actualizarStock ({ id, nuevoStockActual, nuevoStockMinimo, nuevaDescripcion }) {
-    try {
-      const [result] = await sequelize.query(
-        'DECLARE @mensaje VARCHAR(100); ' +
-                'EXEC p_ActualizarStock @id = :id, @nuevoStockActual = :nuevoStockActual, ' +
-                '@nuevoStockMinimo = :nuevoStockMinimo, @nuevaDescripcion = :nuevaDescripcion, ' +
-                '@mensaje = @mensaje OUTPUT; ' +
-                'SELECT @mensaje AS mensaje;',
-        {
-          replacements: {
-            id,
-            nuevoStockActual: nuevoStockActual || null,
-            nuevoStockMinimo: nuevoStockMinimo || null,
-            nuevaDescripcion: nuevaDescripcion || null
-          },
-          type: sequelize.QueryTypes.SELECT
-        }
-      )
-
-      if (result.mensaje.includes('Error') || result.mensaje.includes('no existe')) {
-        return { error: result.mensaje }
+  static async actualizarStock (input) {
+  const { id, nuevoStockActual, nuevoStockMinimo } = input;
+  try {
+    const [result] = await sequelize.query(
+      `DECLARE @mensaje VARCHAR(100);
+       EXEC p_ActualizarStock 
+         @id = :id,
+         @nuevoStockActual = :nuevoStockActual,
+         @nuevoStockMinimo = :nuevoStockMinimo,
+         @mensaje = @mensaje OUTPUT;
+       SELECT @mensaje AS mensaje;`,
+      {
+        replacements: {
+          id,
+          nuevoStockActual,
+          nuevoStockMinimo 
+        },
+        type: sequelize.QueryTypes.SELECT
       }
+    );
 
-      return {
-        producto: { id, nuevoStockActual, nuevoStockMinimo, nuevaDescripcion },
-        mensaje: result.mensaje
-      }
-    } catch (error) {
-      throw new Error('Error al actualizar producto: ' + error.message)
+    if (result.mensaje.includes('Error') || result.mensaje.includes('no existe')) {
+      return { error: result.mensaje };
     }
-  }
 
-  // Consultar todo el inventario
+    return {
+      producto: { id, nuevoStockActual, nuevoStockMinimo },
+      mensaje: result.mensaje
+    };
+  } catch (error) {
+    throw new Error('Error al actualizar producto: ' + error.message);
+  }
+}
+
+
+  // Consultar todo el inventario (STOCKS)
   static async mostrarStocks () {
     try {
       const stock = await sequelize.query(
-        'EXEC p_ConsultarTodoStock',
+        'EXEC get_MostrarStocks',
         { type: sequelize.QueryTypes.SELECT }
       )
 
@@ -106,11 +110,10 @@ export class ModeloInventario {
   }
 
   // mostrar stock por id
-  // Consultar stock por ID específico
   static async mostrarStockPorId (id) {
     try {
       const stock = await sequelize.query(
-        'SELECT * FROM Producto WHERE id = :id',
+        'exec get_MostrarStockID @id = :id',
         {
           replacements: { id },
           type: sequelize.QueryTypes.SELECT
