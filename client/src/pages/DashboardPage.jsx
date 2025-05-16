@@ -1,5 +1,6 @@
 import SideBar from '../components/SideBar'
 import UserTable from '../components/UserTable'
+import Rol from '../components/Rol'
 import { useState } from 'react'
 export const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState('inicio')
@@ -12,6 +13,8 @@ export const DashboardPage = () => {
         return <EmpleadosTable />
       case 'productos':
         return <ProductosTable />
+      case 'roles':
+        return <Rol />
       // Agrega los demás casos...
       default:
         return (
@@ -25,7 +28,7 @@ export const DashboardPage = () => {
   return (
     <div className='flex md:flex-row flex-col gap-2'>
       <SideBar setActiveTab={setActiveTab} />
-      <div className='flex justify-center items-center w-full'>
+      <div className='flex-1 justify-center items-center w-full'>
         {renderContent()}
       </div>
     </div>

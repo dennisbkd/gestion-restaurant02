@@ -1,6 +1,6 @@
 import { editUserRequest } from '../api/user'
 import { useState } from 'react'
-const ModalEdit = ({ onClose, user }) => {
+const ModalEdit = ({ onClose, user, setIsSuccessModalOpen }) => {
   const [userInput, setUserInput] = useState({
     id: user.id,
     nombreUsuario: user.nombreUsuario,
@@ -19,6 +19,7 @@ const ModalEdit = ({ onClose, user }) => {
     try {
       console.log(userInput)
       await editUserRequest(userInput)
+      setIsSuccessModalOpen(true)
       onClose()
     } catch (error) {
       console.log(error)

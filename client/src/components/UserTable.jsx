@@ -1,12 +1,18 @@
 import { useEffect, useState } from 'react'
 import { getUserRequest } from '../api/user'
+import SuccessModal from './SuccessModal'
 import ModalEdit from './ModalEdit'
+import ModalAddEmployees from './ModalAddEmployees'
+
 const UserTable = () => {
   const [users, setUsers] = useState([])
   const [areAllChecked, setAllChecked] = useState(false)
   const [checkboxItems, setCheckboxItem] = useState({})
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
+  const [refresh, setRefresh] = useState(false)
+  const [isEmployeesOpen, setIsEmployeesOpen] = useState(false)
   // Cargar usuarios al montar el componente
   useEffect(() => {
     const fetchUsers = async () => {
@@ -20,7 +26,7 @@ const UserTable = () => {
     }
 
     fetchUsers()
-  }, [])
+  }, [refresh])
 
   // Verifica si todos están seleccionados
   useEffect(() => {
@@ -48,23 +54,32 @@ const UserTable = () => {
   }
 
   return (
-    <div className='max-w-screen-xl mx-auto px-2 md:px-8 w-full'>
+    <div className='max-w-screen-xl mx-auto px-2 mt-4 md:mt-40 md:px-8 w-full'>
       <div className='items-start justify-between md:flex'>
         <div className='max-w-lg'>
           <h3 className='text-gray-800 text-xl font-bold sm:text-2xl'>
-            Team members
+            Usuarios registrados
           </h3>
           <p className='text-gray-600 mt-2'>
             Lista dinámica de usuarios desde la base de datos.
           </p>
         </div>
         <div className='mt-3 md:mt-0'>
-          <button className='inline-block px-4 py-2 text-white duration-150 font-medium bg-indigo-600 rounded-lg hover:bg-indigo-500 active:bg-indigo-700 md:text-sm'>
-            Add member
+          <button
+            className='inline-block px-4 py-2 text-white duration-150 font-medium bg-indigo-600 rounded-lg hover:bg-indigo-500 active:bg-indigo-700 md:text-sm'
+            onClick={() => setIsEmployeesOpen(true)}
+          >
+            Añadir empleado
           </button>
         </div>
       </div>
-
+      {/* Modal de empleados */}
+      {isEmployeesOpen && (
+        <ModalAddEmployees
+          onClose={() => setIsEmployeesOpen(false)}
+          setIsSuccessModalOpen={setIsSuccessModalOpen}
+        />
+      )}
       <div className='mt-12 shadow-sm border rounded-lg overflow-x-auto'>
         <table className='w-full table-auto text-sm text-left'>
           <thead className='text-gray-600 font-medium border-b'>
@@ -140,7 +155,18 @@ const UserTable = () => {
       </div>
       {/* Modal */}
       {isModalOpen && (
-        <ModalEdit onClose={() => setIsModalOpen(false)} user={currentUser} />
+        <ModalEdit
+          onClose={() => setIsModalOpen(false)}
+          user={currentUser}
+          setIsSuccessModalOpen={setIsSuccessModalOpen}
+        />
+      )}
+      {isSuccessModalOpen && (
+        <SuccessModal
+          setIsOpen={setIsSuccessModalOpen}
+          message={'Se han actualizado los datos correctamente'}
+          refresh={() => setRefresh((prev) => !prev)}
+        />
       )}
     </div>
   )

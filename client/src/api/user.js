@@ -6,4 +6,4 @@ export const editUserRequest = async (user) => {
     console.log(otrosDatos)
     return axios.patch(`/user/editarUsuario?id=${id}`, otrosDatos)
   }
-  
+export const registerEmployeeRequest = async (user) => axios.post('/user/register', user)
