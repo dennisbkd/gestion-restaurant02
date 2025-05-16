@@ -16,6 +16,7 @@ import { crearMenuRutas } from './routes/menu.js' //
 import cookieParser from 'cookie-parser'
 import { PALABRA_SECRETA } from './config/authConfig.js'
 import { Token } from './utils/authToken.js'
+import cors from 'cors'
 
 export const CreateApp = async ({ modeloAuth, modeloAdministrador, modeloProveedor, modeloMenu, modeloUsuario, modeloRol, modeloPermiso, modeloInventario }) => {
   const app = express()
@@ -24,6 +25,11 @@ export const CreateApp = async ({ modeloAuth, modeloAdministrador, modeloProveed
   app.use(cookieParser())
   app.use(json())
   app.use(express.json())
+
+  app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+  }))
 
   db()
 
