@@ -1,11 +1,15 @@
 import { Router } from 'express'
-import { ControladorProducto } from '../controllers/producto.js'
+import { ControladorProducto } from '../controllers/productos.js'
 
-export const crearProductoRutas = ({ modeloProducto }) => {
+export const crearRutasProducto = ({ modeloProducto }) => {
   const ProductoRuta = Router()
-  const controladorProducto = new ControladorProducto({ modeloProducto })
+  const controlador = new ControladorProducto({ modeloProducto })
 
-  ProductoRuta.get('/obtener', controladorProducto.obtenerProductos)
+  ProductoRuta.post('/crear', controlador.crearProducto)
+  ProductoRuta.put('/editar', controlador.editarProducto)
+  ProductoRuta.delete('/eliminar/:id', controlador.eliminarProducto.bind(controlador))
+  ProductoRuta.get('/mostrar', controlador.obtenerProductos)
+  ProductoRuta.get('/mostrar/:id', controlador.obtenerProductoPorId)
 
   return ProductoRuta
 }

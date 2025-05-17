@@ -6,84 +6,39 @@ export class ControladorInventario {
   // Agregar Stock
   agregarStock = async (req, res) => {
     try {
-      const { descripcion, stockActual, stockMinimo } = req.body
-
-      if (!descripcion || !stockActual || !stockMinimo) {
-        return res.status(400).json({ error: 'Faltan campos obligatorios' })
-      }
-
-      const resultado = await this.ModeloInventario.agregarStock({
-        descripcion,
-        stockActual,
-        stockMinimo
-      })
-
-      if (resultado.error) {
-        return res.status(400).json({ error: resultado.error })
-      }
-
-      return res.status(201).json(resultado)
+      const stock = await this.ModeloInventario.agregarStock(req.body)
+      if (stock.error) return res.status(400).json({ error: stock.error })
+      return res.status(200).json(stock)
     } catch (error) {
-      return res.status(500).json({
-        error: 'Error interno del servidor',
-        detalles: error.message
-      })
+      return res.status(500).json({ error: 'Error interno del servidor' })
     }
   }
 
+  // Disminuir stock
   disminuirStock = async (req, res) => {
-    try {
-      const { id } = req.params
-      const { cantidad } = req.body
-
-      if (!id || !cantidad) {
-        return res.status(400).json({ error: 'ID de producto y cantidad son requeridos' })
-      }
-
-      const resultado = await this.ModeloInventario.disminuirStock({ id, cantidad })
-
-      if (resultado.error) {
-        return res.status(400).json({ error: resultado.error })
-      }
-
-      return res.status(200).json(resultado)
-    } catch (error) {
-      return res.status(500).json({
-        error: 'Error interno del servidor',
-        detalles: error.message
-      })
-    }
+  try {
+    const resultado = await this.ModeloInventario.disminuirStock(req.body);
+    if (resultado.error) return res.status(400).json({ error: resultado.error });
+    return res.status(200).json(resultado);
+  } catch (error) {
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
+}
+
 
   // Actualizar producto existente
   actualizarStock = async (req, res) => {
-    try {
-      const { id } = req.params
-      const { nuevoStockActual, nuevoStockMinimo, nuevaDescripcion } = req.body
-
-      if (!id) {
-        return res.status(400).json({ error: 'ID de producto es requerido' })
-      }
-
-      const resultado = await this.ModeloInventario.actualizarStock({
-        id,
-        nuevoStockActual,
-        nuevoStockMinimo,
-        nuevaDescripcion
-      })
-
-      if (resultado.error) {
-        return res.status(400).json({ error: resultado.error })
-      }
-
-      return res.status(200).json(resultado)
-    } catch (error) {
-      return res.status(500).json({
-        error: 'Error interno del servidor',
-        detalles: error.message
-      })
+  try {
+    if (!req.body.id || !req.body.nuevoStockActual || !req.body.nuevoStockMinimo) {
+      return res.status(400).json({ error: 'ID del producto, nuevo stock actual y nuevo stock mínimo son requeridos' });
     }
+    const stock = await this.ModeloInventario.actualizarStock(req.body);
+    if (stock.error) return res.status(400).json({ error: stock.error });
+    return res.status(200).json(stock);
+  } catch (error) {
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
+}
 
   // Obtener todo el inventario
   mostrarStocks = async (req, res) => {
@@ -99,25 +54,13 @@ export class ControladorInventario {
   }
 
   mostrarStockPorId = async (req, res) => {
-    try {
-      const { id } = req.params
-
-      if (!id) {
-        return res.status(400).json({ error: 'ID de producto es requerido' })
-      }
-
-      const resultado = await this.ModeloInventario.mostrarStockPorId(id)
-
-      if (resultado.error) {
-        return res.status(400).json({ error: resultado.error })
-      }
-
-      return res.status(200).json(resultado)
-    } catch (error) {
-      return res.status(500).json({
-        error: 'Error interno del servidor',
-        detalles: error.message
-      })
-    }
+  try {
+    const resultado = await this.ModeloInventario.mostrarStockPorId(req.params.id);
+    if (resultado.error) return res.status(400).json({ error: resultado.error });
+    return res.status(200).json(resultado);
+  } catch (error) {
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
+}
+
 }

@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 const permisosDisponibles = ['Permiso 1', 'Permiso 2', 'Permiso 3']
 
-const ModalCrearRol = ({ isOpen, onClose, onGuardar, rol }) => {
+const ModalCrearRol = ({ isOpen, onClose, onGuardar, rol, context }) => {
   const [nombreRol, setNombreRol] = useState(rol?.nombre || '')
   const [permisosAsignados, setPermisosAsignados] = useState([])
 
@@ -26,24 +26,28 @@ const ModalCrearRol = ({ isOpen, onClose, onGuardar, rol }) => {
   return (
     <div className='fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50'>
       <div className='bg-white rounded-lg p-6 w-full max-w-md shadow-lg'>
-        <h2 className='text-xl font-bold text-gray-800 mb-4'>Rol</h2>
+        <h2 className='text-xl font-bold text-gray-800 mb-4'>
+          {context.title}
+        </h2>
 
-        <label className='block text-sm text-gray-700 mb-1'>Nombre Rol:</label>
+        <label className='block text-sm text-gray-700 mb-1'>{`Nombre del ${context.title}:`}</label>
         <input
           type='text'
           className='w-full border border-gray-300 rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500'
-          placeholder='Ej: Administrador'
+          placeholder={context.placeholder1}
           value={nombreRol}
           onChange={(e) => setNombreRol(e.target.value)}
         />
 
         <div className='mb-4'>
           <label className='block text-sm text-gray-700 mb-1'>
-            Permisos Asignados:
+            {context.placeholder2}
           </label>
           <div className='border rounded p-2 min-h-[40px]'>
             {permisosAsignados.length === 0 && (
-              <p className='text-sm text-gray-400'>Sin permisos asignados</p>
+              <p className='text-sm text-gray-400'>
+                Sin {context.placeholder2}
+              </p>
             )}
             {permisosAsignados.map((permiso) => (
               <span
@@ -58,7 +62,7 @@ const ModalCrearRol = ({ isOpen, onClose, onGuardar, rol }) => {
 
         <div className='mb-4'>
           <label className='block text-sm text-gray-700 mb-1'>
-            Añadir Permisos:
+            Añadir {context.placeholder2}:
           </label>
           <div className='flex flex-wrap gap-2'>
             {permisosDisponibles.map((permiso) => (
