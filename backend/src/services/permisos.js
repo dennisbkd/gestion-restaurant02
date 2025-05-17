@@ -1,4 +1,4 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize'
 
 export const definicionPermiso = {
   id: {
@@ -11,9 +11,9 @@ export const definicionPermiso = {
     allowNull: false,
     unique: true
   }
- }
+}
 
-  export const DetallePermiso = {
+export const DetallePermiso = {
   idRol: {
     type: DataTypes.INTEGER,
     primaryKey: true,

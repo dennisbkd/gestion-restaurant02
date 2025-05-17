@@ -1,4 +1,5 @@
 export class ControladorProducto {
+
   constructor({ modeloProducto }) {
     this.modeloProducto = modeloProducto;
   }
@@ -35,13 +36,12 @@ export class ControladorProducto {
     }
   }
 
+
   obtenerProductos = async (req, res) => {
-    try {
-      const productos = await this.modeloProducto.obtenerProductos();
-      return res.status(200).json(productos);
-    } catch (error) {
-      return res.status(500).json({ error: 'Error al obtener productos' });
-    }
+    const { tipo } = req.query
+    const productos = await this.modeloProducto.ObtenerProductos({ tipo })
+    if (productos.error) return res.status(401).json({ error: productos.error })
+    return res.status(201).json({ producto: productos })
   }
 }
     obtenerProductoPorId = async (req, res) => {
@@ -55,3 +55,5 @@ export class ControladorProducto {
         return res.status(500).json({ error: 'Error al obtener el producto' });
         }
     }
+}
+

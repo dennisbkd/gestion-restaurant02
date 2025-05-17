@@ -17,12 +17,11 @@ import { crearRutaRecetas } from './routes/receta.js'
 import { crearRutaProductos } from './routes/productos.js'
 import { crearRutaIngredientes } from './routes/ingredientes.js'
 
-
-
 import cookieParser from 'cookie-parser'
 import { PALABRA_SECRETA } from './config/authConfig.js'
 import { Token } from './utils/authToken.js'
 import cors from 'cors'
+
 
 export const CreateApp = async ({ 
   modeloAuth, modeloAdministrador, 
@@ -34,8 +33,10 @@ export const CreateApp = async ({
   modeloPedido
 }) => {
   const app = express()
+  
   const token = new Token(PALABRA_SECRETA)
-
+  modeloAuth.token = token
+  
   app.use(cookieParser())
   app.use(json())
   app.use(express.json())
@@ -47,21 +48,22 @@ export const CreateApp = async ({
 
   db()
 
-  modeloAuth.token = token
-
   app.use('/auth', crearAuthRutas({ modeloAuth }))
   app.use('/user', crearRutaUsuarios({ modeloUsuario }))
   app.use('/admin', crearRutaAdministrador({ modeloAdministrador, token }))
-  app.use('/roles', crearRutasRoles({ modeloRol }))
-  app.use('/inventario', crearRutasInventario({ modeloInventario }))
   app.use('/permisos', crearRutasPermisos({ modeloPermiso }))
+  app.use('/roles', crearRutasRoles({ modeloRol }))
+  
+  app.use('/inventario', crearRutasInventario({ modeloInventario }))
   app.use('/proveedor', crearProveedorRutas({ modeloProveedor }))
-  app.use('/reservas', crearRutasReservas({ modeloReserva }))
-  app.use('/recetas', crearRutaRecetas({ modeloReceta }))
-  app.use('/menus', crearMenuRutas({ modeloMenu })) //
+ 
   app.use('/productos', crearRutaProductos({ modeloProducto }))
   app.use('/ingredientes', crearRutaIngredientes({ modeloIngrediente }))
+  
+  app.use('/menus', crearMenuRutas({ modeloMenu }))
   app.use('/pedido', crearRutasPedido({ modeloPedido }))
+  app.use('/reservas', crearRutasReservas({ modeloReserva }))
+  app.use('/recetas', crearRutaRecetas({ modeloReceta }))
 
   app.listen(PORT, () => {
     console.log('servidor activo en el puerto:', PORT)

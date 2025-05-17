@@ -13,7 +13,6 @@ export class ModeloAuth {
     freezeTableName: true
   })
 
-
   static async login ({ input }) {
     const { nombreUsuario, password } = input.data
     try {

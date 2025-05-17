@@ -136,9 +136,14 @@ Content-Type: application/json
 ### Eliminar permiso
 DELETE http://localhost:3000/permisos/eliminar/6
 
+
+###  
+GET http://localhost:3000/menus/dia/Lunes
+
 ### ASIGNAR PERMISO A ROL
 POST http://localhost:3000/permisos/asignar
 Content-Type: application/json
+
 
 {
   "idRol": 9,
@@ -200,6 +205,9 @@ GET http://localhost:3000/reservas/mostrar
 GET http://localhost:3000/reservas/mostrar/juan p rez
 ### 
 GET http://localhost:3000/inventario/mostrarStock/15
+
+###
+GET http://localhost:3000/productos/obtener?tipo=3
 
 /// ****registrar pedido ****
 ### 
