@@ -12,6 +12,11 @@ import { crearRutaAdministrador } from './routes/administrador.js'
 import { crearRutaUsuarios } from './routes/usuario.js'
 import { crearRutasReservas } from './routes/reservas.js'
 import { crearMenuRutas } from './routes/menu.js' //
+import { crearRutaRecetas } from './routes/receta.js'
+import { crearRutaProductos } from './routes/productos.js'
+import { crearRutaIngredientes } from './routes/ingredientes.js'
+
+
 
 import cookieParser from 'cookie-parser'
 import { PALABRA_SECRETA } from './config/authConfig.js'
@@ -22,7 +27,8 @@ export const CreateApp = async ({
   modeloProveedor, modeloMenu, 
   modeloUsuario, modeloRol, 
   modeloPermiso, modeloInventario,
-  modeloReserva
+  modeloReserva, modeloReceta,
+  modeloProducto, modeloIngrediente
 }) => {
   const app = express()
   const token = new Token(PALABRA_SECRETA)
@@ -43,8 +49,11 @@ export const CreateApp = async ({
   app.use('/permisos', crearRutasPermisos({ modeloPermiso }))
   app.use('/proveedor', crearProveedorRutas({ modeloProveedor }))
   app.use('/reservas', crearRutasReservas({ modeloReserva }))
-
+  app.use('/recetas', crearRutaRecetas({ modeloReceta }))
   app.use('/menus', crearMenuRutas({ modeloMenu })) //
+  app.use('/productos', crearRutaProductos({ modeloProducto }))
+  app.use('/ingredientes', crearRutaIngredientes({ modeloIngrediente }))
+
 
   app.listen(PORT, () => {
     console.log('servidor activo en el puerto:', PORT)
