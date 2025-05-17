@@ -1,0 +1,805 @@
+-- Crear Rol
+CREATE PROCEDURE p_CrearRol
+    @nombreRol VARCHAR(60),
+    @newID INT OUTPUT,
+    @mensaje VARCHAR(200) OUTPUT
+AS 
+BEGIN 
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+   
+        IF EXISTS (SELECT 1 FROM Rol WHERE nombre = @nombreRol)
+        BEGIN 
+            SET @newID = -1;
+            SET @mensaje = 'Ya existe un rol con ese nombre';
+            RETURN;
+        END
+
+        INSERT INTO Rol (nombre) VALUES (@nombreRol);
+
+        SET @newID = SCOPE_IDENTITY();
+        SET @mensaje = 'Rol creado exitosamente';
+    END TRY
+
+    BEGIN CATCH
+        SET @newID = -1;
+        SET @mensaje = 'Error al crear el Rol: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+
+
+-- Editar Rol 
+CREATE PROCEDURE p_EditarRol
+    @oldRol VARCHAR(60),      -- rol antiguo
+    @newRol VARCHAR(60),
+    @mensaje VARCHAR(200) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        IF EXISTS (SELECT 1 FROM Rol WHERE nombre = @oldRol)
+        BEGIN
+            IF EXISTS (SELECT 1 FROM Rol WHERE nombre = @newRol)
+            BEGIN
+                SET @mensaje = 'Ya existe un rol con el nuevo nombre';
+                RETURN;
+            END
+
+            UPDATE Rol
+            SET nombre = @newRol
+            WHERE nombre = @oldRol;
+
+            SET @mensaje = 'Rol actualizado exitosamente';
+        END
+        ELSE
+        BEGIN
+            SET @mensaje = 'No existe el rol que est  buscando';
+            RETURN;
+        END
+    END TRY
+    BEGIN CATCH
+        SET @mensaje = 'Error al actualizar el rol: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+
+
+-- Eliminar Rol
+CREATE PROCEDURE p_EliminarRol
+    @idRol INT,
+    @mensaje VARCHAR(100) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM Rol WHERE id = @idRol)
+        BEGIN
+            SET @mensaje = 'No existe el rol que est  buscando';
+            RETURN;
+        END
+
+        IF (@idRol = 4)
+        BEGIN
+            SET @mensaje = 'No se puede eliminar el rol cliente.';
+            RETURN;
+        END
+
+        
+		UPDATE Usuario
+		SET idEstado=13
+		where idRol=@idRol
+        SET @mensaje = 'Rol eliminado correctamente';
+    END TRY
+    BEGIN CATCH
+        SET @mensaje = 'Error al eliminar el rol: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+
+-- Crear Permiso
+CREATE PROCEDURE p_CrearPermiso
+    @descripcion VARCHAR(100),
+    @newID INT OUTPUT,
+    @mensaje VARCHAR(200) OUTPUT
+AS 
+BEGIN 
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+       IF (@descripcion='')
+        BEGIN 
+            SET @newID = -1;
+            SET @mensaje = 'La descripci n del permiso no puede estar vac a';
+            RETURN;
+        END
+   
+        IF EXISTS (SELECT 1 FROM Permisos WHERE descripcion = @descripcion)
+        BEGIN 
+            SET @newID = -1;
+            SET @mensaje = 'Ya existe un permiso con esa descripci n';
+            RETURN;
+        END
+
+        INSERT INTO Permisos (descripcion) VALUES (@descripcion);
+        SET @newID = SCOPE_IDENTITY();
+        SET @mensaje = 'Permiso creado exitosamente';
+    END TRY
+    BEGIN CATCH
+        SET @newID = -1;
+        SET @mensaje = 'Error al crear el Permiso: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+
+-- EDITAR PERMISO
+CREATE PROCEDURE p_EditarPermiso
+    @idPermiso INT,
+    @newDescripcion VARCHAR(100),
+    @mensaje VARCHAR(200) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+       
+        IF (@newDescripcion='')
+        BEGIN
+            SET @mensaje = 'La descripci n del permiso no puede estar vac a';
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM Permisos WHERE id = @idPermiso)
+        BEGIN
+            SET @mensaje = 'No existe el permiso que est  buscando';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM Permisos WHERE descripcion = @newDescripcion AND id != @idPermiso)
+        BEGIN
+            SET @mensaje = 'Ya existe un permiso con esa descripci n';
+            RETURN;
+        END
+
+        UPDATE Permisos
+        SET descripcion = @newDescripcion
+        WHERE id = @idPermiso;
+
+        SET @mensaje = 'Permiso actualizado exitosamente';
+    END TRY
+    BEGIN CATCH
+        SET @mensaje = 'Error al actualizar el permiso: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+-- ELIMINAR PERMISO
+CREATE PROCEDURE p_EliminarPermiso
+    @idPermiso INT,
+    @mensaje VARCHAR(200) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM Permisos WHERE id = @idPermiso)
+        BEGIN
+            SET @mensaje = N'No existe el permiso que est  buscando';
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM DetallePermiso WHERE idPermisos = @idPermiso)
+        BEGIN
+            SET @mensaje = N'No se puede eliminar el permiso porque est  asignado a uno o m s roles';
+            RETURN;
+        END
+
+       DELETE FROM Permisos WHERE id = @idPermiso;
+
+        SET @mensaje = N'Permiso marcado como eliminado correctamente';
+    END TRY
+    BEGIN CATCH
+        SET @mensaje = N'Error al eliminar (cambiar estado) del permiso: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+
+
+-- OBTENER PERMISOS DE UN ROL
+CREATE PROCEDURE get_MostrarPermisoRol
+@idRol int
+AS
+BEGIN
+SET NOCOUNT ON;
+
+	SELECT 
+        id,
+        descripcion
+    FROM 
+        Permisos
+    WHERE 
+        id IN (SELECT idPermisos FROM DetallePermiso WHERE idRol = @idRol);
+END;
+
+
+
+-- MOSTRAR ROLES Y PERMISOS
+CREATE PROCEDURE p_MostrarRolesYPermisos
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        R.id AS idRol,
+        R.nombre AS nombreRol,
+        P.id AS idPermiso,
+        P.descripcion AS descripcionPermiso
+    FROM 
+        Rol R,
+        DetallePermiso DP,
+        Permisos P
+    WHERE 
+        R.id = DP.idRol AND
+        DP.idPermisos = P.id
+
+    UNION
+
+    SELECT 
+        R.id AS idRol,
+        R.nombre AS nombreRol,
+        NULL AS idPermiso,
+        NULL AS descripcionPermiso
+    FROM 
+        Rol R
+    WHERE 
+        R.id NOT IN (
+            SELECT idRol FROM DetallePermiso
+        )
+END;
+
+
+-- Asignar permiso a un rol
+CREATE PROCEDURE set_AsignarPermiso
+  @idRol INT,
+  @idPermiso INT,
+  @mensaje VARCHAR(70) OUTPUT
+AS
+BEGIN
+  SET NOCOUNT ON;
+
+  BEGIN TRY
+
+    IF NOT EXISTS (SELECT 1 FROM Rol WHERE id = @idRol)
+    BEGIN
+      SET @mensaje = 'No existe el rol especificado';
+      RETURN;
+    END
+
+    IF NOT EXISTS (SELECT 1 FROM Permisos WHERE id = @idPermiso)
+    BEGIN
+      SET @mensaje = 'No existe el permiso especificado';
+      RETURN;
+    END
+
+    IF EXISTS (SELECT 1 FROM DetallePermiso WHERE idRol = @idRol AND idPermisos = @idPermiso)
+    BEGIN
+      SET @mensaje = 'El permiso ya est  asignado al rol';
+      RETURN;
+    END
+
+    INSERT INTO DetallePermiso (idRol, idPermisos)
+    VALUES (@idRol, @idPermiso);
+
+    SET @mensaje = 'Permiso asignado correctamente';
+  END TRY
+  BEGIN CATCH
+    SET @mensaje = 'Error al asignar permiso: ' + ERROR_MESSAGE();
+  END CATCH
+END;
+
+
+
+   -- getionar inventario
+   CREATE PROCEDURE p_AgregarStock
+    @descripcion VARCHAR(100),
+    @stockActual INT,
+    @stockMinimo INT,
+	@mensaje varchar(100) output
+AS
+BEGIN
+set nocount on;
+    IF EXISTS (SELECT 1 FROM Stock WHERE descripcion = @descripcion)
+    BEGIN
+       set @mensaje=' Estock ya existe';
+        RETURN;
+    END
+    
+    INSERT INTO Stock (descripcion, stockActual, stockMinimo)
+    VALUES (@descripcion, @stockActual, @stockMinimo)
+    set @mensaje= 'Producto agregado al inventario correctamente'
+END;
+
+-- Actualizar
+CREATE PROCEDURE p_ActualizarStock
+    @id INT,
+    @nuevoStockActual INT,
+    @nuevoStockMinimo INT,
+	@mensaje varchar(100) output
+AS
+BEGIN
+set nocount on;
+    IF NOT EXISTS (SELECT 1 FROM Stock WHERE id = @id)
+    BEGIN
+        set @mensaje='El producto no existe en el inventario';
+        RETURN;
+    END
+    
+    UPDATE Stock
+    SET 
+        stockActual = @nuevoStockActual,
+        stockMinimo = @nuevoStockMinimo
+    WHERE id = @id
+    
+    set @mensaje = 'Stock actualizado correctamente';
+END;
+
+
+-- Mostrar Stock
+CREATE PROCEDURE get_MostrarStocks
+AS
+BEGIN
+SELECT* 
+FROM Stock;
+END;
+
+-- mostrar stock id
+CREATE  PROCEDURE get_MostrarStockID
+    @id INT
+AS
+BEGIN
+    SELECT *
+    FROM Stock
+    WHERE ID = @id
+END;
+
+-- -- Mostrar Reservas
+
+-- Registrar Reserva
+
+CREATE PROCEDURE set_RegistrarReserva
+    @fecha DATE,
+    @hora TIME,
+    @id_Cliente INT,
+    @id_Estado INT,
+	@mensaje varchar(60) OUTPUT
+AS
+BEGIN
+    BEGIN TRY
+        INSERT INTO Reserva (fecha, hora, idClienteWeb, idEstado)
+        VALUES (@fecha, @hora, @id_Cliente, @id_Estado);
+		SET @mensaje='Reserva registrada correctamente.';
+    END TRY
+    BEGIN CATCH
+        set @mensaje=ERROR_MESSAGE();
+		return;
+    END CATCH
+END;
+
+-- Actualizar Reserva
+
+CREATE PROCEDURE set_ActualizarReserva
+    @id int,
+    @fecha DATE,
+    @hora TIME,
+    @id_Cliente INT,
+    @id_Estado INT,
+    @mensaje NVARCHAR(100) OUTPUT
+AS
+BEGIN
+    BEGIN TRY
+        UPDATE Reserva
+        SET fecha = @fecha,
+            hora = @hora,
+            idClienteWeb = @id_Cliente,
+            idEstado = @id_Estado
+        WHERE id= @id;
+
+       IF @@ROWCOUNT = 0
+        BEGIN
+            SET @mensaje = ' No se encontró la reserva con ese ID.';
+            RETURN;
+        END
+        SET @mensaje = 'Reserva actualizada correctamente.';
+    END TRY
+    BEGIN CATCH
+        SET @mensaje = ERROR_MESSAGE();
+    END CATCH
+END;
+
+-- Cancelar Reserva
+CREATE PROCEDURE set_CancelarReserva
+    @id INT,
+    @mensaje VARCHAR(100) OUTPUT
+AS
+BEGIN
+    BEGIN TRY
+        UPDATE Reserva
+        SET idEstado = 6 
+        WHERE id = @id;
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            SET @mensaje = ' No se encontró la reserva con ese ID.';
+            RETURN;
+        END
+
+        SET @mensaje = ' Reserva cancelada correctamente.';
+    END TRY
+    BEGIN CATCH
+        SET @mensaje = ERROR_MESSAGE();
+    END CATCH
+END;
+
+-- Mostrar Reservas
+CREATE PROCEDURE get_MostrarReservas
+AS 
+BEGIN
+SELECT  
+ u.nombreUsuario,u.nombre,u.telefono,c.puntosFidelidad,r.id,r.fecha,r.hora
+FROM Usuario u,Reserva r,ClienteWeb c
+where u.id=c.idUsuario AND c.idUsuario=r.idClienteWeb 
+END;
+
+-- Mostrar Reserva "nombre"
+CREATE PROCEDURE get_MostrarReservasNombre
+@nombre varchar(80)
+AS 
+BEGIN
+SELECT  
+ u.nombreUsuario,u.nombre,u.telefono,c.puntosFidelidad,r.id,r.fecha,r.hora
+FROM Usuario u,Reserva r,ClienteWeb c
+where u.nombre=@nombre AND u.id=c.idUsuario AND c.idUsuario=r.idClienteWeb 
+END;
+
+
+-- Registrar Producto 
+CREATE PROCEDURE set_ResgistrarProducto
+    @nombre varchar(70),
+    @precio decimal,
+    @descripcion varchar(300),
+    @time time,
+    @idCategoria int,
+    @idStock int,
+    @mensaje varchar(100) OUTPUT
+AS
+BEGIN
+
+    IF @nombre IS NULL OR @precio IS NULL OR @idCategoria IS NULL
+    BEGIN
+        SET @mensaje = 'Error: nombre, precio e idCategoria no pueden ser NULL.';
+        RETURN;
+    END
+
+    BEGIN TRY
+        INSERT INTO Producto (nombre, precio, descripcion, tiempoPreparacion, idCategoria, idStock)
+        VALUES (@nombre, @precio, @descripcion, @time, @idCategoria, @idStock);
+
+        SET @mensaje = 'Producto registrado exitosamente.';
+    END TRY
+    BEGIN CATCH
+        SET @mensaje = 'Error al registrar el producto: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+-- Actualizar Producto
+CREATE PROCEDURE set_ActualizarProducto
+    @idProducto INT,
+    @nombre VARCHAR(70),
+    @precio decimal,
+    @descripcion VARCHAR(300),
+    @tiempo TIME,
+    @idCategoria INT,
+    @idStock INT,
+    @mensaje VARCHAR(100) OUTPUT
+AS
+BEGIN
+    -- Validaci n de par metros obligatorios
+    IF @idProducto IS NULL OR @nombre IS NULL OR @precio IS NULL OR @idCategoria IS NULL
+    BEGIN
+        SET @mensaje = 'Error: idProducto, nombre, precio e idCategoria no pueden ser NULL.';
+        RETURN;
+    END
+
+    BEGIN TRY
+        UPDATE Producto
+        SET nombre = @nombre,
+            precio = @precio,
+            descripcion = @descripcion,
+            tiempoPreparacion = @tiempo,
+            idCategoria = @idCategoria,
+            idStock = @idStock
+        WHERE id = @idProducto;
+
+        IF @@ROWCOUNT = 0
+            SET @mensaje = 'No se encontr  un producto con ese ID.';
+        ELSE
+            SET @mensaje = 'Producto actualizado exitosamente.';
+    END TRY
+    BEGIN CATCH
+        SET @mensaje = 'Error al actualizar el producto: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+
+-- Eliminar Producto
+CREATE PROCEDURE set_EliminarProducto
+    @idProducto INT,
+    @mensaje VARCHAR(100) OUTPUT
+AS
+BEGIN
+    IF @idProducto IS NULL
+    BEGIN
+        SET @mensaje = 'Error: idProducto no puede ser NULL.';
+        RETURN;
+    END
+
+    BEGIN TRY
+        DELETE FROM Producto WHERE id = @idProducto;
+
+        IF @@ROWCOUNT = 0
+            SET @mensaje = 'No se encontr  un producto con ese ID.';
+        ELSE
+            SET @mensaje = 'Producto eliminado exitosamente.';
+    END TRY
+    BEGIN CATCH
+        SET @mensaje = 'Error al eliminar el producto: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+-- Mostrar Productos
+CREATE PROCEDURE get_MostrarProductos
+AS
+BEGIN
+    SELECT *
+    FROM Producto;
+END;
+
+-- Mostrar Productos id
+CREATE PROCEDURE get_MostrarProductoPorId
+    @idProducto INT,
+	@mensaje varchar(200) OUTPUT
+AS
+BEGIN
+
+    IF @idProducto IS NULL
+    BEGIN
+        set @mensaje = 'El ID del producto no puede ser NULL.';
+        RETURN;
+    END
+
+    SELECT *
+    FROM Producto
+    WHERE id = @idProducto;
+
+ SET @mensaje='Producto Encontrado';
+END;
+
+-- Registrar Receta
+CREATE PROCEDURE set_RegistrarReceta
+    @idProducto INT,
+    @idIngrediente INT,
+    @cantidad FLOAT,
+    @mensaje VARCHAR(100) OUTPUT
+AS
+BEGIN
+    IF @idProducto IS NULL OR @idIngrediente IS NULL OR @cantidad IS NULL
+    BEGIN
+        SET @mensaje = 'Error: idProducto, idIngrediente y cantidad no pueden ser NULL.';
+        RETURN;
+    END
+
+	 IF NOT EXISTS (
+        SELECT 1 FROM Ingrediente
+        WHERE id = @idIngrediente AND idEstado != 13
+    )
+    BEGIN
+        SET @mensaje = 'Error: El ingrediente no existe o est  marcado como no disponible.';
+        RETURN;
+    END
+
+    BEGIN TRY
+        INSERT INTO Receta (idProducto, idIngrediente, cantidad)
+        VALUES (@idProducto, @idIngrediente, @cantidad);
+
+        SET @mensaje = 'Receta registrada exitosamente.';
+    END TRY
+    BEGIN CATCH
+        SET @mensaje = 'Error al registrar la receta: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+-- Actualizar Receta
+CREATE PROCEDURE set_ActualizarReceta
+    @idProducto INT,
+    @idIngrediente INT,
+    @cantidad FLOAT,
+    @mensaje VARCHAR(100) OUTPUT
+AS
+BEGIN
+    IF @idProducto IS NULL OR @idIngrediente IS NULL OR @cantidad IS NULL
+    BEGIN
+        SET @mensaje = 'Error: idProducto, idIngrediente y cantidad no pueden ser NULL.';
+        RETURN;
+    END
+
+    BEGIN TRY
+        UPDATE Receta
+        SET cantidad = @cantidad
+        WHERE idProducto = @idProducto AND idIngrediente = @idIngrediente;
+
+        IF @@ROWCOUNT = 0
+            SET @mensaje = 'No se encontr  la receta para actualizar.';
+        ELSE
+            SET @mensaje = 'Receta actualizada exitosamente.';
+    END TRY
+    BEGIN CATCH
+        SET @mensaje = 'Error al actualizar la receta: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+-- Eliminar Ingrediente de una Receta
+CREATE PROCEDURE set_EliminarIngredienteDeReceta
+    @idProducto INT,
+    @idIngrediente INT,
+    @mensaje VARCHAR(100) OUTPUT
+AS
+BEGIN
+    IF @idProducto IS NULL OR @idIngrediente IS NULL
+    BEGIN
+        SET @mensaje = 'Error: idProducto e idIngrediente no pueden ser NULL.';
+        RETURN;
+    END
+
+    BEGIN TRY
+        DELETE FROM Receta
+        WHERE idProducto = @idProducto AND idIngrediente = @idIngrediente;
+
+        IF @@ROWCOUNT = 0
+            SET @mensaje = 'No se encontr  la receta para eliminar.';
+        ELSE
+            SET @mensaje = 'Ingrediente eliminado de la receta exitosamente.';
+    END TRY
+    BEGIN CATCH
+        SET @mensaje = 'Error al eliminar el ingrediente de la receta: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+
+-- Mostrar Receta por id producto
+CREATE PROCEDURE get_ProductoYReceta
+    @idProducto INT
+AS
+BEGIN
+    IF @idProducto IS NULL
+    BEGIN
+        RAISERROR('El idProducto no puede ser NULL.', 16, 1);
+        RETURN;
+    END
+
+    SELECT 
+        p.id AS idProducto,
+        p.descripcion AS descripcionProducto,
+        p.tiempoPreparacion,
+        NULL AS nombreIngrediente,
+        NULL AS cantidad
+    FROM Producto p
+    WHERE p.id = @idProducto
+
+    UNION ALL
+
+    SELECT 
+        NULL AS idProducto,
+        NULL AS descripcionProducto,
+        NULL AS tiempoPreparacion,
+        i.nombre AS nombreIngrediente,
+        r.cantidad
+    FROM Receta r, Ingrediente i
+    WHERE r.idProducto = @idProducto AND r.idIngrediente = i.id;
+END;
+
+-- Registrar Ingrediente
+CREATE PROCEDURE set_RegistrarIngrediente
+    @nombre VARCHAR(100),
+    @idUnidadMedida INT,
+    @idStock INT,
+    @idStado INT,
+	@mensaje varchar(200) OUTPUT
+AS
+BEGIN
+    IF @nombre IS NULL OR @idUnidadMedida IS NULL OR @idStock IS NULL
+    BEGIN
+        set @mensaje ='Nombre, Unidad de Medida y Stock no pueden ser NULL.';
+        RETURN;
+    END
+	IF EXISTS (
+        SELECT 1 FROM Ingrediente 
+        WHERE nombre = @nombre AND idEstado != 13
+    )
+	 BEGIN
+        set @mensaje ='Ya existe un ingrediente con ese nombre.';
+        RETURN;
+    END
+
+
+    INSERT INTO Ingrediente (nombre, idUnidadMedida, idStock, idEstado)
+    VALUES (@nombre, @idUnidadMedida, @idStock, @idStado);
+	SET @mensaje='Ingrediente registrado corectamente'
+END;
+
+-- Editar Ingrediente
+CREATE PROCEDURE set_EditarIngrediente
+    @id INT,
+    @nombre VARCHAR(100),
+    @idUnidadMedida INT,
+    @idStock INT,
+    @idStado INT,
+	@mensaje varchar(200) output
+AS
+BEGIN
+
+    IF NOT EXISTS (SELECT 1 FROM Ingrediente WHERE id = @id )
+    BEGIN
+        set @mensaje = 'El ingrediente con el ID proporcionado no existe.';
+        RETURN;
+    END
+    UPDATE Ingrediente
+    SET nombre = @nombre,
+        idUnidadMedida = @idUnidadMedida,
+        idStock = @idStock,
+        idEstado = @idStado
+    WHERE id = @id;
+  set @mensaje='ingrediente Actualizado Corectamente';
+END;
+
+-- Eliminar Ingrediente
+CREATE PROCEDURE set_EliminarIngrediente
+    @id INT,
+	@mensaje varchar(200) OUTPUT
+AS
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM Ingrediente WHERE id = @id)
+    BEGIN
+        SET @mensaje = 'El ingrediente con el ID proporcionado no existe.';
+        RETURN;
+    END
+
+    -- Cambiar el estado a 13 (no disponible)
+    UPDATE Ingrediente
+    SET idEstado = 13
+    WHERE id = @id;
+	set @mensaje = 'Ingrediente eliminado corectamente'
+END;
+
+-- Mostrar Ingredientes
+CREATE PROCEDURE get_MostrarIngredientes
+AS
+BEGIN
+    SELECT id, nombre, idUnidadMedida, idStock, idEstado
+    FROM Ingrediente;
+END;
+
+-- Mostrar Ingrediente ID
+CREATE PROCEDURE get_MostrarIngredientePorID
+    @id INT
+AS
+BEGIN
+    SELECT id, nombre, idUnidadMedida, idStock, idEstado
+    FROM Ingrediente
+    WHERE id = @id;
+END;
+
+
+
+
+
+
