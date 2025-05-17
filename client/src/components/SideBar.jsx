@@ -7,6 +7,7 @@ import {
   UserIcon,
   Bars3Icon,
   XMarkIcon,
+  ClipboardDocumentCheckIcon
 } from '@heroicons/react/24/outline'
 import { useState } from 'react'
 
@@ -46,9 +47,9 @@ const SideBar = ({ setActiveTab }) => {
           <img
             src='https://png.pngtree.com/png-clipart/20220921/ourmid/pngtree-fire-logo-png-image_6209600.png'
             alt='Logo'
-            className='w-12 h-12'
+            className='w-10 h-10'
           />
-          <h1 className='text-3xl font-bold text-[#f8f9fa] tracking-wide'>
+          <h1 className='text-xl font-bold text-[#f8f9fa] tracking-wide'>
             Restaurante
           </h1>
         </div>
@@ -75,10 +76,6 @@ const SideBar = ({ setActiveTab }) => {
 
             {isOpen && (
               <div className='ml-8'>
-                <h2 className='flex items-center gap-4 text-sm font-medium text-[#b0bec5] hover:text-[#ff6f61] cursor-pointer transition-all duration-300 mt-2'>
-                  <UserIcon className='w-8 h-8' />
-                  Empleados
-                </h2>
                 <h2
                   className='flex items-center gap-4 text-sm font-medium text-[#b0bec5] hover:text-[#ff6f61] cursor-pointer transition-all duration-300 mt-2'
                   onClick={() => {
@@ -91,11 +88,24 @@ const SideBar = ({ setActiveTab }) => {
                 </h2>
                 <h2 className='flex items-center gap-4 text-sm font-medium text-[#b0bec5] hover:text-[#ff6f61] cursor-pointer transition-all duration-300 mt-2'>
                   <UserIcon className='w-8 h-8' />
+                  Empleados
+                </h2>
+
+                <h2 className='flex items-center gap-4 text-sm font-medium text-[#b0bec5] hover:text-[#ff6f61] cursor-pointer transition-all duration-300 mt-2'>
+                  <UserIcon className='w-8 h-8' />
                   ClienteWeb
                 </h2>
               </div>
             )}
-
+            <h2
+              className='flex items-center gap-4 text-lg font-medium text-[#b0bec5] hover:text-[#ff6f61] cursor-pointer transition-all duration-300'
+              onClick={() => {
+                setActiveTab('roles')
+              }}
+            >
+              <ClipboardDocumentCheckIcon className='w-8 h-8' />
+              Roles y Permisos
+            </h2>
             <h2 className='flex items-center gap-4 text-lg font-medium text-[#b0bec5] hover:text-[#ff6f61] cursor-pointer transition-all duration-300'>
               <ArchiveBoxIcon className='w-8 h-8' />
               Productos

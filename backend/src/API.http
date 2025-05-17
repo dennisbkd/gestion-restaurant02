@@ -165,11 +165,6 @@ Content-Type: application/json
   "nuevoStockMinimo": 20
 }
 
-### mostrar stock
-GET http://localhost:3000/inventario/mostrarStocks
-
-### mostrar stock por id
-GET http://localhost:3000/inventario/mostrarStock/34
 
 ### registrar reserva
 POST http://localhost:3000/reservas/crear
@@ -203,4 +198,34 @@ GET http://localhost:3000/reservas/mostrar
 
 ### Mostrar reservas por nombre de cliente
 GET http://localhost:3000/reservas/mostrar/juan p rez
+### 
+GET http://localhost:3000/inventario/mostrarStock/15
 
+/// ****registrar pedido ****
+### 
+POST http://localhost:3000/pedido/registrar/3
+Content-Type: application/json
+
+{
+     "mesas": [
+        {"id": 1},
+        {"id": 2}
+     ],
+
+     "productos": 
+        [{
+        "id": 2,
+        "cantidad": 2,
+        "precio": 10,
+        "exclusiones": 
+            [
+             {"idIngrediente": 1},
+             {"idIngrediente": 2}
+            ]
+        }        
+        ]
+   
+
+        
+  
+}

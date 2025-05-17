@@ -11,6 +11,7 @@ import { ModeloReserva } from './models/reservas.js'
 import { ModeloReceta } from './models/receta.js'
 import { ModeloProducto } from './models/productos.js'
 import { ModeloIngrediente } from './models/ingredientes.js'
+import { ModeloPedido } from './models/pedido.js'
 
 CreateApp({
   modeloAuth: ModeloAuth,
@@ -23,5 +24,7 @@ CreateApp({
   modeloReserva: ModeloReserva,
   modeloReceta: ModeloReceta,
   modeloProducto: ModeloProducto,
-  modeloIngrediente: ModeloIngrediente
+  modeloIngrediente: ModeloIngrediente,
+  modeloPedido: ModeloPedido
 })
+

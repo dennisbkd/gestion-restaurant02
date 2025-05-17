@@ -1,7 +1,5 @@
-
+import SuccessModal from '../components/SuccessModal.jsx'
 
 export const HomePage = () => {
-  return (
-    <div>HomePage</div>
-  )
+  return <SuccessModal />
 }
