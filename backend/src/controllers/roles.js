@@ -26,7 +26,8 @@ export class ControladorRoles {
 
   eliminarRol = async (req, res) => {
     try {
-      const { id } = req.body; 
+      const { id } = req.params;
+      if (!id || isNaN(Number(id))) return res.status(400).json({ error: 'ID de rol no proporcionado' }); 
       const rol = await this.modeloRol.eliminarRol(id);
       if (rol.error) return res.status(400).json({ error: rol.error });
       return res.status(200).json(rol);
@@ -44,4 +45,16 @@ export class ControladorRoles {
       return res.status(500).json({ error: 'Error interno del servidor' });
     }
   }
+  
+  mostrarPermisoRol = async (req, res) => {
+    try {
+      const  { id } = req.params;
+      const permisos = await this.modeloRol.mostrarPermisoRol(id);
+      if (permisos.error) return res.status(400).json({ error: permisos.error });
+      return res.status(200).json(permisos);
+    } catch (error) {
+      return res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  }
+
 }

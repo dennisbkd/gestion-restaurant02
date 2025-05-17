@@ -7,6 +7,10 @@ import { ModeloInventario } from './models/inventario.js'
 import { ModeloProveedor } from './models/provider.js'
 import { ModeloUsuario } from './models/usuario.js'
 import { ModeloMenu } from './models/menu.js'
+import { ModeloReserva } from './models/reservas.js'
+import { ModeloReceta } from './models/receta.js'
+import { ModeloProducto } from './models/productos.js'
+import { ModeloIngrediente } from './models/ingredientes.js'
 import { ModeloPedido } from './models/pedido.js'
 
 CreateApp({
@@ -17,5 +21,10 @@ CreateApp({
   modeloPermiso: ModeloPermiso,
   modeloInventario: ModeloInventario,
   modeloRol: ModeloRol,
+  modeloReserva: ModeloReserva,
+  modeloReceta: ModeloReceta,
+  modeloProducto: ModeloProducto,
+  modeloIngrediente: ModeloIngrediente,
   modeloPedido: ModeloPedido
 })
+
