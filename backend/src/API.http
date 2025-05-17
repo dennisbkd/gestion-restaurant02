@@ -107,7 +107,7 @@ get http://localhost:3000/permisos/mostrarStock/2
 ### 
 GET http://localhost:3000/menus/todos
 
-### 
+###  
 GET http://localhost:3000/menus/dia/Lunes
 
 ### 
@@ -142,3 +142,6 @@ Content-Type: application/json
 
 ### 
 GET http://localhost:3000/inventario/mostrarStock/15
+
+###
+GET http://localhost:3000/productos/obtener?tipo=3

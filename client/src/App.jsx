@@ -7,24 +7,34 @@ import { ProfilePage } from "./pages/ProfilePage"
 import { HomePage } from "./pages/HomePage"
 import { ProtectedRoute } from "./ProtectedRoute"
 import { Task } from "./pages/task"
+import Menu from "./components/usuario/Menu"
+import { CartLayout } from "./Layouts/CartLayout"
+
+
 export default function App() {
   // todas las rutas hijas tendran el contexto
   return (
     <AuthProvide>
-      <BrowserRouter >
+      <BrowserRouter>
+
+        {/* CartSidebar fuera de Routes pero dentro del Router */}
+
         <Routes>
-          <Route path="/" element={<h1><HomePage /></h1>} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/profile" element={<h1><ProfilePage /></h1>} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/task" element={<Task />} />
 
 
           <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<h1><DashboardPage /></h1>} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+          </Route>
+          <Route element={<CartLayout />}>
+            <Route path="/menu" element={<Menu />} />
           </Route>
         </Routes>
       </BrowserRouter>
     </AuthProvide>
-  )
+  );
 }
