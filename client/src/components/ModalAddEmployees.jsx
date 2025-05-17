@@ -1,8 +1,8 @@
 import { registerEmployeeRequest } from '../api/user'
-import { useState } from 'react'
+import { useFormHandler } from '../hooks/useFormHandler'
 
 const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
-  const [userInput, setUserInput] = useState({
+  const initialValues = {
     nombreUsuario: '',
     nombre: '',
     password: '',
@@ -10,38 +10,31 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
     telefono: '',
     ci: '',
     idRol: ''
-  })
-
-  const handleInputChange = (event) => {
-    const { name, value } = event.target
-    setUserInput((prev) => ({
-      ...prev,
-      [name]: value
-    }))
   }
-
-  const handleSubmit = async (event) => {
-    event.preventDefault()
-    try {
-      // Convertir idRol a número
-      const dataToSend = {
-        ...userInput,
-        idRol: parseInt(userInput.idRol, 10)
+  const { formData, handleInputChange, handleSubmit } = useFormHandler(
+    initialValues, //se envia los valores iniciales a mostrar
+    async (data) => {
+      //obtienes los datos del formulario
+      const dataSend = {
+        ...data,
+        idRol: parseInt(data.idRol, 10) //separamos el id para convertirlo en un entero
       }
-
-      console.log(dataToSend)
-      await registerEmployeeRequest(dataToSend)
-      setIsSuccessModalOpen(true)
-      onClose()
-    } catch (error) {
-      console.log(error)
+      try {
+        await registerEmployeeRequest(dataSend) // se envian los datos
+        setIsSuccessModalOpen(true)
+        onClose()
+      } catch (error) {
+        console.log(error)
+      }
     }
-  }
+  )
 
   return (
     <>
+      {/* Fondo desenfocado sin opacidad negra */}
       <div className='fixed inset-0 z-40 backdrop-blur-sm'></div>
 
+      {/* Modal centrado */}
       <div className='fixed inset-0 z-50 flex items-center justify-center'>
         <div className='bg-white rounded-lg shadow-md w-full max-w-md p-6 relative dark:bg-gray-700'>
           <button
@@ -63,7 +56,7 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
               <input
                 type='text'
                 name='nombreUsuario'
-                value={userInput.nombreUsuario}
+                value={formData.nombreUsuario}
                 onChange={handleInputChange}
                 placeholder='Nombre de Usuario'
                 className='mt-1 w-full p-2 border rounded-md dark:bg-gray-600 dark:text-white'
@@ -77,7 +70,7 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
               <input
                 type='text'
                 name='nombre'
-                value={userInput.nombre}
+                value={formData.nombre}
                 onChange={handleInputChange}
                 placeholder='Nombre completo'
                 className='mt-1 w-full p-2 border rounded-md dark:bg-gray-600 dark:text-white'
@@ -91,7 +84,7 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
               <input
                 type='password'
                 name='password'
-                value={userInput.password}
+                value={formData.password}
                 onChange={handleInputChange}
                 placeholder='Contraseña'
                 className='mt-1 w-full p-2 border rounded-md dark:bg-gray-600 dark:text-white'
@@ -105,7 +98,7 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
               <input
                 type='email'
                 name='correo'
-                value={userInput.correo}
+                value={formData.correo}
                 onChange={handleInputChange}
                 placeholder='Correo electrónico'
                 className='mt-1 w-full p-2 border rounded-md dark:bg-gray-600 dark:text-white'
@@ -119,7 +112,7 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
               <input
                 type='tel'
                 name='telefono'
-                value={userInput.telefono}
+                value={formData.telefono}
                 onChange={handleInputChange}
                 pattern='[0-9]{8}'
                 placeholder='Teléfono'
@@ -134,7 +127,7 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
               <input
                 type='text'
                 name='ci'
-                value={userInput.ci}
+                value={formData.ci}
                 onChange={handleInputChange}
                 placeholder='Cédula de Identidad'
                 className='mt-1 w-full p-2 border rounded-md dark:bg-gray-600 dark:text-white'
@@ -147,7 +140,7 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
               </label>
               <select
                 name='idRol'
-                value={userInput.idRol}
+                value={formData.idRol}
                 onChange={handleInputChange}
                 required
                 className='mt-1 w-full p-2 border rounded-md bg-white text-gray-700 dark:bg-gray-600 dark:text-white'
