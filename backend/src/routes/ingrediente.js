@@ -1,7 +1,7 @@
 import { Router } from 'express'
-import { ControladorIngrediente } from '../controllers/ingredientes.js'
+import { ControladorIngrediente } from '../controllers/ingrediente.js'
 
-export const crearRutasIngrediente = ({ modeloIngrediente }) => {
+export const crearRutaIngrediente = ({ modeloIngrediente }) => {
   const router = Router()
   const controlador = new ControladorIngrediente({ modeloIngrediente })
 

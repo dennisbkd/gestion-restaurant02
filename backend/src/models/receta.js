@@ -1,5 +1,5 @@
 import sequelize from '../config/db/config.js'
-import { definicionReceta } from '../services/recetas.js'
+import { definicionReceta } from '../services/receta.js'
 
 export class ModeloReceta {
   static Receta = sequelize.define('Recetas', definicionReceta, {
@@ -7,8 +7,8 @@ export class ModeloReceta {
     freezeTableName: true
   })
 
-  static async crearReceta({ input }) {
-    const { idProducto, idIngrediente, cantidad } = input;
+  static async crearReceta ({ input }) {
+    const { idProducto, idIngrediente, cantidad } = input
     try {
       const [resultado] = await sequelize.query(
         `DECLARE @mensaje VARCHAR(200);
@@ -22,10 +22,10 @@ export class ModeloReceta {
           replacements: { idProducto, idIngrediente, cantidad },
           type: sequelize.QueryTypes.SELECT
         }
-      );
+      )
 
       if (resultado.mensaje.includes('Error')) {
-        return { error: resultado.mensaje };
+        return { error: resultado.mensaje }
       }
 
       return {
@@ -35,17 +35,17 @@ export class ModeloReceta {
           cantidad
         },
         mensaje: resultado.mensaje
-      };
+      }
     } catch (error) {
       return {
         error: 'Error al crear la receta',
         detalles: error.message
-      };
+      }
     }
   }
 
-  static async editarReceta({ input }) {
-    const { idProducto, idIngrediente, nuevaCantidad } = input;
+  static async editarReceta ({ input }) {
+    const { idProducto, idIngrediente, nuevaCantidad } = input
     try {
       const [resultado] = await sequelize.query(
         `DECLARE @mensaje VARCHAR(200);
@@ -59,10 +59,10 @@ export class ModeloReceta {
           replacements: { idProducto, idIngrediente, nuevaCantidad },
           type: sequelize.QueryTypes.SELECT
         }
-      );
+      )
 
       if (resultado.mensaje.includes('Error')) {
-        return { error: resultado.mensaje };
+        return { error: resultado.mensaje }
       }
 
       return {
@@ -72,16 +72,16 @@ export class ModeloReceta {
           cantidad: nuevaCantidad
         },
         mensaje: resultado.mensaje
-      };
+      }
     } catch (error) {
       return {
         error: 'Error al editar la receta',
         detalles: error.message
-      };
+      }
     }
   }
 
-  static async eliminarIngredienteDeReceta({ idProducto, idIngrediente }) {
+  static async eliminarIngredienteDeReceta ({ idProducto, idIngrediente }) {
     try {
       const [resultado] = await sequelize.query(
         `DECLARE @mensaje VARCHAR(200);
@@ -94,37 +94,37 @@ export class ModeloReceta {
           replacements: { idProducto, idIngrediente },
           type: sequelize.QueryTypes.SELECT
         }
-      );
+      )
 
       if (resultado.mensaje.includes('Error')) {
-        return { error: resultado.mensaje };
+        return { error: resultado.mensaje }
       }
 
-      return { mensaje: resultado.mensaje };
+      return { mensaje: resultado.mensaje }
     } catch (error) {
       return {
         error: 'Error al eliminar ingrediente de la receta',
         detalles: error.message
-      };
+      }
     }
   }
 
-  static async mostrarRecetaPorProducto({ idProducto }) {
+  static async mostrarRecetaPorProducto ({ idProducto }) {
     try {
       const receta = await sequelize.query(
-        `EXEC get_ProductoYReceta @idProducto = :idProducto`,
+        'EXEC get_ProductoYReceta @idProducto = :idProducto',
         {
           replacements: { idProducto },
           type: sequelize.QueryTypes.SELECT
         }
-      );
+      )
 
-      return receta;
+      return receta
     } catch (error) {
       return {
         error: 'Error al mostrar la receta',
         detalles: error.message
-      };
+      }
     }
   }
 }
