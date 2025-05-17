@@ -9,10 +9,9 @@ import { ModeloUsuario } from './models/usuario.js'
 import { ModeloMenu } from './models/menu.js'
 import { ModeloReserva } from './models/reservas.js'
 import { ModeloReceta } from './models/receta.js'
-import { ModeloProducto } from './models/productos.js'
-import { ModeloIngrediente } from './models/ingredientes.js'
+import { ModeloProducto } from './models/producto.js'
+// import { ModeloIngrediente } from './models/ingredientes.js'  --> falta el modelo de Ingrediente
 import { ModeloPedido } from './models/pedido.js'
-
 
 CreateApp({
   modeloAuth: ModeloAuth,
@@ -25,7 +24,6 @@ CreateApp({
   modeloReserva: ModeloReserva,
   modeloReceta: ModeloReceta,
   modeloProducto: ModeloProducto,
-  modeloIngrediente: ModeloIngrediente,
+  // modeloIngrediente: ModeloIngrediente,  --> corregir
   modeloPedido: ModeloPedido
 })
-
