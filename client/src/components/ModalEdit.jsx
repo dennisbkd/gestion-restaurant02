@@ -1,30 +1,14 @@
 import { editUserRequest } from '../api/user'
-import { useState } from 'react'
+import { useFormHandler } from '../hooks/useFormHandler'
 const ModalEdit = ({ onClose, user, setIsSuccessModalOpen }) => {
-  const [userInput, setUserInput] = useState({
-    id: user.id,
-    nombreUsuario: user.nombreUsuario,
-    correo: user.correo,
-    telefono: user.telefono,
-    tipoUsuario: user.tipoUsuario
-  })
-  const handleInputChange = (event) => {
-    setUserInput({
-      ...userInput,
-      [event.target.name]: event.target.value
-    })
-  }
-  const handleSubmit = async () => {
-    event.preventDefault()
-    try {
-      console.log(userInput)
-      await editUserRequest(userInput)
+  const { formData, handleInputChange, handleSubmit } = useFormHandler(
+    user,
+    async (formData) => {
+      await editUserRequest(formData)
       setIsSuccessModalOpen(true)
       onClose()
-    } catch (error) {
-      console.log(error)
     }
-  }
+  )
   return (
     <>
       {/* Fondo desenfocado sin opacidad negra */}
@@ -55,7 +39,7 @@ const ModalEdit = ({ onClose, user, setIsSuccessModalOpen }) => {
                 type='text'
                 placeholder='Nombre'
                 name='nombreUsuario'
-                value={userInput.nombreUsuario}
+                value={formData.nombreUsuario}
                 onChange={handleInputChange}
                 className='mt-1 w-full p-2 border border-gray-300 rounded-md dark:bg-gray-600 dark:text-white'
               />
@@ -67,7 +51,7 @@ const ModalEdit = ({ onClose, user, setIsSuccessModalOpen }) => {
               <input
                 type='email'
                 name='correo'
-                value={userInput.correo}
+                value={formData.correo}
                 onChange={handleInputChange}
                 placeholder='Correo'
                 className='mt-1 w-full p-2 border border-gray-300 rounded-md dark:bg-gray-600 dark:text-white'
@@ -80,7 +64,7 @@ const ModalEdit = ({ onClose, user, setIsSuccessModalOpen }) => {
               <input
                 type='tel'
                 name='telefono'
-                value={userInput.telefono}
+                value={formData.telefono}
                 onChange={handleInputChange}
                 pattern='[0-8]{8,8}' // Ajusta según tu formato requerido
                 placeholder='Telefono'
@@ -99,7 +83,7 @@ const ModalEdit = ({ onClose, user, setIsSuccessModalOpen }) => {
                 required
                 id='tipoUsuario'
                 name='tipoUsuario'
-                value={userInput.tipoUsuario}
+                value={formData.tipoUsuario}
                 className='mt-1 w-full p-2 border border-gray-300 rounded-md bg-white text-gray-700 dark:bg-gray-600 dark:border-gray-500 dark:text-white'
               >
                 <option value=''>Selecciona una opción</option>

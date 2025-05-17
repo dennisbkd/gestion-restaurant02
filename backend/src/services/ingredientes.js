@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize'
-export const definicionProducto = {
+export const definicionIngrediente = {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -10,12 +10,16 @@ export const definicionProducto = {
     allowNull: false,
     unique: true
   },
-  precio: {
-    type: DataTypes.DECIMAL(10, 2),
+  idUnidadMedida: {
+    type: DataTypes.INTEGER,
     allowNull: false
   },
-  descripcion: DataTypes.TEXT,
-  tiempoPreparacion: DataTypes.TIME,
-  idCategoria: DataTypes.INTEGER,
-  idStock: DataTypes.INTEGER
+  idStock: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  idEstado: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  }
 }

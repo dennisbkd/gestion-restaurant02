@@ -61,9 +61,9 @@ export class ModeloInventario {
 
   // Actualizar producto en el inventario
   static async actualizarStock (input) {
-  const { id, nuevoStockActual, nuevoStockMinimo } = input;
-  try {
-    const [result] = await sequelize.query(
+    const { id, nuevoStockActual, nuevoStockMinimo } = input
+    try {
+      const [result] = await sequelize.query(
       `DECLARE @mensaje VARCHAR(100);
        EXEC p_ActualizarStock 
          @id = :id,
@@ -75,25 +75,24 @@ export class ModeloInventario {
         replacements: {
           id,
           nuevoStockActual,
-          nuevoStockMinimo 
+          nuevoStockMinimo
         },
         type: sequelize.QueryTypes.SELECT
       }
-    );
+      )
 
-    if (result.mensaje.includes('Error') || result.mensaje.includes('no existe')) {
-      return { error: result.mensaje };
+      if (result.mensaje.includes('Error') || result.mensaje.includes('no existe')) {
+        return { error: result.mensaje }
+      }
+
+      return {
+        producto: { id, nuevoStockActual, nuevoStockMinimo },
+        mensaje: result.mensaje
+      }
+    } catch (error) {
+      throw new Error('Error al actualizar producto: ' + error.message)
     }
-
-    return {
-      producto: { id, nuevoStockActual, nuevoStockMinimo },
-      mensaje: result.mensaje
-    };
-  } catch (error) {
-    throw new Error('Error al actualizar producto: ' + error.message);
   }
-}
-
 
   // Consultar todo el inventario (STOCKS)
   static async mostrarStocks () {

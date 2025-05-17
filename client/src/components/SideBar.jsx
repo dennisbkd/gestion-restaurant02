@@ -7,7 +7,8 @@ import {
   UserIcon,
   Bars3Icon,
   XMarkIcon,
-  ClipboardDocumentCheckIcon
+  ClipboardDocumentCheckIcon,
+  BookOpenIcon
 } from '@heroicons/react/24/outline'
 import { useState } from 'react'
 
@@ -105,6 +106,13 @@ const SideBar = ({ setActiveTab }) => {
             >
               <ClipboardDocumentCheckIcon className='w-8 h-8' />
               Roles y Permisos
+            </h2>
+            <h2
+              className='flex items-center gap-4 text-lg font-medium text-[#b0bec5] hover:text-[#ff6f61] cursor-pointer transition-all duration-300'
+              onClick={() => setActiveTab('menu')}
+            >
+              <BookOpenIcon className='w-8 h-8' />
+              Menú
             </h2>
             <h2 className='flex items-center gap-4 text-lg font-medium text-[#b0bec5] hover:text-[#ff6f61] cursor-pointer transition-all duration-300'>
               <ArchiveBoxIcon className='w-8 h-8' />

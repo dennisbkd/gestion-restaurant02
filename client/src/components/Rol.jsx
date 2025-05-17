@@ -1,6 +1,9 @@
 import { getRolesRequest } from '../api/rol'
-import { useState, useEffect } from 'react'
+import { useFetchData } from '../hooks/useFetchData'
+import { useState } from 'react'
+import { useModal } from '../hooks/useModal'
 import ModalCrearRol from './ModalRol'
+
 const iconMap = {
   Administrador: (
     <svg
@@ -69,30 +72,15 @@ const iconMap = {
     </svg>
   )
 }
-
+const extractRoles = (res) => res.data.roles
 const Rol = () => {
-  const [rol, setRol] = useState([])
-  const [refresh, setRefresh] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const { data: roles, refresh } = useFetchData(getRolesRequest, extractRoles)
+  const modal = useModal()
   const [currentRol, setCurrentRol] = useState('')
-  useEffect(() => {
-    const fetchrol = async () => {
-      try {
-        const res = await getRolesRequest()
-        const data = res.data.roles
-        console.log(data)
-        setRol(data)
-      } catch (error) {
-        console.error('Error cargando roles:', error)
-      }
-    }
-
-    fetchrol()
-  }, [refresh])
 
   return (
-    <section className='py-16 mt-0 md:mt-35'>
-      <div className='max-w-screen-xl mx-auto px-4 md:px-8 '>
+    <section className='py-16'>
+      <div className='max-w-screen-xl mx-auto px-4 md:px-8'>
         <div className='max-w-md md:max-w-full flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
           <div>
             <h1 className='text-gray-800 text-xl font-extrabold sm:text-2xl'>
@@ -106,20 +94,19 @@ const Rol = () => {
           <div>
             <button
               className='inline-block px-4 py-2 text-white duration-150 font-medium bg-indigo-600 rounded-lg hover:bg-indigo-500 active:bg-indigo-700 md:text-sm'
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => modal.open()}
             >
               Añadir Rol
             </button>
           </div>
         </div>
+
         <ul className='mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3'>
-          {rol.map((item, key) => (
+          {roles.map((item, key) => (
             <li className='border rounded-lg' key={key}>
               <div className='flex items-start justify-between p-4'>
                 <div className='space-y-2'>
-                  {iconMap[item.nombre] || (
-                    <div className='w-8 h-8 bg-gray-200 rounded-full' />
-                  )}
+                  {iconMap[item.nombre] || iconMap.default}
                   <h4 className='text-gray-800 font-semibold'>{item.nombre}</h4>
                   <p className='text-gray-600 text-sm'>
                     {item.permisos?.[0]?.descripcion || 'Sin permisos'}
@@ -128,7 +115,7 @@ const Rol = () => {
                 <button
                   className='text-gray-700 text-sm border rounded-lg px-3 py-2 duration-150 hover:bg-gray-100'
                   onClick={() => {
-                    setIsModalOpen(true)
+                    modal.open()
                     setCurrentRol(item)
                   }}
                 >
@@ -147,18 +134,26 @@ const Rol = () => {
           ))}
         </ul>
       </div>
-      {isModalOpen && (
+
+      {modal.isOpen && (
         <ModalCrearRol
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onGuardar={(nuevoRol) => {
-            // Aquí puedes guardar el nuevo rol con una petición POST si quieres
-            console.log('Nuevo rol:', nuevoRol)
-            setRefresh(!refresh) // refresca la lista de roles
-            setIsModalOpen(false) // cierra el modal
+          isOpen={modal.isOpen}
+          onClose={() => {
+            modal.close()
+            setCurrentRol('')
+          }}
+          onGuardar={() => {
+            refresh()
+            modal.close()
+
             setCurrentRol('')
           }}
           rol={currentRol}
+          context={{
+            title: 'Rol',
+            placeholder1: 'Nombre del Rol',
+            placeholder2: 'Permisos'
+          }}
         />
       )}
     </section>

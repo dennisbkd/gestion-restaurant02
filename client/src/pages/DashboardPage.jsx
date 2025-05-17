@@ -1,6 +1,7 @@
 import SideBar from '../components/SideBar'
 import UserTable from '../components/UserTable'
 import Rol from '../components/Rol'
+import Menu from '../components/Menu'
 import { useState } from 'react'
 export const DashboardPage = () => {
   const [activeTab, setActiveTab] = useState('inicio')
@@ -15,6 +16,8 @@ export const DashboardPage = () => {
         return <ProductosTable />
       case 'roles':
         return <Rol />
+      case 'menu':
+        return <Menu />
       // Agrega los demás casos...
       default:
         return (

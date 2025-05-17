@@ -1,8 +1,9 @@
-import axios from './axios.js'
+import instancia from "./axios"
 
 
-export const registerRequest = user =>axios.post(`/auth/register`,user)
 
-export const loginRequest = user => axios.post(`/auth/login`,user)
+export const registerRequest = user =>instancia.post(`/auth/register`,user)
 
-export const verifyTokenRequest = () => axios.get('/auth/verificar')
+export const loginRequest = user => instancia.post(`/auth/login`,user)
+
+export const verifyTokenRequest = () => instancia.get('/auth/verificar')

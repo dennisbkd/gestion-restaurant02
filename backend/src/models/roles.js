@@ -70,9 +70,9 @@ export class ModeloRol {
   }
 
   // Eliminar un rol o Deshabilitarlo
-    static eliminarRol = async (id) => {
-  try {
-    const  resultado  = await sequelize.query(
+  static eliminarRol = async (id) => {
+    try {
+      const resultado = await sequelize.query(
       `DECLARE @mensaje VARCHAR(200);
        EXEC p_EliminarRol @idRol = :idRol, @mensaje = @mensaje OUTPUT;
        SELECT @mensaje AS mensaje;`,
@@ -80,66 +80,59 @@ export class ModeloRol {
         replacements: { idRol: Number(id) },
         type: sequelize.QueryTypes.SELECT
       }
-    );
+      )
 
-    const mensaje = resultado[resultado.length - 1].mensaje;
+      const mensaje = resultado[resultado.length - 1].mensaje
 
-    return { message: mensaje };
-
-  } catch (error) {
-    return {
-      error: 'Error al intentar eliminar el rol',
-      detalles: error.message
-    };
+      return { message: mensaje }
+    } catch (error) {
+      return {
+        error: 'Error al intentar eliminar el rol',
+        detalles: error.message
+      }
+    }
   }
-}
-
-
 
   // Mostrar roles y permisos
-static async mostrarRolesYPermisos() {
-  try {
-    const rolesYPermisos = await sequelize.query(
-      'EXEC p_MostrarRolesYPermisos',
-      { type: sequelize.QueryTypes.SELECT }
-    );
+  static async mostrarRolesYPermisos () {
+    try {
+      const rolesYPermisos = await sequelize.query(
+        'EXEC p_MostrarRolesYPermisos',
+        { type: sequelize.QueryTypes.SELECT }
+      )
 
-    const rolesMap = new Map();
+      const rolesMap = new Map()
 
-    rolesYPermisos.forEach(row => {
+      rolesYPermisos.forEach(row => {
+        if (!rolesMap.has(row.idRol)) {
+          rolesMap.set(row.idRol, {
+            id: row.idRol,
+            nombre: row.nombreRol,
+            permisos: []
+          })
+        }
 
-      if (!rolesMap.has(row.idRol)) {
-        rolesMap.set(row.idRol, {
-          id: row.idRol,
-          nombre: row.nombreRol,
-          permisos: []
-        });
+        if (row.idPermiso && row.descripcionPermiso) {
+          rolesMap.get(row.idRol).permisos.push({
+            id: row.idPermiso,
+            descripciones: row.descripcionPermiso
+          })
+        }
+      })
+
+      return {
+        roles: Array.from(rolesMap.values())
       }
-
-      if (row.idPermiso && row.descripcionPermiso) {
-        rolesMap.get(row.idRol).permisos.push({
-          id: row.idPermiso,
-          descripciones: row.descripcionPermiso
-        });
-      }
-    });
-
-    return {
-      roles: Array.from(rolesMap.values())
-    };
-    
-  } catch (error) {
-    throw new Error('Error al obtener roles y permisos: ' + error.message);
+    } catch (error) {
+      throw new Error('Error al obtener roles y permisos: ' + error.message)
+    }
   }
-}
-
 
   // Obtener permisos de un rol
-  static mostrarPermisoRol = async( id ) => {
- 
+  static mostrarPermisoRol = async (id) => {
     try {
       const permiso = await sequelize.query(
-       'EXEC get_MostrarPermisoRol @idRol = :idRol',
+        'EXEC get_MostrarPermisoRol @idRol = :idRol',
         { replacements: { idRol: id }, type: sequelize.QueryTypes.SELECT }
       )
 

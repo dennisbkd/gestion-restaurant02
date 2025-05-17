@@ -9,44 +9,43 @@ export class ModeloPermiso {
 
   // Crear un nuevo permiso
   static async crearPermiso ({ input }) {
-  const { descripcion } = input;
-  try {
-    const [resultado] = await sequelize.query(
-      'DECLARE @newID INT, @mensaje VARCHAR(200); ' +
+    const { descripcion } = input
+    try {
+      const [resultado] = await sequelize.query(
+        'DECLARE @newID INT, @mensaje VARCHAR(200); ' +
       'EXEC p_CrearPermiso @descripcion = :descripcion, @newID = @newID OUTPUT, @mensaje = @mensaje OUTPUT; ' +
       'SELECT @newID AS newID, @mensaje AS mensaje;',
-      {
-        replacements: { descripcion },
-        type: sequelize.QueryTypes.SELECT
+        {
+          replacements: { descripcion },
+          type: sequelize.QueryTypes.SELECT
+        }
+      )
+
+      if (resultado.newID === -1) {
+        return { error: resultado.mensaje }
       }
-    );
 
-    if (resultado.newID === -1) {
-      return { error: resultado.mensaje };
+      return {
+        permiso: {
+          id: resultado.newID,
+          descripcion
+        },
+        mensaje: resultado.mensaje
+      }
+    } catch (error) {
+      console.error('Error detallado:', error)
+      return {
+        error: 'Error al crear el permiso',
+        detalles: error.message
+      }
     }
-
-    return {
-      permiso: {
-        id: resultado.newID,
-        descripcion
-      },
-      mensaje: resultado.mensaje
-    };
-  } catch (error) {
-    console.error('Error detallado:', error);
-    return {
-      error: 'Error al crear el permiso',
-      detalles: error.message
-    };
   }
-}
-
 
   // Editar o actualizar un permiso
-  static async editarPermiso({ input }) {
-  const { idPermiso, newDescripcion } = input;
-  try {
-    const [resultado] = await sequelize.query(
+  static async editarPermiso ({ input }) {
+    const { idPermiso, newDescripcion } = input
+    try {
+      const [resultado] = await sequelize.query(
       `DECLARE @mensaje VARCHAR(200);
        EXEC p_EditarPermiso 
           @idPermiso = :idPermiso, 
@@ -60,32 +59,31 @@ export class ModeloPermiso {
         },
         type: sequelize.QueryTypes.SELECT
       }
-    );
+      )
 
-    if (resultado.mensaje.includes('Error') || resultado.mensaje.includes('No existe')) {
-      return { error: resultado.mensaje };
+      if (resultado.mensaje.includes('Error') || resultado.mensaje.includes('No existe')) {
+        return { error: resultado.mensaje }
+      }
+
+      return {
+        permiso: {
+          id: idPermiso,
+          descripcion: newDescripcion
+        },
+        mensaje: resultado.mensaje
+      }
+    } catch (error) {
+      return {
+        error: 'Error al editar el permiso',
+        detalles: error.message
+      }
     }
-
-    return {
-      permiso: {
-        id: idPermiso,
-        descripcion: newDescripcion
-      },
-      mensaje: resultado.mensaje
-    };
-  } catch (error) {
-    return {
-      error: 'Error al editar el permiso',
-      detalles: error.message
-    };
   }
-}
-
 
   // Eliminar un permiso
-  static async eliminarPermiso(id) {
-  try {
-    const result = await sequelize.query(
+  static async eliminarPermiso (id) {
+    try {
+      const result = await sequelize.query(
       `DECLARE @mensaje VARCHAR(200);
        EXEC p_EliminarPermiso @idPermiso = :idPermiso, @mensaje = @mensaje OUTPUT;
        SELECT @mensaje AS mensaje;`,
@@ -93,23 +91,22 @@ export class ModeloPermiso {
         replacements: { idPermiso: Number(id) },
         type: sequelize.QueryTypes.SELECT
       }
-    );
+      )
 
-    const mensaje = result[result.length - 1].mensaje;
+      const mensaje = result[result.length - 1].mensaje
 
-    return { message: mensaje };
-
-  } catch (error) {
-    return {
-      error: 'Error al eliminar el permiso',
-      detalles: error.message
-    };
+      return { message: mensaje }
+    } catch (error) {
+      return {
+        error: 'Error al eliminar el permiso',
+        detalles: error.message
+      }
+    }
   }
- }
 
   // Asignar un permiso a un rol
-  static async asignarPermiso( input ) {
-    const { idRol, idPermiso } = input;
+  static async asignarPermiso (input) {
+    const { idRol, idPermiso } = input
     try {
       const [resultado] = await sequelize.query(
         `DECLARE @mensaje VARCHAR(200);
@@ -119,24 +116,23 @@ export class ModeloPermiso {
             @mensaje = @mensaje OUTPUT;
          SELECT @mensaje AS mensaje;`,
         {
-          replacements: { idRol :idRol, idPermiso: idPermiso },
+          replacements: { idRol, idPermiso },
           type: sequelize.QueryTypes.SELECT
         }
-      );
+      )
 
       if (resultado.mensaje.includes('Error') || resultado.mensaje.includes('No existe')) {
-        return { error: resultado.mensaje };
+        return { error: resultado.mensaje }
       }
 
       return {
         mensaje: resultado.mensaje
-      };
+      }
     } catch (error) {
       return {
         error: 'Error al asignar el permiso',
         detalles: error.message
-      };
+      }
     }
   }
-
 }

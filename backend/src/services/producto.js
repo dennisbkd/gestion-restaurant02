@@ -1,4 +1,4 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize'
 
 export const definicionProducto = {
   id: {
@@ -7,7 +7,7 @@ export const definicionProducto = {
     autoIncrement: true
   },
   nombre: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(100),
     allowNull: false,
     unique: true
   },
@@ -19,7 +19,7 @@ export const definicionProducto = {
     type: DataTypes.TEXT,
     allowNull: true
   },
-  time: {
+  tiempoPreparacion: {
     type: DataTypes.TIME,
     allowNull: true
   },
@@ -31,4 +31,4 @@ export const definicionProducto = {
     type: DataTypes.INTEGER,
     allowNull: false
   }
-};
+}

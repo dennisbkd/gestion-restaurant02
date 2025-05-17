@@ -8,7 +8,7 @@ export class ModeloReserva {
   })
 
   // Registrar Reserva
-  static async crearReserva({ input }) {
+  static async crearReserva ({ input }) {
     const { fecha, hora, idClienteWeb, idEstado } = input
 
     try {
@@ -35,7 +35,7 @@ export class ModeloReserva {
   }
 
   // Actualizar Reserva
-  static async editarReserva({ input }) {
+  static async editarReserva ({ input }) {
     const { id, fecha, hora, idClienteWeb, idEstado } = input
 
     if (!id) {
@@ -71,7 +71,7 @@ export class ModeloReserva {
   }
 
   // Cancelar Reserva
-  static async eliminarReserva(id) {
+  static async eliminarReserva (id) {
     try {
       const result = await sequelize.query(
         `DECLARE @mensaje VARCHAR(200);
@@ -100,7 +100,7 @@ export class ModeloReserva {
   }
 
   // Mostrar todas las reservas
-  static async mostrarReservas() {
+  static async mostrarReservas () {
     try {
       const reservas = await sequelize.query(
         'EXEC get_Reservas',
@@ -113,40 +113,39 @@ export class ModeloReserva {
   }
 
   // Mostrar reservas por nombre
-  static async mostrarReservasNombre(nombre) {
-  try {
-    const reservas = await sequelize.query(
-      'EXEC get_MostrarReservasNombre @nombre = :nombre',
-      {
-        replacements: { nombre },
-        type: sequelize.QueryTypes.SELECT
-      }
-    );
+  static async mostrarReservasNombre (nombre) {
+    try {
+      const reservas = await sequelize.query(
+        'EXEC get_MostrarReservasNombre @nombre = :nombre',
+        {
+          replacements: { nombre },
+          type: sequelize.QueryTypes.SELECT
+        }
+      )
 
-    const zonaHoraria = 'America/La_Paz'; // Puedes cambiarla según tu país
+      const zonaHoraria = 'America/La_Paz' // Puedes cambiarla según tu país
 
-    const reserva = reservasRaw.map(r => ({
-      ...r,
-      hora: r.hora instanceof Date
-        ? r.hora.toLocaleTimeString('es-BO', {
+      const reserva = reservas.map(r => ({
+        ...r,
+        hora: r.hora instanceof Date
+          ? r.hora.toLocaleTimeString('es-BO', {
             timeZone: zonaHoraria,
             hour12: false,
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit'
           })
-        : r.hora,
-      fecha: r.fecha instanceof Date
-        ? r.fecha.toLocaleDateString('es-BO', {
+          : r.hora,
+        fecha: r.fecha instanceof Date
+          ? r.fecha.toLocaleDateString('es-BO', {
             timeZone: zonaHoraria
           })
-        : r.fecha
-    }));
+          : r.fecha
+      }))
 
-    return { reserva };
-  } catch (error) {
-    throw new Error('Error al obtener reservas por nombre: ' + error.message);
+      return { reserva }
+    } catch (error) {
+      throw new Error('Error al obtener reservas por nombre: ' + error.message)
+    }
   }
-}
-
 }
