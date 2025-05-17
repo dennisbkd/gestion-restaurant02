@@ -142,3 +142,32 @@ Content-Type: application/json
 
 ### 
 GET http://localhost:3000/inventario/mostrarStock/15
+
+/// ****registrar pedido ****
+### 
+POST http://localhost:3000/pedido/registrar/3
+Content-Type: application/json
+
+{
+     "mesas": [
+        {"id": 1},
+        {"id": 2}
+     ],
+
+     "productos": 
+        [{
+        "id": 2,
+        "cantidad": 2,
+        "precio": 10,
+        "exclusiones": 
+            [
+             {"idIngrediente": 1},
+             {"idIngrediente": 2}
+            ]
+        }        
+        ]
+   
+
+        
+  
+}

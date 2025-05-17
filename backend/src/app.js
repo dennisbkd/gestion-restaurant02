@@ -10,7 +10,7 @@ import { crearRutasInventario } from './routes/inventario.js'
 import { crearProveedorRutas } from './routes/provider.js'
 import { crearRutaAdministrador } from './routes/administrador.js'
 import { crearRutaUsuarios } from './routes/usuario.js'
-
+import { crearRutasPedido } from './routes/pedido.js'
 import { crearMenuRutas } from './routes/menu.js' //
 
 import cookieParser from 'cookie-parser'
@@ -18,7 +18,7 @@ import { PALABRA_SECRETA } from './config/authConfig.js'
 import { Token } from './utils/authToken.js'
 import cors from 'cors'
 
-export const CreateApp = async ({ modeloAuth, modeloAdministrador, modeloProveedor, modeloMenu, modeloUsuario, modeloRol, modeloPermiso, modeloInventario }) => {
+export const CreateApp = async ({ modeloAuth, modeloAdministrador, modeloProveedor, modeloMenu, modeloUsuario, modeloRol, modeloPermiso, modeloInventario, modeloPedido }) => {
   const app = express()
   const token = new Token(PALABRA_SECRETA)
 
@@ -44,7 +44,7 @@ export const CreateApp = async ({ modeloAuth, modeloAdministrador, modeloProveed
   app.use('/proveedor', crearProveedorRutas({ modeloProveedor }))
 
   app.use('/menus', crearMenuRutas({ modeloMenu })) //
-
+  app.use('/pedido', crearRutasPedido({ modeloPedido }))
   app.listen(PORT, () => {
     console.log('servidor activo en el puerto:', PORT)
   })
