@@ -7,6 +7,7 @@ import { ModeloInventario } from './models/inventario.js'
 import { ModeloProveedor } from './models/provider.js'
 import { ModeloUsuario } from './models/usuario.js'
 import { ModeloMenu } from './models/menu.js'
+import { ModeloProducto } from './models/producto.js'
 
 CreateApp({
   modeloAuth: ModeloAuth,
@@ -15,5 +16,6 @@ CreateApp({
   modeloMenu: ModeloMenu,
   modeloPermiso: ModeloPermiso,
   modeloInventario: ModeloInventario,
-  modeloRol: ModeloRol
+  modeloRol: ModeloRol,
+  modeloProducto: ModeloProducto
 })

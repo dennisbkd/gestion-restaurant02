@@ -17,8 +17,19 @@ import cookieParser from 'cookie-parser'
 import { PALABRA_SECRETA } from './config/authConfig.js'
 import { Token } from './utils/authToken.js'
 import cors from 'cors'
+import { crearProductoRutas } from './routes/producto.js'
 
-export const CreateApp = async ({ modeloAuth, modeloAdministrador, modeloProveedor, modeloMenu, modeloUsuario, modeloRol, modeloPermiso, modeloInventario }) => {
+export const CreateApp = async ({
+  modeloAuth,
+  modeloAdministrador,
+  modeloProveedor,
+  modeloMenu,
+  modeloUsuario,
+  modeloRol,
+  modeloPermiso,
+  modeloInventario,
+  modeloProducto
+}) => {
   const app = express()
   const token = new Token(PALABRA_SECRETA)
 
@@ -44,6 +55,7 @@ export const CreateApp = async ({ modeloAuth, modeloAdministrador, modeloProveed
   app.use('/proveedor', crearProveedorRutas({ modeloProveedor }))
 
   app.use('/menus', crearMenuRutas({ modeloMenu })) //
+  app.use('/productos', crearProductoRutas({ modeloProducto }))
 
   app.listen(PORT, () => {
     console.log('servidor activo en el puerto:', PORT)
