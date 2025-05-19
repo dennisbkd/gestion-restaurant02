@@ -18,7 +18,7 @@ export const crearRutasPedido = ({ modeloPedido }) => {
   crearRutasPedido.patch('/editar/:id', controladorPedido.editarPedido)
 */
   // Completar pedido, restringido al cocinero
-  //crearRutasPedido.patch('/completar/:id', controladorPedido.completarPedido)
+  // crearRutasPedido.patch('/completar/:id', controladorPedido.completarPedido)
 
   return crearRutasPedido
 }

@@ -4,26 +4,23 @@ POST http://localhost:3000/user/register
 Content-Type: application/json
 
 {
-    "nombreUsuario" : "benjamin12",
-    "nombre" : "benjamin",
+    "nombreUsuario" : "prueba7",
+    "nombre" : "prueba7",
     "password" : "123",
-    "correo" : "b12@example.com",
-    "telefono" : "12345678",
-    "idRol" : 2 ,
-    "ci" : "2437842"
+    "correo" : "prueba7@example.com",
+    "telefono" : "00000000",
+    "idRol" : 4 ,
+    "ci" : "0000000",
+    "tipoUsuario" : "empleado"
 }
 
 ###
-PATCH http://localhost:3000/user/editarUsuario
+PATCH http://localhost:3000/user/editarUsuario/4
 Content-Type: application/json
 
 {    
-    "nombreUsuario" : "beni",
-    "nombre" : "beni",
-    "password" : "123",
-    "correo" : "beni@example.com",
-    "telefono" : "12345678",
-    "idRol" : 4
+    "nombreUsuario": "edit2",
+    "direccion": "direccion edit2"
 }
 
 ###
