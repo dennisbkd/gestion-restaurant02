@@ -227,12 +227,26 @@ Content-Type: application/json
         [{
         "id": 2,
         "cantidad": 2,
-        "precio": 10,
+        "precio": 6,
         "exclusiones": 
             [
              {"idIngrediente": 1},
              {"idIngrediente": 2}
             ]
+        },
+        {
+        "id": 3,
+        "cantidad": 1,
+        "precio": 6,
+        "exclusiones": 
+            [
+             
+            ]
+        }
+        ]
+}        
+        
+// Visualizar pedidos pendientes, para el cocinero
         }        
         ]  
 }
@@ -334,3 +348,6 @@ GET http://localhost:3000/productos/mostrar
 
 ### mostrar productos por id
 GET http://localhost:3000/productos/mostrar/1
+### 
+GET http://localhost:3000/pedido/pendientes
+

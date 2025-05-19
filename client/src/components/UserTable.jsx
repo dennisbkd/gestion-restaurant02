@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import { getUserRequest } from '../api/user'
 import { useFetchData } from '../hooks/useFetchData'
 import { useModal } from '../hooks/useModal'
-import SuccessModal from './SuccessModal'
-import ModalEdit from './ModalEdit'
-import ModalAddEmployees from './ModalAddEmployees'
+import SuccessModal from './modals/SuccessModal'
+import ModalEdit from './modals/ModalEdit'
+import ModalAddEmployees from './modals/ModalAddEmployees'
 
 const extractUsuarios = (res) => res.data.usuarios
 
