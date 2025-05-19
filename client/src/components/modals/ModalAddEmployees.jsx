@@ -1,5 +1,5 @@
-import { registerEmployeeRequest } from '../api/user'
-import { useFormHandler } from '../hooks/useFormHandler'
+import { registerEmployeeRequest } from '../../api/user'
+import { useFormHandler } from '../../hooks/useFormHandler'
 
 const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
   const initialValues = {
