@@ -11,7 +11,7 @@ export const definicionPedido = {
     allowNull: false
   },
   hora: {
-    type: DataTypes.DATE,
+    type: DataTypes.TIME(0),
     allowNull: false
   },
   idClienteWeb: {

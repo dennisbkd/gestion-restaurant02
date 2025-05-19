@@ -1,6 +1,4 @@
 import sequelize from '../config/db/config.js'
-
-import { definicionCategoria } from '../services/categoria.js'
 import { definicionProducto } from '../services/producto.js'
 
 export class ModeloProducto {
@@ -8,16 +6,6 @@ export class ModeloProducto {
     timestamps: false,
     freezeTableName: true
   })
-
-  static Categoria = sequelize.define('Categoria', definicionCategoria, {
-    timestamps: false,
-    freezeTableName: true
-  })
-
-  static asociacion () {
-    this.Producto.belongsTo(this.Categoria, { foreignKey: 'idCategoria' })
-    this.Categoria.hasMany(this.Producto, { foreignKey: 'idCategoria' })
-  }
 
   // Crear producto
   static async crearProducto ({ input }) {
@@ -58,18 +46,22 @@ export class ModeloProducto {
 
   // Editar producto
   static async editarProducto ({ input }) {
-    const { idProducto, nombre, precio } = input
+    const { idProducto, nombre, precio, descripcion, tiempo, idCategoria, idStock } = input
     try {
       const [resultado] = await sequelize.query(
         `DECLARE @mensaje VARCHAR(200);
-         EXEC p_EditarProducto 
+         EXEC set_ActualizarProducto 
            @idProducto = :idProducto, 
            @nombre = :nombre, 
            @precio = :precio, 
+           @descripcion = :descripcion,
+           @tiempo = :tiempo,
+           @idCategoria = :idCategoria,
+           @idStock = :idStock,
            @mensaje = @mensaje OUTPUT;
          SELECT @mensaje AS mensaje;`,
         {
-          replacements: { idProducto, nombre, precio },
+          replacements: { idProducto, nombre, precio, descripcion, tiempo, idCategoria, idStock },
           type: sequelize.QueryTypes.SELECT
         }
       )
@@ -79,7 +71,7 @@ export class ModeloProducto {
       }
 
       return {
-        producto: { idProducto, nombre, precio },
+        producto: { idProducto, nombre, precio, descripcion, tiempo, idCategoria, idStock },
         mensaje: resultado.mensaje
       }
     } catch (error) {
@@ -95,7 +87,7 @@ export class ModeloProducto {
     try {
       const [resultado] = await sequelize.query(
         `DECLARE @mensaje VARCHAR(200);
-         EXEC p_EliminarProducto 
+         EXEC set_EliminarProducto 
            @idProducto = :idProducto, 
            @mensaje = @mensaje OUTPUT;
          SELECT @mensaje AS mensaje;`,
@@ -120,40 +112,21 @@ export class ModeloProducto {
 
   // Obtener todos los productos
   static async ObtenerProductos ({ tipo }) {
-    console.log(tipo)
-    let resultado
     try {
-      if (tipo) {
-        const productos = await this.Producto.findAll({
-          where: { idCategoria: tipo },
-          include: [{ model: this.Categoria }]
-        })
+      const [resultado] = await sequelize.query(
+         ' EXEC get_MostrarProductos '
+      )
 
-        if (!productos.length) {
-          return { error: `No se encontraron productos con el filtro ${tipo || 'ninguno'}` }
-        }
-        resultado = productos
-      } else {
-        const productos = await this.Producto.findAll({
-          include: [{ model: this.Categoria }]
-        })
-        resultado = productos
-        if (!productos.length) {
-          return { error: 'No se encontraron productos' }
-        }
+      if (resultado.mensaje && resultado.mensaje.includes('Error')) {
+        return { error: resultado.mensaje }
       }
-      const productosLimpios = resultado.map(producto => ({
-        id: producto.id,
-        nombre: producto.nombre,
-        precio: producto.precio,
-        descripcion: producto.descripcion,
-        tiempoPreparacion: producto.tiempoPreparacion,
-        categoria: producto.Categorium.descripcion
-      }))
-      return productosLimpios
+
+      return resultado
     } catch (error) {
-      console.error('Hubo un error al obtener los productos:', error)
-      throw new Error('Error en la base de datos, intente más tarde.')
+      return {
+        error: 'Error al obtener productos',
+        detalles: error.message
+      }
     }
   }
 
@@ -185,5 +158,3 @@ export class ModeloProducto {
     }
   }
 }
-
-ModeloProducto.asociacion()
