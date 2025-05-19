@@ -8,7 +8,11 @@ import { HomePage } from "./pages/HomePage"
 import { ProtectedRoute } from "./ProtectedRoute"
 import { Task } from "./pages/task"
 import Menu from "./components/usuario/Menu"
+import { lazy, Suspense } from "react"
 import { CartLayout } from "./Layouts/CartLayout"
+import { CargaDeEspera } from "./components/loading/CargaDeEspera"
+
+const CheckoutPage = lazy(() => import('./pages/procesoPago/CheckoutPage'))
 
 
 export default function App() {
@@ -16,8 +20,6 @@ export default function App() {
   return (
     <AuthProvide>
       <BrowserRouter>
-
-        {/* CartSidebar fuera de Routes pero dentro del Router */}
 
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -31,10 +33,15 @@ export default function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
           </Route>
           <Route element={<CartLayout />}>
-            <Route path="/menu" element={<Menu />} />
+            <Route path="/productos" element={<Menu />} />
+            <Route path="/checkout" element={<Suspense fallback={<CargaDeEspera
+              text="Procesando tu pedido..."
+              text2="Redirigiendo al método de pago" />}>
+              <CheckoutPage />
+            </Suspense>} />
           </Route>
         </Routes>
       </BrowserRouter>
-    </AuthProvide>
+    </AuthProvide >
   );
 }

@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { Link } from 'react-router';
 import { XMarkIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
-import { Outlet } from 'react-router';
 import { useCart } from '../../context/CartContext';
+
 
 const CartSidebar = () => {
   const {
@@ -14,7 +15,7 @@ const CartSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
-
+  console.log(cart)
   return (
     <div className="relative">
       <button
@@ -65,7 +66,7 @@ const CartSidebar = () => {
                       <li key={item.id} className="flex justify-between items-start border-b pb-4">
                         <div className="flex-1">
                           <h3 className="font-medium text-gray-800">{item.nombre}</h3>
-                          <p className="text-gray-600">${item.precio}</p>
+                          <p className="text-gray-600">{item.precio} bs</p>
                           <div className="flex items-center mt-2">
                             <button
                               onClick={() => actualizarCantidad(item.id, item.quantity - 1)}
@@ -83,7 +84,7 @@ const CartSidebar = () => {
                           </div>
                         </div>
                         <div className="flex flex-col items-end">
-                          <p className="font-medium">${(item.precio * item.quantity).toFixed(2)}</p>
+                          <p className="font-medium">{(item.precio * item.quantity).toFixed(2)} bs</p>
                           <button
                             onClick={() => removerDelCarrito(item.id)}
                             className="text-red-500 hover:text-red-700 mt-2 text-sm"
@@ -102,11 +103,15 @@ const CartSidebar = () => {
                 <div className="border-t p-4">
                   <div className="flex justify-between mb-4">
                     <span className="font-medium">Total:</span>
-                    <span className="font-bold">${total.toFixed(2)}</span>
+                    <span className="font-bold">{total.toFixed(2)} bs</span>
                   </div>
-                  <button className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors">
+                  <Link
+                    onClick={toggleSidebar}
+                    to="/checkout"
+                    className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors text-center block"
+                  >
                     Proceder al Pago
-                  </button>
+                  </Link>
                 </div>
               )}
             </div>
@@ -116,5 +121,6 @@ const CartSidebar = () => {
     </div>
   );
 };
+
 
 export default CartSidebar;

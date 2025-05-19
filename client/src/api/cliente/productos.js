@@ -2,4 +2,4 @@ import instancia from "../axios"
 
 
 
-export const obtenerProductos = ()=> instancia.get('/productos/obtener')
+export const obtenerProductos = ()=> instancia.get('/productos/mostrar')
