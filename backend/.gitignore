@@ -1,6 +1,4 @@
 
 node_modules
-
 src/config/db/config.js
-
 src/API.http
