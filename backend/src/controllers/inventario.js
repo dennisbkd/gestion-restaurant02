@@ -6,7 +6,7 @@ export class ControladorInventario {
   // Agregar Stock
   agregarStock = async (req, res) => {
     try {
-      const stock = await this.ModeloInventario.agregarStock(req.body)
+      const stock = await this.ModeloInventario.agregarStock( { input: req.body })
       if (stock.error) return res.status(400).json({ error: stock.error })
       return res.status(200).json(stock)
     } catch (error) {
@@ -17,7 +17,7 @@ export class ControladorInventario {
   // Disminuir stock
   disminuirStock = async (req, res) => {
     try {
-      const resultado = await this.ModeloInventario.disminuirStock(req.body)
+      const resultado = await this.ModeloInventario.disminuirStock({ input : req.body})
       if (resultado.error) return res.status(400).json({ error: resultado.error })
       return res.status(200).json(resultado)
     } catch (error) {
@@ -28,10 +28,7 @@ export class ControladorInventario {
   // Actualizar producto existente
   actualizarStock = async (req, res) => {
     try {
-      if (!req.body.id || !req.body.nuevoStockActual || !req.body.nuevoStockMinimo) {
-        return res.status(400).json({ error: 'ID del producto, nuevo stock actual y nuevo stock mínimo son requeridos' })
-      }
-      const stock = await this.ModeloInventario.actualizarStock(req.body)
+      const stock = await this.ModeloInventario.actualizarStock({ input: req.body })
       if (stock.error) return res.status(400).json({ error: stock.error })
       return res.status(200).json(stock)
     } catch (error) {

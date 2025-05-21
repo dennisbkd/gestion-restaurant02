@@ -1,11 +1,13 @@
 import sequelize from '../config/db/config.js';
-import { definicionIngrediente } from '../services/ingrediente.js';
+import { definicionIngrediente } from '../services/receta.js';
 
 export class ModeloIngrediente {
   static Ingrediente = sequelize.define('Ingrediente', definicionIngrediente, {
     timestamps: false,
     freezeTableName: true
   });
+
+  // ciclo 3
 
   // Crear ingrediente
   static async crearIngrediente({ input }) {

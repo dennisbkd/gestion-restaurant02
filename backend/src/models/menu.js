@@ -2,7 +2,7 @@ import sequelize from '../config/db/config.js'
 
 import { definicionMenu } from '../services/menu.js'
 import { definicionDetalleMenu } from '../services/detalleMenu.js'
-import { definicionProducto } from '../services/producto.js'
+import { definicionProducto } from '../services/receta.js'
 
 // Definición de modelos
 export class ModeloMenu {

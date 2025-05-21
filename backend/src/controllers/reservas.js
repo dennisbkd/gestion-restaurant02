@@ -4,20 +4,23 @@ export class ControladorReservas {
   }
 
   // Registrar Reserva
-  crearReserva = async (req, res) => {
-    try {
-      const reserva = await this.modeloReserva.crearReserva({ input: req.body })
-      if (reserva.error) return res.status(400).json({ error: reserva.error })
-      return res.status(201).json(reserva)
-    } catch (error) {
-      return res.status(500).json({ error: 'Error interno del servidor' })
-    }
+crearReserva = async (req, res) => {
+  try {
+    const { id } = req.params
+    const reserva = await this.modeloReserva.crearReserva(id , { input: req.body })
+
+    if (reserva.error) return res.status(400).json({ error: reserva.error })
+    return res.status(201).json(reserva)
+  } catch (error) {
+    return res.status(500).json({ error: 'Error interno del servidor' })
   }
+}
 
   // Actualizar Reserva
   editarReserva = async (req, res) => {
     try {
-      const reserva = await this.modeloReserva.editarReserva({ input: req.body })
+      const  { id } = req.params
+      const reserva = await this.modeloReserva.editarReserva(id , { input: req.body })
       if (reserva.error) return res.status(400).json({ error: reserva.error })
       return res.status(200).json(reserva)
     } catch (error) {
@@ -28,8 +31,8 @@ export class ControladorReservas {
   // Cancelar Reserva
   eliminarReserva = async (req, res) => {
     try {
-      if (!req.params.id) return res.status(400).json({ error: 'ID de reserva no proporcionado' })
-      const reserva = await this.modeloReserva.eliminarReserva(req.params.id)
+      const  { id } = req.body
+      const reserva = await this.modeloReserva.eliminarReserva(id)
       if (reserva.error) return res.status(400).json({ error: reserva.error })
       return res.status(200).json(reserva)
     } catch (error) {
@@ -48,16 +51,14 @@ export class ControladorReservas {
     }
   }
 
-  // mostrar Reserva por Nombre
-  mostrarReservasNombre = async (req, res) => {
+  // mostrar Reserva por fecha
+  mostrarReservasFecha = async (req, res) => {
     try {
-      const { nombre } = req.params
-      if (!nombre) return res.status(400).json({ error: 'Nombre no proporcionado' })
-      const reservas = await this.modeloReserva.mostrarReservasNombre(nombre)
+      const { fecha } = req.body
+      const reservas = await this.modeloReserva.mostrarReservasFecha(fecha)
       if (reservas.error) return res.status(400).json({ error: reservas.error })
       return res.status(200).json(reservas)
     } catch (error) {
-      console.error('Error en mostrarReservasNombre:', error)
       return res.status(500).json({ error: error.message || 'Error interno del servidor' })
     }
   }

@@ -9,7 +9,6 @@ import { ModeloUsuario } from './models/usuario.js'
 import { ModeloMenu } from './models/menu.js'
 import { ModeloReserva } from './models/reservas.js'
 import { ModeloReceta } from './models/receta.js'
-import { ModeloProducto } from './models/producto.js' 
 import { ModeloIngrediente } from './models/ingrediente.js' 
 import { ModeloPedido } from './models/pedido.js'
 
@@ -23,7 +22,6 @@ CreateApp({
   modeloRol: ModeloRol,
   modeloReserva: ModeloReserva,
   modeloReceta: ModeloReceta,
-  modeloProducto: ModeloProducto,
   modeloIngrediente: ModeloIngrediente, 
   modeloPedido: ModeloPedido
 })

@@ -12,9 +12,8 @@ import { crearRutaAdministrador } from './routes/administrador.js'
 import { crearRutaUsuarios } from './routes/usuario.js'
 import { crearRutasPedido } from './routes/pedido.js'
 import { crearRutasReservas } from './routes/reservas.js'
-import { crearMenuRutas } from './routes/menu.js' //
+import { crearMenuRutas } from './routes/menu.js' 
 import { crearRutasReceta } from './routes/receta.js'
-import { crearRutasProducto } from './routes/producto.js'
 import { crearRutaIngrediente } from './routes/ingrediente.js'
 
 import cookieParser from 'cookie-parser'
@@ -28,9 +27,13 @@ export const CreateApp = async ({
   modeloUsuario, modeloRol,
   modeloPermiso, modeloInventario,
   modeloReserva, modeloReceta,
-  modeloProducto, modeloIngrediente,
-  modeloPedido
+  modeloIngrediente, modeloPedido
 }) => {
+
+  modeloRol.asociar()
+  modeloReserva.asociar()
+  modeloReceta.asociar()
+
   const app = express()
 
   const token = new Token(PALABRA_SECRETA)
@@ -56,7 +59,6 @@ export const CreateApp = async ({
   app.use('/inventario', crearRutasInventario({ modeloInventario }))
   app.use('/proveedor', crearProveedorRutas({ modeloProveedor }))
 
-  app.use('/productos', crearRutasProducto({ modeloProducto }))
   app.use('/ingredientes', crearRutaIngrediente({ modeloIngrediente }))
 
   app.use('/menus', crearMenuRutas({ modeloMenu }))
