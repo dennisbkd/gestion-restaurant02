@@ -1,6 +1,6 @@
 import { registerEmployeeRequest } from '../../api/user'
 import { useFormHandler } from '../../hooks/useFormHandler'
-
+import { useFormValidator } from '../../hooks/useFormValidator'
 const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
   const initialValues = {
     nombreUsuario: '',
@@ -11,16 +11,20 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
     ci: '',
     idRol: ''
   }
+
+  const { errors, validate } = useFormValidator()
   const { formData, handleInputChange, handleSubmit } = useFormHandler(
-    initialValues, //se envia los valores iniciales a mostrar
+    initialValues,
     async (data) => {
-      //obtienes los datos del formulario
+      if (!validate(data)) return
+
       const dataSend = {
         ...data,
-        idRol: parseInt(data.idRol, 10) //separamos el id para convertirlo en un entero
+        idRol: parseInt(data.idRol, 10)
       }
+
       try {
-        await registerEmployeeRequest(dataSend) // se envian los datos
+        await registerEmployeeRequest(dataSend)
         setIsSuccessModalOpen(true)
         onClose()
       } catch (error) {
@@ -61,6 +65,9 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
                 placeholder='Nombre de Usuario'
                 className='mt-1 w-full p-2 border rounded-md dark:bg-gray-600 dark:text-white'
               />
+              {errors.nombreUsuario && (
+                <p className='text-sm text-red-500'>{errors.nombreUsuario}</p>
+              )}
             </div>
 
             <div>
@@ -75,6 +82,9 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
                 placeholder='Nombre completo'
                 className='mt-1 w-full p-2 border rounded-md dark:bg-gray-600 dark:text-white'
               />
+              {errors.nombre && (
+                <p className='text-sm text-red-500'>{errors.nombre}</p>
+              )}
             </div>
 
             <div>
@@ -89,6 +99,9 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
                 placeholder='Contraseña'
                 className='mt-1 w-full p-2 border rounded-md dark:bg-gray-600 dark:text-white'
               />
+              {errors.password && (
+                <p className='text-sm text-red-500'>{errors.password}</p>
+              )}
             </div>
 
             <div>
@@ -103,6 +116,9 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
                 placeholder='Correo electrónico'
                 className='mt-1 w-full p-2 border rounded-md dark:bg-gray-600 dark:text-white'
               />
+              {errors.correo && (
+                <p className='text-sm text-red-500'>{errors.correo}</p>
+              )}
             </div>
 
             <div>
@@ -118,6 +134,9 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
                 placeholder='Teléfono'
                 className='mt-1 w-full p-2 border rounded-md dark:bg-gray-600 dark:text-white'
               />
+              {errors.telefono && (
+                <p className='text-sm text-red-500'>{errors.telefono}</p>
+              )}
             </div>
 
             <div>
@@ -132,6 +151,7 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
                 placeholder='Cédula de Identidad'
                 className='mt-1 w-full p-2 border rounded-md dark:bg-gray-600 dark:text-white'
               />
+              {errors.ci && <p className='text-sm text-red-500'>{errors.ci}</p>}
             </div>
 
             <div>
@@ -152,6 +172,9 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
                 <option value='2'>Cocinero</option>
                 <option value='3'>Mesero</option>
               </select>
+              {errors.idRol && (
+                <p className='text-sm text-red-500'>{errors.idRol}</p>
+              )}
             </div>
 
             <button
