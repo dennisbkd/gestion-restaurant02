@@ -16,12 +16,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 
 // Avatares predeterminados
-const avatarOptions = [
-  { id: "avatar1", src: "/placeholder.svg?height=40&width=40&text=1", label: "Avatar 1" },
-  { id: "avatar2", src: "/placeholder.svg?height=40&width=40&text=2", label: "Avatar 2" },
-  { id: "avatar3", src: "/placeholder.svg?height=40&width=40&text=3", label: "Avatar 3" },
-  { id: "avatar4", src: "/placeholder.svg?height=40&width=40&text=4", label: "Avatar 4" },
-]
+// const avatarOptions = [
+//   { id: "avatar1", src: "/placeholder.svg?height=40&width=40&text=1", label: "Avatar 1" },
+//   { id: "avatar2", src: "/placeholder.svg?height=40&width=40&text=2", label: "Avatar 2" },
+//   { id: "avatar3", src: "/placeholder.svg?height=40&width=40&text=3", label: "Avatar 3" },
+//   { id: "avatar4", src: "/placeholder.svg?height=40&width=40&text=4", label: "Avatar 4" },
+// ]
 
 export default function EditarPerfilPage() {
   const navigate = useNavigate()
@@ -62,9 +62,9 @@ export default function EditarPerfilPage() {
   }
 
   // Manejador para cambio de avatar
-  const handleAvatarChange = (value) => {
-    setFormData((prev) => ({ ...prev, avatar: value }))
-  }
+  // const handleAvatarChange = (value) => {
+  //   setFormData((prev) => ({ ...prev, avatar: value }))
+  // }
 
   // Manejador para envío del formulario
   const handleSubmit = async (e) => {
@@ -119,7 +119,7 @@ export default function EditarPerfilPage() {
             <form onSubmit={handleSubmit}>
               <CardContent className="space-y-6">
                 {/* Sección de avatar */}
-                <div className="space-y-4">
+                {/* <div className="space-y-4">
                   <h3 className="text-lg font-medium">Foto de perfil</h3>
                   <div className="flex items-center space-x-4">
                     <Avatar className="h-16 w-16">
@@ -163,7 +163,7 @@ export default function EditarPerfilPage() {
                       </div>
                     ))}
                   </RadioGroup>
-                </div>
+                </div> */}
 
                 <Separator />
 
@@ -287,7 +287,7 @@ export default function EditarPerfilPage() {
                 </div>
               </CardContent>
 
-              <CardFooter className="flex justify-between">
+              <CardFooter className="flex justify-between my-5">
                 <Button variant="outline" type="button" onClick={() => navigate("/perfil")} disabled={isLoading}>
                   Cancelar
                 </Button>
