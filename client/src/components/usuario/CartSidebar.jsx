@@ -1,7 +1,15 @@
 import { useState } from 'react';
-import { XMarkIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
-import { Outlet } from 'react-router';
+import { Link } from 'react-router';
+import { ShoppingCartIcon } from '@heroicons/react/24/outline';
 import { useCart } from '../../context/CartContext';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '../ui/card';
+import { ScrollArea } from '../ui/scroll-area';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { Badge } from '../ui/badge';
+import { Separator } from '../ui/separator';
+import { X } from 'lucide-react';
+import { Button } from '../ui/button';
+
 
 const CartSidebar = () => {
   const {
@@ -14,107 +22,141 @@ const CartSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
-
   return (
     <div className="relative">
-      <button
+      {/* Botón flotante del carrito */}
+      <Button
+        variant="default"
+        size="icon"
+        className="fixed top-4 right-4 z-30 rounded-full h-12 w-12 shadow-lg"
         onClick={toggleSidebar}
-        className="fixed top-4 right-4 z-30 p-3 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 transition-colors"
         aria-label="Abrir carrito"
       >
-        <ShoppingCartIcon className="h-6 w-6" />
+        <ShoppingCartIcon className="h-5 w-5" />
         {cart.length > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+          <Badge
+            variant="destructive"
+            className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0"
+          >
             {cart.reduce((sum, item) => sum + item.quantity, 0)}
-          </span>
+          </Badge>
         )}
-      </button>
+      </Button>
 
       {/* Overlay y Sidebar */}
       {isOpen && (
         <>
           <div
-            className="fixed inset-0  backdrop-blur-sm"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
             onClick={toggleSidebar}
           />
+          <Card className="fixed top-0 right-0 h-full w-full sm:w-96 rounded-none border-l z-50 shadow-xl animate-in slide-in-from-right-96 duration-300">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-lg font-semibold">Tu Carrito</CardTitle>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleSidebar}
+                aria-label="Cerrar carrito"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </CardHeader>
 
-          <div className="fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-xl z-50">
-            <div className="flex flex-col h-full">
-              {/* Encabezado */}
-              <div className="flex justify-between items-center p-4 border-b">
-                <h2 className="text-xl font-bold text-gray-800">Tu Carrito</h2>
-                <button
-                  onClick={toggleSidebar}
-                  className="text-gray-500 hover:text-gray-700"
-                  aria-label="Cerrar carrito"
-                >
-                  <XMarkIcon className="h-6 w-6" />
-                </button>
-              </div>
+            <Separator />
 
-              {/* Lista de productos */}
-              <div className="flex-1 overflow-y-auto p-4">
+            <CardContent className="p-0 h-[calc(100%-180px)]">
+              <ScrollArea className="h-full p-4">
                 {cart.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    <ShoppingCartIcon className="mx-auto h-12 w-12 text-gray-300" />
-                    <p className="mt-2">Tu carrito está vacío</p>
-                  </div>
+                  <Alert variant="default">
+                    <ShoppingCartIcon className="h-5 w-5" />
+                    <AlertTitle>Carrito vacío</AlertTitle>
+                    <AlertDescription>
+                      No hay productos en tu carrito
+                    </AlertDescription>
+                  </Alert>
                 ) : (
                   <ul className="space-y-4">
                     {cart.map(item => (
-                      <li key={item.id} className="flex justify-between items-start border-b pb-4">
-                        <div className="flex-1">
-                          <h3 className="font-medium text-gray-800">{item.nombre}</h3>
-                          <p className="text-gray-600">${item.precio}</p>
-                          <div className="flex items-center mt-2">
-                            <button
-                              onClick={() => actualizarCantidad(item.id, item.quantity - 1)}
-                              className="px-2 py-1 bg-gray-200 rounded-l hover:bg-gray-300"
-                            >
-                              -
-                            </button>
-                            <span className="px-4 py-1 bg-gray-100">{item.quantity}</span>
-                            <button
-                              onClick={() => actualizarCantidad(item.id, item.quantity + 1)}
-                              className="px-2 py-1 bg-gray-200 rounded-r hover:bg-gray-300"
-                            >
-                              +
-                            </button>
+                      <li key={item.id} className="space-y-3">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h3 className="font-medium">{item.nombre}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              {item.precio} bs
+                            </p>
                           </div>
-                        </div>
-                        <div className="flex flex-col items-end">
-                          <p className="font-medium">${(item.precio * item.quantity).toFixed(2)}</p>
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={() => removerDelCarrito(item.id)}
-                            className="text-red-500 hover:text-red-700 mt-2 text-sm"
+                            className="text-destructive hover:text-destructive"
                           >
-                            Eliminar
-                          </button>
+                            <X className="h-4 w-4" />
+                          </Button>
                         </div>
+
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => actualizarCantidad(item.id, item.quantity - 1)}
+                          >
+                            -
+                          </Button>
+                          <input type="number"
+                            value={item.quantity}
+                            onChange={(e) => actualizarCantidad(item.id, parseInt(e.target.value))}
+                            className="w-12 text-center"
+                            min="1">
+                          </input>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => actualizarCantidad(item.id, item.quantity + 1)}
+                          >
+                            +
+                          </Button>
+                          <span className="ml-auto font-medium">
+                            {(item.precio * item.quantity).toFixed(2)} bs
+                          </span>
+                        </div>
+                        <Separator />
                       </li>
                     ))}
                   </ul>
                 )}
-              </div>
+              </ScrollArea>
+            </CardContent>
 
-              {/* Resumen y botón de checkout */}
-              {cart.length > 0 && (
-                <div className="border-t p-4">
-                  <div className="flex justify-between mb-4">
+            {cart.length > 0 && (
+              <>
+                <Separator />
+                <CardFooter className="flex flex-col space-y-4">
+                  <div className="flex justify-between w-full">
                     <span className="font-medium">Total:</span>
-                    <span className="font-bold">${total.toFixed(2)}</span>
+                    <span className="font-bold">{total.toFixed(2)} bs</span>
                   </div>
-                  <button className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors">
-                    Proceder al Pago
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
+                  <Button
+                    asChild
+                    className="w-full"
+                    onClick={toggleSidebar}
+                  >
+                    <Link to="/checkout">
+                      Proceder al Pago
+                    </Link>
+                  </Button>
+                </CardFooter>
+              </>
+            )}
+          </Card>
         </>
       )}
     </div>
   );
 };
+
 
 export default CartSidebar;

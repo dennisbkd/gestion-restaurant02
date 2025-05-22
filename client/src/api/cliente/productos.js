@@ -1,5 +1,6 @@
 import instancia from "../axios"
 
-
-
-export const obtenerProductos = ()=> instancia.get('/productos/obtener')
+export const obtenerProductos = (tipo = null)=> {
+  const url = tipo ? `/productos/mostrar?tipo=${tipo}` : '/productos/mostrar';
+  return instancia.get(url);
+}

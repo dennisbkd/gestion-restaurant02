@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import { getUserRequest } from '../api/user'
 import { useFetchData } from '../hooks/useFetchData'
 import { useModal } from '../hooks/useModal'
-import SuccessModal from './SuccessModal'
-import ModalEdit from './ModalEdit'
-import ModalAddEmployees from './ModalAddEmployees'
+import SuccessModal from './modals/SuccessModal'
+import ModalEdit from './modals/ModalEdit'
+import ModalAddEmployees from './modals/ModalAddEmployees'
 
 const extractUsuarios = (res) => res.data.usuarios
 
@@ -68,7 +68,7 @@ const UserTable = () => {
       )}
 
       <div className='mt-12 shadow-sm border rounded-lg overflow-hidden'>
-        <div className='max-h-[500px] overflow-y-auto'>
+        <div className='max-h-[500px] overflow-y-auto custom-scrollbar'>
           <table className='w-full table-auto text-sm text-left'>
             <thead className='text-gray-600 font-medium border-b sticky top-0 z-10 bg-white'>
               <tr>
@@ -95,7 +95,7 @@ const UserTable = () => {
                 <th className='py-3 px-6'></th>
               </tr>
             </thead>
-            <tbody className='text-gray-600 divide-y'>
+            <tbody className='text-gray-600 divide-y '>
               {users.map((user, idx) => (
                 <tr key={user.id} className='odd:bg-gray-50 even:bg-white'>
                   <td className='px-6 py-4 whitespace-nowrap flex items-center gap-x-4'>

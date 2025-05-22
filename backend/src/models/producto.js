@@ -1,7 +1,6 @@
 import sequelize from '../config/db/config.js'
-
-import { definicionCategoria } from '../services/categoria.js'
 import { definicionProducto } from '../services/producto.js'
+import { definicionCategoria } from '../services/categoria.js'
 
 export class ModeloProducto {
   static Producto = sequelize.define('producto', definicionProducto, {
@@ -58,18 +57,22 @@ export class ModeloProducto {
 
   // Editar producto
   static async editarProducto ({ input }) {
-    const { idProducto, nombre, precio } = input
+    const { idProducto, nombre, precio, descripcion, tiempo, idCategoria, idStock } = input
     try {
       const [resultado] = await sequelize.query(
         `DECLARE @mensaje VARCHAR(200);
-         EXEC p_EditarProducto 
+         EXEC set_ActualizarProducto 
            @idProducto = :idProducto, 
            @nombre = :nombre, 
            @precio = :precio, 
+           @descripcion = :descripcion,
+           @tiempo = :tiempo,
+           @idCategoria = :idCategoria,
+           @idStock = :idStock,
            @mensaje = @mensaje OUTPUT;
          SELECT @mensaje AS mensaje;`,
         {
-          replacements: { idProducto, nombre, precio },
+          replacements: { idProducto, nombre, precio, descripcion, tiempo, idCategoria, idStock },
           type: sequelize.QueryTypes.SELECT
         }
       )
@@ -79,7 +82,7 @@ export class ModeloProducto {
       }
 
       return {
-        producto: { idProducto, nombre, precio },
+        producto: { idProducto, nombre, precio, descripcion, tiempo, idCategoria, idStock },
         mensaje: resultado.mensaje
       }
     } catch (error) {
@@ -95,7 +98,7 @@ export class ModeloProducto {
     try {
       const [resultado] = await sequelize.query(
         `DECLARE @mensaje VARCHAR(200);
-         EXEC p_EliminarProducto 
+         EXEC set_EliminarProducto 
            @idProducto = :idProducto, 
            @mensaje = @mensaje OUTPUT;
          SELECT @mensaje AS mensaje;`,
@@ -120,7 +123,6 @@ export class ModeloProducto {
 
   // Obtener todos los productos
   static async ObtenerProductos ({ tipo }) {
-    console.log(tipo)
     let resultado
     try {
       if (tipo) {
@@ -148,7 +150,8 @@ export class ModeloProducto {
         precio: producto.precio,
         descripcion: producto.descripcion,
         tiempoPreparacion: producto.tiempoPreparacion,
-        categoria: producto.Categorium.descripcion
+        categoria: producto.Categorium.descripcion,
+        subCategoria: producto.Categorium.idCategoria
       }))
       return productosLimpios
     } catch (error) {
@@ -185,5 +188,4 @@ export class ModeloProducto {
     }
   }
 }
-
 ModeloProducto.asociacion()

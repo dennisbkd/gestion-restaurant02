@@ -1,5 +1,7 @@
 import sequelize from '../config/db/config.js'
+import { definicionMesa } from '../services/pedido.js'
 import { definicionReserva } from '../services/reservas.js'
+import { obtenerFechaBolivia } from '../utils/fechaLocal.js'
 
 export class ModeloReserva {
   static Reserva = sequelize.define('Reserva', definicionReserva, {
@@ -7,28 +9,44 @@ export class ModeloReserva {
     freezeTableName: true
   })
 
+  static Mesa = sequelize.define('Mesa', definicionMesa, {
+    timestamps: false,
+    freezeTableName: true
+  })
+
+  static asociar = () => {
+    this.Reserva.belongsToMany(this.Mesa, {
+      through: 'ReservasMesas',
+      foreignKey: 'idReserva',
+      otherKey: 'idMesa'
+    })
+
+    this.Mesa.belongsToMany(this.Reserva, {
+      through: 'ReservasMesas',
+      foreignKey: 'idMesa',
+      otherKey: 'idReserva'
+    })
+  }
+
   // Registrar Reserva
   static async crearReserva ({ input }) {
-    const { fecha, hora, idClienteWeb, idEstado } = input
+    const {
+      fecha, hora, idEstado, idClienteWeb,
+      Mesa: { nro, capacidad, idEstadoMesa }
+    } = input
 
     try {
-      const result = await sequelize.query(
-        `DECLARE @mensaje VARCHAR(200);
-         EXEC set_RegistrarReserva 
-           @fecha = :fecha, 
-           @hora = :hora, 
-           @id_Cliente = :idClienteWeb, 
-           @id_Estado = :idEstado, 
-           @mensaje = @mensaje OUTPUT;
-         SELECT @mensaje AS mensaje;`,
-        {
-          replacements: { fecha, hora, idClienteWeb, idEstado },
-          type: sequelize.QueryTypes.SELECT
-        }
-      )
-
-      const mensaje = result[0]?.mensaje || 'Sin mensaje'
-      return { mensaje }
+      const nuevaReserva = await this.Reserva.create({
+        fecha: obtenerFechaBolivia(fecha),
+        hora,
+        idClienteWeb,
+        idEstado
+      })
+      const nuevaMesa = await this.Mesa.create({
+        nro,
+        capacidad,
+        idEstado: idEstadoMesa
+      })
     } catch (error) {
       throw new Error('Error al crear la reserva: ' + error.message)
     }
@@ -149,3 +167,4 @@ export class ModeloReserva {
     }
   }
 }
+ModeloReserva.asociar()
