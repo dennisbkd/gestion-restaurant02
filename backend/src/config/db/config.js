@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize'
 
-const sequelize = new Sequelize('RestauranteP2', 'sa', '2004', {
+const sequelize = new Sequelize('RestauranteP3', 'sa', '2004', {
   host: 'localhost',
   dialect: 'mssql',
   dialectOptions: {

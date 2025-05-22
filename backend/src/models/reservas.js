@@ -46,22 +46,32 @@ export class ModeloReserva {
   try {
     const { fecha, hora, idMesas } = input
 
-    const estado = await this.Estado.findOne({
-      where: { descripcion: 'No disponible' }
+    const estadoReserva = await this.Estado.findOne({
+      where: { descripcion: 'Pendiente' }
     })
 
+    const estadoMesa = await this.Estado.findOne({
+      where: { descripcion: 'NO Disponible' }
+    })
+
+    // Crear la reserva
     const nuevaReserva = await this.Reserva.create({
       fecha,
       hora,
       idClienteWeb: id,
-      idEstado: estado.id
+      idEstado: estadoReserva.id
     })
 
-    for (const { id } of idMesas) {
+    for (const { id: idMesa } of idMesas) {
       await this.MesasReservas.create({
         idReserva: nuevaReserva.id,
-        idMesa: id
+        idMesa
       })
+
+      await this.Mesa.update(
+        { idEstado: estadoMesa.id },
+        { where: { id: idMesa } }
+      )
     }
 
     return {
@@ -74,6 +84,7 @@ export class ModeloReserva {
 }
 
 
+
   // Editar reserva
   static async editarReserva(id, { input }) {
   try {
@@ -82,24 +93,37 @@ export class ModeloReserva {
     const reserva = await this.Reserva.findByPk(idReserva)
     if (!reserva) return { error: 'Reserva no encontrada' }
 
-    const estado = await this.Estado.findOne({
-      where: { descripcion: 'No disponible' }
-    })
+    const estadoReserva = await this.Estado.findOne({ where: { descripcion: 'pendiente' } })
+    const estadoNoDisponible = await this.Estado.findOne({ where: { descripcion: 'NO Disponible' } })
+    const estadoDisponible = await this.Estado.findOne({ where: { descripcion: 'disponible' } })
 
     await reserva.update({
       fecha,
       hora,
-      idClienteWeb:id,
-      idEstado: estado.id
+      idClienteWeb: id,
+      idEstado: estadoReserva.id
     })
+
+    const mesasAnteriores = await this.MesasReservas.findAll({ where: { idReserva } })
+    for (const mesa of mesasAnteriores) {
+      await this.Mesa.update(
+        { idEstado: estadoDisponible.id },
+        { where: { id: mesa.idMesa } }
+      )
+    }
 
     await this.MesasReservas.destroy({ where: { idReserva } })
 
-    for (const  idMesa  of idMesas) {
+    for (const { id: idMesa } of idMesas) {
       await this.MesasReservas.create({
-        idReserva: idReserva,
-        idMesa: idMesa.id
+        idReserva,
+        idMesa
       })
+
+      await this.Mesa.update(
+        { idEstado: estadoNoDisponible.id },
+        { where: { id: idMesa } }
+      )
     }
 
     return {
@@ -112,6 +136,7 @@ export class ModeloReserva {
 }
 
 
+
   // Eliminar reserva
   static async eliminarReserva (id) {
     try {
@@ -121,6 +146,21 @@ export class ModeloReserva {
       const estado = await this.Estado.findOne({
       where: { descripcion: 'cancelado' }
     })
+
+        const estadoDisponible = await this.Estado.findOne({
+      where: { descripcion: 'disponible' }
+    })
+
+    const mesasAsociadas = await this.MesasReservas.findAll({
+      where: { idReserva: id }
+    })
+
+       for (const mesaReserva of mesasAsociadas) {
+      await this.Mesa.update(
+        { idEstado: estadoDisponible.id },
+        { where: { id: mesaReserva.idMesa } }
+      )
+    }
 
       await reserva.update({ idEstado: estado.id })
 

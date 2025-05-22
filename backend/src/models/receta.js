@@ -1,5 +1,6 @@
 import sequelize from '../config/db/config.js'
 import { definicionReceta, definicionIngrediente, definicionProducto } from '../services/receta.js'
+import { definicionEstado } from '../services/pedido.js'
 
 export class ModeloReceta {
   static Receta = sequelize.define('Receta', definicionReceta, {
@@ -13,6 +14,11 @@ export class ModeloReceta {
   })
 
   static Ingrediente = sequelize.define('Ingrediente', definicionIngrediente, {
+    timestamps: false,
+    freezeTableName: true
+  })
+
+  static Estado = sequelize.define('Estado', definicionEstado, {
     timestamps: false,
     freezeTableName: true
   })
@@ -31,10 +37,13 @@ export class ModeloReceta {
     otherKey: 'idProducto'
   });
 
+  
+
 
   this.Producto.hasMany(this.Receta, { foreignKey: 'idProducto' });
   this.Receta.belongsTo(this.Producto, { foreignKey: 'idProducto' });
-
+  this.Producto.belongsTo(this.Estado, { foreignKey: 'idEstado' })
+  this.Estado.hasMany(this.Producto, { foreignKey: 'idEstado' })
   this.Receta.belongsTo(this.Ingrediente, { foreignKey: 'idIngrediente' });
 }
 
@@ -49,13 +58,16 @@ export class ModeloReceta {
       return { error: 'Ya existe un producto con ese nombre' }
     }
 
+    const estado = await this.Estado.findOne({ where: { descripcion: 'Activo' } })
+
     const nuevoProducto = await this.Producto.create({
       nombre: nombreProducto,
       precio,
       descripcion,
       tiempoPreparacion,
       idCategoria,
-      idStock
+      idStock,
+      idEstado: estado.id
     })
 
     for (const ingrediente of ingredientes) {
@@ -77,6 +89,7 @@ export class ModeloReceta {
     }
 
   } catch (error) {
+    console.error('Error al crear el producto y su receta:', error)
     return {
       error: 'Error al crear el producto y su receta',
       detalles: error.message
@@ -104,12 +117,15 @@ export class ModeloReceta {
       return { error: 'El producto no existe' };
     }
 
+   const estado = await this.Estado.findOne({ where: { descripcion: 'Activo' } });
+
    await producto.update({
       precio,
       descripcion,
       tiempoPreparacion,
       idCategoria,
-      idStock
+      idStock,
+      idEstado: estado.id
     });
 
    if (ingredientesAEliminar.length > 0) {
@@ -143,7 +159,8 @@ export class ModeloReceta {
         descripcion: producto.descripcion,
         tiempoPreparacion: producto.tiempoPreparacion,
         idCategoria: producto.idCategoria,
-        idStock: producto.idStock
+        idStock: producto.idStock,
+        idEstado: producto.idEstado
       }
     };
 
@@ -159,21 +176,17 @@ export class ModeloReceta {
   // Eliminar Producto (Desahabilitar)
  static async eliminarProductoReceta(idProducto ) {
   try {
-    // No hay idEstado en producto, por lo que no se puede deshabilitar
-    const eliminados = await this.Receta.destroy({
-      where: { idProducto }
-    });
+    
 
+    const estado = await this.Estado.findOne({ where: { descripcion: 'No Disponible' } });
 
-    // Eliminar el producto 
-   /* const productoEliminado = await this.Producto.destroy({
-      where: { id: idProducto }
-    });
-   */
-
+    await this.Producto.update(
+      { idEstado: estado.id }, 
+      { where: { id: idProducto } }
+    );
+   
     return {
       mensaje: 'Receta de Producto eliminada correctamente',
-      cantidadIngredientesEliminados: eliminados
     };
   } catch (error) {
     return {

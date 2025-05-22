@@ -191,8 +191,8 @@ Content-Type: application/json
   "fecha": "2025-05-10",
   "hora": "12:00:00",
   "idMesas": [
-    { "id": 3 },
-    { "id": 4 }
+    { "id": 1 },
+    { "id": 2 }
   ]
 }
 
@@ -217,7 +217,7 @@ DELETE http://localhost:3000/reservas/eliminar
 Content-Type: application/json
 
 {
-  "id": 20
+  "id": 17
 }
 
 ### Mostrar reservas
@@ -338,8 +338,8 @@ Content-Type: application/json
 }
 
 ### eliminar Producto y receta
-DELETE http://localhost:3000/recetas/eliminar/24
+DELETE http://localhost:3000/recetas/eliminar/25
 
 
 ### mostrar recetas
-GET http://localhost:3000/recetas/mostrar/23
+GET http://localhost:3000/recetas/mostrar/2

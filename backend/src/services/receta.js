@@ -78,5 +78,9 @@ export const definicionProducto = {
   idStock: {
     type: DataTypes.INTEGER,
     allowNull: false
+  },
+  idEstado: {
+    type: DataTypes.INTEGER,
+    allowNull: false
   }
 }
