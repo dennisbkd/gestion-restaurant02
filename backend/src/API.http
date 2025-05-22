@@ -14,23 +14,22 @@ Content-Type: application/json
 }
 
 ###
-PATCH http://localhost:3000/user/editarUsuario
+PATCH http://localhost:3000/user/editarUsuario/22
 Content-Type: application/json
 
 {    
-    "nombreUsuario" : "beni",
-    "nombre" : "beni",
-    "password" : "123",
-    "correo" : "beni@example.com",
-    "telefono" : "12345678",
-    "idRol" : 4
+"email": "dennis23@gmail.com",
+"nombre": "dennis",
+"nombreUsuario": "dennisbk1",
+"password": "123",
+"telefono": "71267273"
 }
 
 ###
 GET http://localhost:3000/user/verUsuarios
 
 ### 
-GET http://localhost:3000/productos/mostrar?tipo=3
+GET http://localhost:3000/productos/mostrar?tipo
 
 ###
 GET http://localhost:3000/user/verUsuario?id=1
@@ -41,7 +40,7 @@ Content-Type: application/json
 
 {
     // --cuenta admin--
-    "nombreUsuario": "dennisbk",	
+    "nombreUsuario": "dennisbk1",	
     "password": "dennis123"
 } 
 
@@ -182,7 +181,12 @@ Content-Type: application/json
   "fecha": "2025-12-15",
   "hora": "17:50:00",
   "idClienteWeb": 4,
-  "idEstado": 7
+  "idEstado": 7,
+  "Mesa":{
+    "nro": 2,
+    "capacidad": 4,
+    "idEstadoMesa": 1
+  }
 }
 
 ### Actualizar reserva (Editar reserva)

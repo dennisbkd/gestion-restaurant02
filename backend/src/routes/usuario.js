@@ -5,7 +5,7 @@ export const crearRutaUsuarios = ({ modeloUsuario }) => {
   const usuarioRuta = Router()
   const controladorUsuario = new ControladorUsuario({ modeloUsuario })
   usuarioRuta.post('/register', controladorUsuario.registrarEmpleado)
-  usuarioRuta.patch('/editarUsuario', controladorUsuario.editarUsuario)
+  usuarioRuta.patch('/editarUsuario/:id', controladorUsuario.editarUsuario)
   usuarioRuta.get('/verUsuarios', controladorUsuario.verUsuarios)
   usuarioRuta.get('/verUsuario', controladorUsuario.verUsuario)
   return usuarioRuta

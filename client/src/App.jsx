@@ -11,8 +11,12 @@ import Menu from "./components/usuario/Menu"
 import { lazy, Suspense } from "react"
 import { CartLayout } from "./Layouts/CartLayout"
 import { CargaDeEspera } from "./components/loading/CargaDeEspera"
+import Perfil from "./pages/usuario/Perfil"
+import Editar from "./pages/usuario/Editar"
+import { PerfilLayout } from "./Layouts/PerfilLayout"
 
-const CheckoutPage = lazy(() => import('./pages/procesoPago/CheckoutPage'))
+
+const VerificarUsuario = lazy(() => import('./pages/usuario/VerificarUsuario'))
 
 
 export default function App() {
@@ -22,8 +26,6 @@ export default function App() {
       <BrowserRouter>
 
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/task" element={<Task />} />
@@ -33,12 +35,17 @@ export default function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
           </Route>
           <Route element={<CartLayout />}>
-            <Route path="/productos" element={<Menu />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/" element={<Menu />} />
             <Route path="/checkout" element={<Suspense fallback={<CargaDeEspera
               text="Procesando tu pedido..."
               text2="Redirigiendo al método de pago" />}>
-              <CheckoutPage />
+              <VerificarUsuario />
             </Suspense>} />
+          </Route>
+          <Route element={<PerfilLayout />}>
+            <Route path="/perfil" element={<Perfil />} />
+            <Route path="/perfil/editar" element={<Editar />} />
           </Route>
         </Routes>
       </BrowserRouter>

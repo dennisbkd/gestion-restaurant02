@@ -59,7 +59,6 @@ export class ModeloUsuario {
 
   static async editarUsuario ({ id, input }) {
     const { ...datos } = input.data
-    console.log(datos)
     try {
       const usuario = await this.Usuario.findByPk(id)
 
