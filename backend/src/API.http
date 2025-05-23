@@ -15,13 +15,12 @@ Content-Type: application/json
 }
 
 ###
-PATCH http://localhost:3000/user/editarUsuario/22
+PATCH http://localhost:3000/user/editarUsuario/5
 Content-Type: application/json
 
 {    
-"email": "dennis23@gmail.com",
-"nombre": "dennis",
-"nombreUsuario": "dennisbk1",
+"nombre": "marta rodriguez",
+"nombreUsuario": "marta",
 "password": "123",
 "telefono": "71267273"
 }
@@ -41,8 +40,8 @@ Content-Type: application/json
 
 {
     // --cuenta admin--
-    "nombreUsuario": "dennisbk1",	
-    "password": "dennis123"
+    "nombreUsuario": "marta",	
+    "password": "123"
 } 
 
 ###
@@ -252,7 +251,7 @@ Content-Type: application/json
 }        
         
 // Visualizar pedidos pendientes, para el cocinero
- }
+
 
 ### registrar ingrediente
 POST http://localhost:3000/ingredientes/crear
@@ -398,4 +397,7 @@ GET http://localhost:3000/productos/mostrar
 GET http://localhost:3000/productos/mostrar/1
 ### 
 GET http://localhost:3000/pedido/pendientes
+
+### 
+GET http://localhost:3000/pedido/cliente/5
 

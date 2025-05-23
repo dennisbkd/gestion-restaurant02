@@ -68,7 +68,6 @@ export const AuthProvide = ({ children }) => {
   const editarUsuario = async (id, user) => {
     try {
       const res = await actualizarPerfil(id, user)
-      console.log("Datos recibidos:", res.data);
       if (!res.data) {
         throw new Error("No se recibieron datos en la respuesta")
       }
@@ -84,7 +83,6 @@ export const AuthProvide = ({ children }) => {
   const reloadUser = async () => {
     try {
       const res = await verifyTokenRequest('/auth/verificar');
-      console.log(res.data)
       setUser(res.data);
     } catch (error) {
       console.error("Error recargando usuario:", error);
@@ -112,7 +110,6 @@ export const AuthProvide = ({ children }) => {
       }
       try {
         const res = await verifyTokenRequest(cookies.access_token)
-        console.log(res)
         if (!res.data) {
           setLoading(false)
           return setIsAuthenticated(false)

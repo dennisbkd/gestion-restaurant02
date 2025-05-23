@@ -51,7 +51,7 @@ export function Header({ isAuthenticated, user, signOut }) {
                 {userName.charAt(1)}
               </div>
               <div className="flex flex-col">
-                <Link to="/perfil" className="grid font-medium text-sm">
+                <Link to="/perfil" className="grid font-medium text-sm transition-transform duration-300 bg-transparent hover:bg-gray-300 hover:scale-105 rounded px-2 py-1">
                   <span className="font-medium text-sm">{userName}</span>
                   <span className="text-xs text-muted-foreground">{email}</span>
                 </Link>
@@ -97,19 +97,21 @@ export function Header({ isAuthenticated, user, signOut }) {
                 ))}
                 <div className="mt-4 flex flex-col gap-2">
                   {isAuthenticated ? (
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-5">
                       <img
                         src={user.avatar}
                         alt={userName}
-                        className="w-10 h-10 rounded-full border object-cover"
+                        className="align-top w-10 h-10 rounded-full border object-cover"
                       />
-                      <div className="flex flex-col">
-                        <span className="font-medium text-sm">{userName}</span>
-                        <span className="text-xs text-muted-foreground">{email}</span>
+                      <div className="flex flex-col gap-9">
+                        <Link to="/perfil" className="grid text-base font-medium transition-transform duration-300 bg-transparent hover:bg-gray-300 hover:scale-105 rounded px-2 py-1" onClick={() => setIsMenuOpen(false)}>
+                          <span className="font-medium text-sm">{userName}</span>
+                          <span className="text-xs text-muted-foreground">{email}</span>
+                        </Link>
+                        <Button asChild variant="ghost" size="sm" className="ml-2">
+                          <Link to="/" onClick={() => { setIsMenuOpen(false); signOut(); }}>Cerrar Sesión</Link>
+                        </Button>
                       </div>
-                      <Button asChild variant="ghost" size="sm" className="ml-2">
-                        <Link to="/" onClick={() => { setIsMenuOpen(false); signOut(); }}>Cerrar Sesión</Link>
-                      </Button>
                     </div>
                   ) : (
                     <>
