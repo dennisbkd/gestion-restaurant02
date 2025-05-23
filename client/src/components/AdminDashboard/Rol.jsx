@@ -1,9 +1,9 @@
-import { getRolesRequest } from '../api/rol'
-import { useFetchData } from '../hooks/useFetchData'
+import { getRolesRequest } from '../../api/rol'
+import { useFetchData } from '../../hooks/useFetchData'
 import { useState } from 'react'
-import { useModal } from '../hooks/useModal'
-import ModalCrearRol from './modals/ModalRol'
-import ModalOneInput from './modals/ModalOneInput'
+import { useModal } from '../../hooks/useModal'
+import ModalCrearRol from '../modals/ModalRol'
+import ModalOneInput from '../modals/ModalOneInput'
 
 const iconMap = {
   Administrador: (
