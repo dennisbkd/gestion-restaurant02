@@ -19,9 +19,8 @@ export class ModeloAuth {
       const buscarUsuario = await this.Usuario.findOne({
         where: { nombreUsuario }
       })
-
       if (!buscarUsuario) return { error: 'Usuario no encontrado' }
-      const verificarPassword = bcrypt.compare(password, buscarUsuario.password)
+      const verificarPassword = await bcrypt.compare(password, buscarUsuario.password)
       if (!verificarPassword) return { error: 'Password incorrecto' }
       const nuevoToken = this.token.crearToken({
         id: buscarUsuario.id,
@@ -47,8 +46,11 @@ export class ModeloAuth {
     if (!user) return { error: 'Error: Usuario  no existente' }
     return {
       user: {
+        id: user.id,
         email: user.correo,
         userName: user.nombreUsuario,
+        telefono: user.telefono,
+        nombre: user.nombre,
         rol: user.idRol
       }
     }

@@ -10,4 +10,11 @@ export class ControladorPedido {
     if (resultado.error) return res.status(400).json({ error: resultado.error, detalles: resultado.detalles })
     return res.status(201).json(resultado)
   }
+
+  // obtenerPedidosPendientes
+  obtenerPedidosPendientes = async (req, res) => {
+    const resultado = await this.ModeloPedido.obtenerPedidosPendientes()
+    if (resultado.error) return res.status(400).json({ error: resultado.error, detalles: resultado.detalles })
+    return res.status(200).json(resultado)
+  }
 }

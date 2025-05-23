@@ -44,7 +44,7 @@ export const definicionUsuario = {
   }
 }
 
-export const empleado = {
+export const definicionEmpleado = {
   idUsuario: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -61,7 +61,7 @@ export const empleado = {
   }
 }
 
-export const clienteWeb = {
+export const definicionClienteWeb = {
   idUsuario: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -76,9 +76,8 @@ export const clienteWeb = {
     allowNull: false,
     defaultValue: 0
   },
-  dirreccion: {
+  direccion: {
     type: DataTypes.STRING(200),
     allowNull: true
   }
 }
-

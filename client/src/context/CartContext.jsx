@@ -1,8 +1,9 @@
-import { createContext, useContext, useState } from "react";
-
+import { createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "./AuthContext";
 export const CartContext = createContext();
 
 export function useCart() {
+
   const context = useContext(CartContext);
   if (!context) {
     throw new Error("useCart debe usarse dentro de un CartProvider");
@@ -11,7 +12,16 @@ export function useCart() {
 }
 
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
+  const { isAuthenticated } = useAuth();
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem('cart');
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
+
+  useEffect(() => {
+    if (isAuthenticated) { localStorage.setItem('cart', JSON.stringify(cart)); }
+    else { localStorage.removeItem('cart'); }
+  }, [cart, isAuthenticated]);
 
   const agregarAlCarrito = (producto) => {
     setCart(prevCart => {

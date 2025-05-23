@@ -1,6 +1,7 @@
 import sequelize from '../config/db/config.js'
-import { definicionReserva,definicionMesa,mesasReserva } from '../services/reservas.js'
-import { definicionEstado } from '../services/pedido.js'
+import { definicionMesa } from '../services/pedido.js'
+import { definicionReserva } from '../services/reservas.js'
+import { obtenerFechaBolivia } from '../utils/fechaLocal.js'
 
 export class ModeloReserva {
   static Reserva = sequelize.define('Reserva', definicionReserva, {
@@ -13,77 +14,43 @@ export class ModeloReserva {
     freezeTableName: true
   })
 
-  static MesasReservas = sequelize.define('MesasReserva', mesasReserva, {
-    timestamps: false,
-    freezeTableName: true
-  })
-
-  static Estado = sequelize.define('Estado', definicionEstado, {
-    timestamps: false,
-    freezeTableName: true
-  })
-
-  // Asociaciones
-  static asociar () {
-    this.Reserva.belongsTo(this.Estado, { foreignKey: 'idEstado' })
-    this.Estado.hasMany(this.Reserva, { foreignKey: 'idEstado' })
-
+  static asociar = () => {
     this.Reserva.belongsToMany(this.Mesa, {
-      through: this.MesasReservas,
+      through: 'ReservasMesas',
       foreignKey: 'idReserva',
       otherKey: 'idMesa'
     })
 
     this.Mesa.belongsToMany(this.Reserva, {
-      through: this.MesasReservas,
+      through: 'ReservasMesas',
       foreignKey: 'idMesa',
       otherKey: 'idReserva'
     })
   }
 
-  // Crear reserva
- static async crearReserva(id, { input }) {
-  try {
-    const { fecha, hora, idMesas } = input
+  // Registrar Reserva
+  static async crearReserva ({ input }) {
+    const {
+      fecha, hora, idEstado, idClienteWeb,
+      Mesa: { nro, capacidad, idEstadoMesa }
+    } = input
 
-    const estadoReserva = await this.Estado.findOne({
-      where: { descripcion: 'Pendiente' }
-    })
-
-    const estadoMesa = await this.Estado.findOne({
-      where: { descripcion: 'NO Disponible' }
-    })
-
-    // Crear la reserva
-    const nuevaReserva = await this.Reserva.create({
-      fecha,
-      hora,
-      idClienteWeb: id,
-      idEstado: estadoReserva.id
-    })
-
-    for (const { id: idMesa } of idMesas) {
-      await this.MesasReservas.create({
-        idReserva: nuevaReserva.id,
-        idMesa
+    try {
+      const nuevaReserva = await this.Reserva.create({
+        fecha: obtenerFechaBolivia(fecha),
+        hora,
+        idClienteWeb,
+        idEstado
       })
-
-      await this.Mesa.update(
-        { idEstado: estadoMesa.id },
-        { where: { id: idMesa } }
-      )
+      const nuevaMesa = await this.Mesa.create({
+        nro,
+        capacidad,
+        idEstado: idEstadoMesa
+      })
+    } catch (error) {
+      throw new Error('Error al crear la reserva: ' + error.message)
     }
-
-    return {
-      mensaje: 'Reserva creada correctamente',
-      reserva: nuevaReserva
-    }
-  } catch (error) {
-    throw new Error('Error al crear reserva: ' + error.message)
   }
-}
-
-
 
   // Editar reserva
   static async editarReserva(id, { input }) {
@@ -201,3 +168,4 @@ export class ModeloReserva {
     }
   }
 }
+ModeloReserva.asociar()

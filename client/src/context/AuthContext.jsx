@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { registerRequest, loginRequest, verifyTokenRequest } from "../api/auth.js";
+import { registerRequest, loginRequest, verifyTokenRequest, logoutRequest } from "../api/auth.js";
 
 import Cookies from 'js-cookie'
+import { actualizarPerfil } from "@/api/cliente/actualizarPerfil.js";
 
 const AuthContext = createContext()
 
@@ -52,6 +53,44 @@ export const AuthProvide = ({ children }) => {
       console.log(error)
     }
   }
+
+  const signOut = async () => {
+    try {
+      await logoutRequest()
+      setUser(null)
+      setIsAuthenticated(false)
+    } catch (error) {
+      setErrors([{ msg: "Error al cerrar sesión" }])
+      console.log(error)
+    }
+  }
+
+  const editarUsuario = async (id, user) => {
+    try {
+      const res = await actualizarPerfil(id, user)
+      console.log("Datos recibidos:", res.data);
+      if (!res.data) {
+        throw new Error("No se recibieron datos en la respuesta")
+      }
+      setUser(res.data)
+      setIsAuthenticated(true);
+      return { success: true, data: res.data }
+    } catch (error) {
+      const msjDeError = error?.response?.data?.error || "Ocurrio un error inesperado"
+      setErrors([{ msg: msjDeError }])
+    }
+  }
+
+  const reloadUser = async () => {
+    try {
+      const res = await verifyTokenRequest('/auth/verificar');
+      console.log(res.data)
+      setUser(res.data);
+    } catch (error) {
+      console.error("Error recargando usuario:", error);
+    }
+  };
+
   //para eliminar los errores que aparecen en el form
   useEffect(() => {
     if (errors.length > 0) {
@@ -67,27 +106,27 @@ export const AuthProvide = ({ children }) => {
       const cookies = Cookies.get()
 
       if (!cookies.access_token) {
-          setIsAuthenticated(false)
-          setLoading(false)
-          return setUser(null)
+        setIsAuthenticated(false)
+        setLoading(false)
+        return setUser(null)
       }
-        try {
-          const res = await verifyTokenRequest(cookies.access_token)
-          console.log(res)
-          if (!res.data) {
-            setLoading(false)
-            return setIsAuthenticated(false)
-          }
-          setIsAuthenticated(true)
-          setUser(res.data)
+      try {
+        const res = await verifyTokenRequest(cookies.access_token)
+        console.log(res)
+        if (!res.data) {
           setLoading(false)
+          return setIsAuthenticated(false)
         }
-        catch (error) {
-          setIsAuthenticated(false)
-          setUser(null)
-          setLoading(false)
-          console.log(error)
-        }
+        setIsAuthenticated(true)
+        setUser(res.data)
+        setLoading(false)
+      }
+      catch (error) {
+        setIsAuthenticated(false)
+        setUser(null)
+        setLoading(false)
+        console.log(error)
+      }
     }
     checkLogin()
   }, [isAuthenticated])
@@ -96,6 +135,9 @@ export const AuthProvide = ({ children }) => {
     <AuthContext.Provider value={{
       signUp,
       signIn,
+      signOut,
+      editarUsuario,
+      reloadUser,
       user,
       isAuthenticated,
       isLoading,

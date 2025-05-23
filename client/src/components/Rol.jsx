@@ -2,7 +2,8 @@ import { getRolesRequest } from '../api/rol'
 import { useFetchData } from '../hooks/useFetchData'
 import { useState } from 'react'
 import { useModal } from '../hooks/useModal'
-import ModalCrearRol from './ModalRol'
+import ModalCrearRol from './modals/ModalRol'
+import ModalOneInput from './modals/ModalOneInput'
 
 const iconMap = {
   Administrador: (
@@ -75,6 +76,7 @@ const iconMap = {
 const extractRoles = (res) => res.data.roles
 const Rol = () => {
   const { data: roles, refresh } = useFetchData(getRolesRequest, extractRoles)
+  const modalCreate = useModal()
   const modal = useModal()
   const [currentRol, setCurrentRol] = useState('')
 
@@ -94,7 +96,7 @@ const Rol = () => {
           <div>
             <button
               className='inline-block px-4 py-2 text-white duration-150 font-medium bg-indigo-600 rounded-lg hover:bg-indigo-500 active:bg-indigo-700 md:text-sm'
-              onClick={() => modal.open()}
+              onClick={() => modalCreate.open()}
             >
               Añadir Rol
             </button>
@@ -109,7 +111,7 @@ const Rol = () => {
                   {iconMap[item.nombre] || iconMap.default}
                   <h4 className='text-gray-800 font-semibold'>{item.nombre}</h4>
                   <p className='text-gray-600 text-sm'>
-                    {item.permisos?.[0]?.descripcion || 'Sin permisos'}
+                    {item.permisos?.[0] || 'Sin permisos'}
                   </p>
                 </div>
                 <button
@@ -153,6 +155,21 @@ const Rol = () => {
             title: 'Rol',
             placeholder1: 'Nombre del Rol',
             placeholder2: 'Permisos'
+          }}
+        />
+      )}
+
+      {modalCreate.isOpen && (
+        <ModalOneInput
+          isOpen={modalCreate.isOpen}
+          onClose={modalCreate.close}
+          onGuardar={() => {
+            refresh()
+            modalCreate.close()
+          }}
+          context={{
+            title: 'Rol',
+            placeholder1: 'Nombre del Rol'
           }}
         />
       )}

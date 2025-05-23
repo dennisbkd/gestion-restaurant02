@@ -1,5 +1,5 @@
-import { editUserRequest } from '../api/user'
-import { useFormHandler } from '../hooks/useFormHandler'
+import { editUserRequest } from '../../api/user'
+import { useFormHandler } from '../../hooks/useFormHandler'
 const ModalEdit = ({ onClose, user, setIsSuccessModalOpen }) => {
   const { formData, handleInputChange, handleSubmit } = useFormHandler(
     user,
