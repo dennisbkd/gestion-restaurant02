@@ -70,29 +70,31 @@ export class ModeloUsuario {
 
   static async editarUsuario ({ id, input }) {
     const { ...datos } = input.data
+    console.log(datos.password)
     try {
       const usuario = await this.Usuario.findByPk(id)
 
       if (!usuario) {
         return { error: 'Error: Usuario no encontrado' }
       }
-      const camposPermitidos = ['nombreUsuario', 'nombre', 'correo', 'telefono', 'tipoUsuario', 'idRol', 'ci', 'direccion']
+      const camposPermitidos = ['nombreUsuario', 'password', 'nombre', 'correo', 'telefono', 'tipoUsuario', 'idRol', 'ci', 'direccion']
       const camposAActualizar = {}
 
       for (const campo of camposPermitidos) {
         if (datos[campo] !== undefined) {
           if (campo === 'password') {
-            datos[campo] = bcrypt.hashSync(datos[campo], 10)
+            datos.password = await bcrypt.hash(datos.password, 10)
+            camposAActualizar.password = datos.password
           } else if (campo === 'ci') {
             const empleado = await this.Empleado.findOne({
               where: { idUsuario: usuario.id }
             })
-            await empleado.update({ ci: datos[campo] })
+            await empleado.update({ ci: datos.ci })
           } else if (campo === 'direccion') {
             const cliente = await this.ClienteWeb.findOne({
               where: { idUsuario: usuario.id }
             })
-            await cliente.update({ direccion: datos[campo] })
+            await cliente.update({ direccion: datos.direccion })
           } else {
             camposAActualizar[campo] = datos[campo]
           }

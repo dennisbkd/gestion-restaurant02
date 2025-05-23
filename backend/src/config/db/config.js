@@ -1,14 +1,8 @@
 import { Sequelize } from 'sequelize'
 
-const sequelize = new Sequelize('Restaurante', 'sa', 'CObuchan8', {
+const sequelize = new Sequelize('restaurante', 'root', 'root', {
   host: 'localhost',
-  dialect: 'mssql',
-  dialectOptions: {
-    options: {
-      encrypt: true, // Si necesitas encriptación
-      trustServerCertificate: true // Para evitar problemas con certificados
-    }
-  }
+  dialect: 'mysql'
 })
 
 export default sequelize

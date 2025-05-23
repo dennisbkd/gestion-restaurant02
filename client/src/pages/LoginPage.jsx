@@ -24,9 +24,12 @@ export default function LoginPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen w-screen  bg-gray-100">
-      <Card className="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
+      <Card className="mb-100 w-full max-w-md bg-white shadow-lg rounded-lg p-6">
         <CardHeader>
-          <CardTitle className="text-2xl text-center text-gray-800">Login</CardTitle>
+          <CardTitle className="text-2xl text-center text-gray-800">
+            Bienvenido
+          </CardTitle>
+          <p className="text-center text-gray-600">Por favor inicia sesión para continuar</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
