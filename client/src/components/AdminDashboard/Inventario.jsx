@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react'
 import { useFetchData } from '../../hooks/useFetchData'
 import { getInventarioRequest } from '../../api/inventario'
+import { useModal } from '@/hooks/useModal'
+import ModalEditarStockMinimo from '../modals/ModalEditStock'
 import {
   ChevronUpIcon,
   ChevronDownIcon,
@@ -13,8 +15,13 @@ import {
 const extractInventario = (res) => res.data.stock
 
 export default function Inventario() {
-  const { data } = useFetchData(getInventarioRequest, extractInventario)
+  const EditModal = useModal()
+  const { data, refresh } = useFetchData(
+    getInventarioRequest,
+    extractInventario
+  )
 
+  const [currentProduct, setCurrentProduct] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [sortConfig, setSortConfig] = useState({
     key: 'id',
@@ -158,7 +165,7 @@ export default function Inventario() {
       </div>
 
       {/* Tabla de inventario */}
-      <div className='overflow-y-auto max-h-[400px] custom-scrollbar'>
+      <div className='overflow-y-auto custom-scrollbar max-h-[calc(100vh-350px)]'>
         <table className='min-w-full divide-y divide-gray-200'>
           <thead className='bg-gray-50 sticky top-0 z-10'>
             <tr>
@@ -247,11 +254,14 @@ export default function Inventario() {
                     )}
                   </td>
                   <td className='px-6 py-4 whitespace-nowrap text-sm font-medium'>
-                    <button className='text-red-600 hover:text-red-900 mr-3'>
-                      Editar
-                    </button>
-                    <button className='text-gray-600 hover:text-gray-900'>
-                      Reponer
+                    <button
+                      className='text-gray-600 hover:text-gray-900 mr-3'
+                      onClick={() => {
+                        setCurrentProduct(item)
+                        EditModal.open()
+                      }}
+                    >
+                      Editar Stock Mínimo
                     </button>
                   </td>
                 </tr>
@@ -268,6 +278,16 @@ export default function Inventario() {
             No se encontraron productos que coincidan con la búsqueda.
           </p>
         </div>
+      )}
+      {/* Modal para editar stock */}
+      {EditModal.isOpen && (
+        <ModalEditarStockMinimo
+          onClose={() => {
+            EditModal.close()
+            refresh()
+          }}
+          currentItem={currentProduct}
+        />
       )}
     </div>
   )

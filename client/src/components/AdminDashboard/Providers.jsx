@@ -90,7 +90,7 @@ const ProviderTable = () => {
       </div>
       {/* tabla */}
       <div className='mt-12 shadow-sm border rounded-lg overflow-hidden'>
-        <div className='max-h-[500px] overflow-y-auto'>
+        <div className='max-h-[calc(100vh-128px)] overflow-y-auto'>
           <table className='w-full table-auto text-sm text-left'>
             <thead className='text-gray-600 font-medium border-b sticky top-0 z-10 bg-white'>
               <tr>
