@@ -1,7 +1,7 @@
 import express, { json } from 'express'
+import dotenv from 'dotenv'
 import { PORT } from './config/config.js'
 import { db } from './connection.js'
-
 import { crearAuthRutas } from './routes/auth.js'
 
 import { crearRutasRoles } from './routes/roles.js'
@@ -31,6 +31,7 @@ export const CreateApp = async ({
   modeloProducto, modeloIngrediente,
   modeloPedido
 }) => {
+  dotenv.config()
   const app = express()
 
   const token = new Token(PALABRA_SECRETA)

@@ -3,6 +3,7 @@ import { useFetchData } from '../../hooks/useFetchData'
 import { getInventarioRequest } from '../../api/inventario'
 import { useModal } from '@/hooks/useModal'
 import ModalEditarStockMinimo from '../modals/ModalEditStock'
+import SuccessModal from '../modals/SuccessModal'
 import {
   ChevronUpIcon,
   ChevronDownIcon,
@@ -16,6 +17,7 @@ const extractInventario = (res) => res.data.stock
 
 export default function Inventario() {
   const EditModal = useModal()
+  const Success = useModal()
   const { data, refresh } = useFetchData(
     getInventarioRequest,
     extractInventario
@@ -284,9 +286,17 @@ export default function Inventario() {
         <ModalEditarStockMinimo
           onClose={() => {
             EditModal.close()
+            Success.open() // Abrir modal de éxito al cerrar el modal de edición
             refresh()
           }}
           currentItem={currentProduct}
+        />
+      )}
+      {/* Modal de éxito */}
+      {Success.isOpen && (
+        <SuccessModal
+          setIsOpen={Success.toggle}
+          message='Stock actualizado correctamente'
         />
       )}
     </div>

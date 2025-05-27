@@ -111,7 +111,7 @@ const Rol = () => {
                   {iconMap[item.nombre] || iconMap.default}
                   <h4 className='text-gray-800 font-semibold'>{item.nombre}</h4>
                   <p className='text-gray-600 text-sm'>
-                    {item.permisos?.[0] || 'Sin permisos'}
+                    {item.permisos?.[0]?.descripciones || 'Sin permisos'}
                   </p>
                 </div>
                 <button
