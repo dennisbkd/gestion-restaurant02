@@ -61,4 +61,17 @@ export class ControladorReservas {
       return res.status(500).json({ error: error.message || 'Error interno del servidor' })
     }
   }
+
+  mostrarMesasDisponibles = async (req, res) => {
+    try {
+      const { fecha, hora } = req.body
+      if (!fecha || !hora) return res.status(400).json({ error: 'Fecha y hora no proporcionadas' })
+      const mesas = await this.modeloReserva.mostrarMesasDisponibles(fecha, hora)
+      if (mesas.error) return res.status(400).json({ error: mesas.error })
+      return res.status(200).json(mesas)
+    } catch (error) {
+      console.error('Error en mostrarMesasDisponibles:', error)
+      return res.status(500).json({ error: error.message || 'Error interno del servidor' })
+    }
+  }
 }
