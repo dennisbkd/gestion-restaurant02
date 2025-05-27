@@ -152,7 +152,7 @@ export class ModeloPedido {
     try {
       const estado = await this.Estado.findOne({
         where: {
-          descripcion: 'Pendiente'
+          descripcion: 'Cancelado'
         }
       })
       const pedidos = await this.Pedido.findAll({
@@ -188,6 +188,34 @@ export class ModeloPedido {
       console.error('Error detallado:', error) // Para debug
       return {
         error: 'Error al obtener los pedidos pendientes',
+        detalles: error.message
+      }
+    }
+  }
+
+  static async obtenerPedidoClienteWeb (id) {
+    this.asociar()
+    try {
+      const { count: totalPedidos, rows: pedidos } = await this.Pedido.findAndCountAll({
+        where: { idClienteWeb: id },
+        include: [
+          {
+            model: this.DetallePedido,
+            include: {
+              model: this.Producto
+            }
+          }
+        ],
+        distinct: true
+      })
+      if (!pedidos) {
+        return { error: 'Pedido no encontrado' }
+      }
+      return { pedidos, totalPedidos }
+    } catch (error) {
+      console.error('Error detallado:', error) // Para debug
+      return {
+        error: 'Error al obtener el pedido',
         detalles: error.message
       }
     }

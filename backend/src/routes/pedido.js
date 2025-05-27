@@ -9,7 +9,7 @@ export const crearRutasPedido = ({ modeloPedido }) => {
   crearRutasPedido.post('/registrar/:idMesero', controladorPedido.registrarPedido)
 
   // Obtener pedidos por cliente
-  // crearRutasPedido.get('/cliente/:idCliente', controladorPedido.obtenerPedidosPorCliente)
+  crearRutasPedido.get('/cliente/:idCliente', controladorPedido.obtenerPedidoClienteWeb)
 
   // Obtener pedidos a realizar, restringido a cocineros
   crearRutasPedido.get('/pendientes', controladorPedido.obtenerPedidosPendientes)

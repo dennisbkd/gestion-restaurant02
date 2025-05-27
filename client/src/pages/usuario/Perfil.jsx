@@ -1,27 +1,37 @@
 import { Link } from "react-router"
-import { Edit, User, Calendar, ShoppingBag, Star, Clock, ArrowLeft } from "lucide-react"
+import { Edit, User, Calendar, ShoppingBag, Clock, ArrowLeft } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, } from "@/components/ui/tabs"
 import { useAuth } from "@/context/AuthContext"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
+import { obtenerPedidoPorId } from "@/api/cliente/productos"
 
 export default function Perfil() {
   const { user, reloadUser } = useAuth()
+  const [pedido, setPedido] = useState([])
   const navigate = useNavigate()
-  const { nombre, email, userName, telefono } = user?.user || {}
+  const { id, nombre, email, userName, telefono } = user?.user || {}
+  const Pedidos = pedido?.data || []
+  const { totalPedidos } = Pedidos
 
   useEffect(() => {
     const loadData = async () => {
       await reloadUser(); // Implementa esta función en tu AuthProvider
+      const response = await obtenerPedidoPorId(id);
+      console.log("Respuesta de la API:", response);
+      if (response.error) {
+        console.error("Error al obtener el pedido:", response.error);
+        return;
+      }
+      setPedido(response);
     };
     loadData();
   }, []);
-
   // Datos de ejemplo del usuario
   const usuario = {
     nombre: "Juan Pérez",
@@ -34,34 +44,34 @@ export default function Perfil() {
   }
 
   // Datos de ejemplo para pedidos recientes
-  const pedidosRecientes = [
-    { id: "ORD-1234", fecha: "15 mayo, 2023", total: "$45.80", estado: "entregado" },
-    { id: "ORD-1198", fecha: "2 mayo, 2023", total: "$32.50", estado: "entregado" },
-    { id: "ORD-1056", fecha: "18 abril, 2023", total: "$67.20", estado: "entregado" },
-  ]
+  // const pedidosRecientes = [
+  //   { id: "ORD-1234", fecha: "15 mayo, 2023", total: "$45.80", estado: "entregado" },
+  //   { id: "ORD-1198", fecha: "2 mayo, 2023", total: "$32.50", estado: "entregado" },
+  //   { id: "ORD-1056", fecha: "18 abril, 2023", total: "$67.20", estado: "entregado" },
+  // ]
 
-  // Datos de ejemplo para reservas
-  const reservasRecientes = [
-    { id: "RES-567", fecha: "20 mayo, 2023", hora: "19:30", personas: 4, estado: "confirmada" },
-    { id: "RES-498", fecha: "10 abril, 2023", hora: "20:00", personas: 2, estado: "completada" },
-    { id: "RES-432", fecha: "15 marzo, 2023", hora: "18:45", personas: 6, estado: "completada" },
-  ]
+  // // Datos de ejemplo para reservas
+  // const reservasRecientes = [
+  //   { id: "RES-567", fecha: "20 mayo, 2023", hora: "19:30", personas: 4, estado: "confirmada" },
+  //   { id: "RES-498", fecha: "10 abril, 2023", hora: "20:00", personas: 2, estado: "completada" },
+  //   { id: "RES-432", fecha: "15 marzo, 2023", hora: "18:45", personas: 6, estado: "completada" },
+  // ]
 
-  // Datos de ejemplo para reseñas
-  const resenasRecientes = [
-    {
-      plato: "Pasta Carbonara",
-      fecha: "22 abril, 2023",
-      calificacion: 5,
-      comentario: "Excelente plato, la pasta estaba en su punto y la salsa deliciosa.",
-    },
-    {
-      plato: "Tiramisú",
-      fecha: "22 abril, 2023",
-      calificacion: 4,
-      comentario: "Muy buen postre, aunque un poco dulce para mi gusto.",
-    },
-  ]
+  // // Datos de ejemplo para reseñas
+  // const resenasRecientes = [
+  //   {
+  //     plato: "Pasta Carbonara",
+  //     fecha: "22 abril, 2023",
+  //     calificacion: 5,
+  //     comentario: "Excelente plato, la pasta estaba en su punto y la salsa deliciosa.",
+  //   },
+  //   {
+  //     plato: "Tiramisú",
+  //     fecha: "22 abril, 2023",
+  //     calificacion: 4,
+  //     comentario: "Muy buen postre, aunque un poco dulce para mi gusto.",
+  //   },
+  // ]
 
   return (
     <div className="flex container mx-auto min-h-screen flex-col">
@@ -98,7 +108,7 @@ export default function Perfil() {
                     </Badge>
                     <Badge variant="outline" className="flex items-center gap-1">
                       <ShoppingBag className="h-3 w-3" />
-                      {usuario.pedidos} pedidos
+                      {totalPedidos} pedidos
                     </Badge>
                     <Badge variant="outline" className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
@@ -120,7 +130,7 @@ export default function Perfil() {
 
           {/* Pestañas de actividad */}
           <Tabs defaultValue="pedidos" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            {/* <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="pedidos" className="flex items-center gap-2">
                 <ShoppingBag className="h-4 w-4" />
                 <span>Pedidos</span>
@@ -133,19 +143,19 @@ export default function Perfil() {
                 <Star className="h-4 w-4" />
                 <span>Reseñas</span>
               </TabsTrigger>
-            </TabsList>
+            </TabsList> */}
 
             {/* Contenido de pedidos */}
-            <TabsContent value="pedidos">
+            {/* <TabsContent value="pedidos">
               <Card>
                 <CardHeader>
                   <CardTitle>Mis pedidos</CardTitle>
                   <CardDescription>Historial de tus pedidos recientes</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {pedidosRecientes.length > 0 ? (
+                  {pedidos?.length > 0 ? (
                     <div className="space-y-4">
-                      {pedidosRecientes.map((pedido) => (
+                      {pedidos?.map((pedido) => (
                         <div
                           key={pedido.id}
                           className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border"
@@ -155,8 +165,8 @@ export default function Perfil() {
                             <div className="text-sm text-muted-foreground">{pedido.fecha}</div>
                           </div>
                           <div className="mt-2 sm:mt-0 flex items-center gap-4">
-                            <div className="font-medium">{pedido.total}</div>
-                            <Badge variant={pedido.estado === "entregado" ? "outline" : "default"}>
+                            <div className="font-medium">{ }</div>
+                            <Badge variant={pedido.idEstado === "entregado" ? "outline" : "default"}>
                               {pedido.estado}
                             </Badge>
                           </div>
@@ -173,10 +183,10 @@ export default function Perfil() {
                   </CardFooter>
                 )}
               </Card>
-            </TabsContent>
+            </TabsContent> */}
 
             {/* Contenido de reservas */}
-            <TabsContent value="reservas">
+            {/* <TabsContent value="reservas">
               <Card>
                 <CardHeader>
                   <CardTitle>Mis reservas</CardTitle>
@@ -214,10 +224,10 @@ export default function Perfil() {
                   </CardFooter>
                 )}
               </Card>
-            </TabsContent>
+            </TabsContent> */}
 
             {/* Contenido de reseñas */}
-            <TabsContent value="resenas">
+            {/* <TabsContent value="resenas">
               <Card>
                 <CardHeader>
                   <CardTitle>Mis reseñas</CardTitle>
@@ -260,7 +270,7 @@ export default function Perfil() {
                   </CardFooter>
                 )}
               </Card>
-            </TabsContent>
+            </TabsContent> */}
           </Tabs>
         </div>
       </main>

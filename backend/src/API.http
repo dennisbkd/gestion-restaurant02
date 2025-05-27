@@ -15,13 +15,12 @@ Content-Type: application/json
 }
 
 ###
-PATCH http://localhost:3000/user/editarUsuario/22
+PATCH http://localhost:3000/user/editarUsuario/5
 Content-Type: application/json
 
 {    
-"email": "dennis23@gmail.com",
-"nombre": "dennis",
-"nombreUsuario": "dennisbk1",
+"nombre": "marta rodriguez",
+"nombreUsuario": "marta",
 "password": "123",
 "telefono": "71267273"
 }
@@ -33,7 +32,7 @@ GET http://localhost:3000/user/verUsuarios
 GET http://localhost:3000/productos/mostrar?tipo
 
 ###
-GET http://localhost:3000/user/verUsuario?id=1
+GET http://localhost:3000/user/ed
 
 ###
 POST http://localhost:3000/auth/login
@@ -41,8 +40,8 @@ Content-Type: application/json
 
 {
     // --cuenta admin--
-    "nombreUsuario": "dennisbk1",	
-    "password": "dennis123"
+    "nombreUsuario": "marta321",	
+    "password": "123"
 } 
 
 ###
@@ -179,15 +178,20 @@ POST http://localhost:3000/reservas/crear
 Content-Type: application/json
 
 {
-  "fecha": "2025-12-15",
-  "hora": "17:50:00",
+  "idMesa": 4,
+  "fecha": "2025-05-27",
+  "hora": "12:00:00",
   "idClienteWeb": 4,
-  "idEstado": 7,
-  "Mesa":{
-    "nro": 2,
-    "capacidad": 4,
-    "idEstadoMesa": 1
-  }
+  "idEstado": 7
+}
+
+###
+POST http://localhost:3000/reservas/mesas
+Content-Type: application/json
+
+{
+  "fecha": "2025-05-27",
+  "hora": "12:00:00"
 }
 
 ### Actualizar reserva (Editar reserva)
@@ -252,7 +256,7 @@ Content-Type: application/json
 }        
         
 // Visualizar pedidos pendientes, para el cocinero
- }
+
 
 ### registrar ingrediente
 POST http://localhost:3000/ingredientes/crear
@@ -398,4 +402,7 @@ GET http://localhost:3000/productos/mostrar
 GET http://localhost:3000/productos/mostrar/1
 ### 
 GET http://localhost:3000/pedido/pendientes
+
+### 
+GET http://localhost:3000/pedido/cliente/5
 
