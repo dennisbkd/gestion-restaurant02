@@ -14,6 +14,7 @@ import { CargaDeEspera } from './components/loading/CargaDeEspera'
 import Perfil from "./pages/usuario/Perfil"
 import Editar from "./pages/usuario/Editar"
 import { PerfilLayout } from "./Layouts/PerfilLayout"
+import Reserva from './pages/usuario/Reserva'
 
 
 const VerificarUsuario = lazy(() => import('./pages/usuario/VerificarUsuario'))
@@ -33,6 +34,7 @@ export default function App() {
           <Route element={<CartLayout />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/" element={<Menu />} />
+            <Route path='/reservar' element={<Reserva />} />
             <Route path="/checkout" element={<Suspense fallback={<CargaDeEspera
               text="Procesando tu pedido..."
               text2="Redirigiendo al método de pago" />}>
