@@ -6,9 +6,9 @@ const sequelize = new Sequelize('restauranteP3', 'sa', '2004', {
   dialectOptions: {
     options: {
       encrypt: true,
-      trustServerCertificate: true,
-    },
-  },
+      trustServerCertificate: true
+    }
+  }
 })
 
 export default sequelize
