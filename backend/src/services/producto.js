@@ -26,9 +26,5 @@ export const definicionProducto = {
   idCategoria: {
     type: DataTypes.INTEGER,
     allowNull: false
-  },
-  idStock: {
-    type: DataTypes.INTEGER,
-    allowNull: false
   }
 }

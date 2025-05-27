@@ -1,7 +1,6 @@
 import sequelize from '../config/db/config.js'
 import { definicionMesa } from '../services/pedido.js'
-import { definicionReserva } from '../services/reservas.js'
-import { obtenerFechaBolivia } from '../utils/fechaLocal.js'
+import { definicionReserva, definicionReservaMesas } from '../services/reservas.js'
 
 export class ModeloReserva {
   static Reserva = sequelize.define('Reserva', definicionReserva, {
@@ -14,15 +13,20 @@ export class ModeloReserva {
     freezeTableName: true
   })
 
+  static ReservaMesa = sequelize.define('MesasReserva', definicionReservaMesas, {
+    timestamps: false,
+    freezeTableName: true
+  })
+
   static asociar = () => {
     this.Reserva.belongsToMany(this.Mesa, {
-      through: 'ReservasMesas',
+      through: this.ReservaMesa,
       foreignKey: 'idReserva',
       otherKey: 'idMesa'
     })
 
     this.Mesa.belongsToMany(this.Reserva, {
-      through: 'ReservasMesas',
+      through: this.ReservaMesa,
       foreignKey: 'idMesa',
       otherKey: 'idReserva'
     })
@@ -31,22 +35,17 @@ export class ModeloReserva {
   // Registrar Reserva
   static async crearReserva ({ input }) {
     const {
-      fecha, hora, idEstado, idClienteWeb,
-      Mesa: { nro, capacidad, idEstadoMesa }
+      fecha, hora, idEstado, idClienteWeb, idMesa: id
     } = input
-
     try {
       const nuevaReserva = await this.Reserva.create({
-        fecha: obtenerFechaBolivia(fecha),
+        fecha,
         hora,
         idClienteWeb,
         idEstado
       })
-      const nuevaMesa = await this.Mesa.create({
-        nro,
-        capacidad,
-        idEstado: idEstadoMesa
-      })
+      await nuevaReserva.addMesa(id)
+      return { message: 'Reserva Creada' }
     } catch (error) {
       throw new Error('Error al crear la reserva: ' + error.message)
     }
@@ -164,6 +163,31 @@ export class ModeloReserva {
       return { reserva }
     } catch (error) {
       throw new Error('Error al obtener reservas por nombre: ' + error.message)
+    }
+  }
+
+  static async mostrarMesasDisponibles (fecha, hora) {
+    try {
+      return await sequelize.query(`
+      SELECT m.id, m.nro, m.capacidad, m.idEstado
+      FROM Mesa m
+      WHERE m.idEstado = 12
+      AND m.id NOT IN (
+        SELECT mr.idMesa
+        FROM MesasReserva mr
+        JOIN Reserva r ON mr.idReserva = r.id
+        WHERE r.fecha = '${fecha}'
+        AND r.hora = '${hora}'
+        AND r.idEstado = 7
+      )
+    `, {
+        type: sequelize.QueryTypes.SELECT,
+        model: this.Mesa,
+        mapToModel: true
+      })
+    } catch (error) {
+      console.error('Error al obtener mesas disponibles:', error)
+      throw error
     }
   }
 }

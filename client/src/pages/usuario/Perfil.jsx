@@ -1,11 +1,11 @@
 import { Link } from "react-router"
-import { Edit, User, Calendar, ShoppingBag, Star, Clock, ArrowLeft } from "lucide-react"
+import { Edit, User, Calendar, ShoppingBag, Clock, ArrowLeft } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, } from "@/components/ui/tabs"
 import { useAuth } from "@/context/AuthContext"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
@@ -17,7 +17,7 @@ export default function Perfil() {
   const navigate = useNavigate()
   const { id, nombre, email, userName, telefono } = user?.user || {}
   const Pedidos = pedido?.data || []
-  const { pedidos, totalPedidos } = Pedidos
+  const { totalPedidos } = Pedidos
 
   useEffect(() => {
     const loadData = async () => {
