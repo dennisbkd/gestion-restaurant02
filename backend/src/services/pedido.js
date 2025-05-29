@@ -157,8 +157,7 @@ export const definicionProducto = {
   },
   descripcion: DataTypes.TEXT,
   tiempoPreparacion: DataTypes.TIME,
-  idCategoria: DataTypes.INTEGER,
-  idStock: DataTypes.INTEGER
+  idCategoria: DataTypes.INTEGER
 }
 
 export const definicionEstado = {

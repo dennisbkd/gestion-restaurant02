@@ -2,18 +2,23 @@ import { Link } from "react-router"
 import { Edit, User, Calendar, ShoppingBag, Clock, ArrowLeft } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { useAuth } from "@/context/AuthContext"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router"
 import { obtenerPedidoPorId } from "@/api/cliente/productos"
+import { ModificarReserva } from "@/components/usuario/ModificarReserva"
+import { ReservaContext } from "@/context/Reserva/ReservaContext"
+
+
 
 export default function Perfil() {
   const { user, reloadUser } = useAuth()
   const [pedido, setPedido] = useState([])
+  const { mesas, reservas } = useContext(ReservaContext)
   const navigate = useNavigate()
   const { id, nombre, email, userName, telefono } = user?.user || {}
   const Pedidos = pedido?.data || []
@@ -23,7 +28,6 @@ export default function Perfil() {
     const loadData = async () => {
       await reloadUser(); // Implementa esta función en tu AuthProvider
       const response = await obtenerPedidoPorId(id);
-      console.log("Respuesta de la API:", response);
       if (response.error) {
         console.error("Error al obtener el pedido:", response.error);
         return;
@@ -31,7 +35,11 @@ export default function Perfil() {
       setPedido(response);
     };
     loadData();
-  }, []);
+
+  }, [setPedido]);
+
+
+
   // Datos de ejemplo del usuario
   const usuario = {
     nombre: "Juan Pérez",
@@ -39,7 +47,7 @@ export default function Perfil() {
     avatar: "/placeholder.svg?height=40&width=40&text=1",
     miembro_desde: "Enero 2023",
     pedidos: 12,
-    reservas: 5,
+    //reservas: 5,
     nivel: "Cliente Frecuente",
   }
 
@@ -49,33 +57,17 @@ export default function Perfil() {
   //   { id: "ORD-1198", fecha: "2 mayo, 2023", total: "$32.50", estado: "entregado" },
   //   { id: "ORD-1056", fecha: "18 abril, 2023", total: "$67.20", estado: "entregado" },
   // ]
-
-  // // Datos de ejemplo para reservas
-  // const reservasRecientes = [
-  //   { id: "RES-567", fecha: "20 mayo, 2023", hora: "19:30", personas: 4, estado: "confirmada" },
-  //   { id: "RES-498", fecha: "10 abril, 2023", hora: "20:00", personas: 2, estado: "completada" },
-  //   { id: "RES-432", fecha: "15 marzo, 2023", hora: "18:45", personas: 6, estado: "completada" },
-  // ]
-
-  // // Datos de ejemplo para reseñas
-  // const resenasRecientes = [
-  //   {
-  //     plato: "Pasta Carbonara",
-  //     fecha: "22 abril, 2023",
-  //     calificacion: 5,
-  //     comentario: "Excelente plato, la pasta estaba en su punto y la salsa deliciosa.",
-  //   },
-  //   {
-  //     plato: "Tiramisú",
-  //     fecha: "22 abril, 2023",
-  //     calificacion: 4,
-  //     comentario: "Muy buen postre, aunque un poco dulce para mi gusto.",
-  //   },
-  // ]
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-muted-foreground">Cargando perfil...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="flex container mx-auto min-h-screen flex-col">
-      {/* <UserNavbar /> */}
+
       <main className="flex-1 container py-8">
         <div className="flex items-center mb-6">
           <Button variant="ghost" size="sm" className="mr-2" onClick={() => navigate("/")}>
@@ -112,7 +104,7 @@ export default function Perfil() {
                     </Badge>
                     <Badge variant="outline" className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
-                      {usuario.reservas} reservas
+                      {reservas.length} reservas
                     </Badge>
                     <Badge className="bg-primary/10 text-primary">{usuario.nivel}</Badge>
                   </div>
@@ -130,7 +122,7 @@ export default function Perfil() {
 
           {/* Pestañas de actividad */}
           <Tabs defaultValue="pedidos" className="w-full">
-            {/* <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="pedidos" className="flex items-center gap-2">
                 <ShoppingBag className="h-4 w-4" />
                 <span>Pedidos</span>
@@ -139,11 +131,7 @@ export default function Perfil() {
                 <Calendar className="h-4 w-4" />
                 <span>Reservas</span>
               </TabsTrigger>
-              <TabsTrigger value="resenas" className="flex items-center gap-2">
-                <Star className="h-4 w-4" />
-                <span>Reseñas</span>
-              </TabsTrigger>
-            </TabsList> */}
+            </TabsList>
 
             {/* Contenido de pedidos */}
             {/* <TabsContent value="pedidos">
@@ -186,30 +174,46 @@ export default function Perfil() {
             </TabsContent> */}
 
             {/* Contenido de reservas */}
-            {/* <TabsContent value="reservas">
+            <TabsContent value="reservas">
               <Card>
                 <CardHeader>
                   <CardTitle>Mis reservas</CardTitle>
                   <CardDescription>Historial de tus reservas en el restaurante</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {reservasRecientes.length > 0 ? (
+                  {reservas.length > 0 ? (
                     <div className="space-y-4">
-                      {reservasRecientes.map((reserva) => (
+                      {reservas.map((reserva, i) => (
                         <div
                           key={reserva.id}
                           className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border"
                         >
                           <div>
-                            <div className="font-medium">{reserva.id}</div>
+                            <div className="font-medium">ID: {reserva.id}</div>
                             <div className="text-sm text-muted-foreground">
-                              {reserva.fecha} · {reserva.hora} · {reserva.personas} personas
+                              {reserva.fecha} · {reserva.hora} · {mesas[i]?.capacidad || 0} personas . Mesa {mesas[i]?.nro || 0}
+
                             </div>
                           </div>
                           <div className="mt-2 sm:mt-0">
-                            <Badge variant={reserva.estado === "confirmada" ? "default" : "outline"}>
-                              {reserva.estado}
+                            <Badge
+                              variant={
+                                reserva.idEstado === 6 ? "destructive" :
+                                  reserva.idEstado === 7 ? "default" :
+                                    "outline"
+                              }
+                            >
+                              {reserva.idEstado === 6 ? "cancelado" :
+                                reserva.idEstado === 7 ? "completado" :
+                                  "pendiente"}
                             </Badge>
+                            {reserva.idEstado === 10 && (
+                              <ModificarReserva
+                                reserva={reserva}
+                                idClienteWeb={id}
+                                nroMesa={mesas[i]}
+                              />
+                            )}
                           </div>
                         </div>
                       ))}
@@ -218,59 +222,13 @@ export default function Perfil() {
                     <div className="text-center py-6 text-muted-foreground">No tienes reservas recientes</div>
                   )}
                 </CardContent>
-                {reservasRecientes.length > 0 && (
+                {reservas.length > 0 && (
                   <CardFooter className="flex justify-center border-t p-4">
                     <Button variant="outline">Ver todas las reservas</Button>
                   </CardFooter>
                 )}
               </Card>
-            </TabsContent> */}
-
-            {/* Contenido de reseñas */}
-            {/* <TabsContent value="resenas">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Mis reseñas</CardTitle>
-                  <CardDescription>Reseñas que has dejado sobre nuestros platos</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {resenasRecientes.length > 0 ? (
-                    <div className="space-y-4">
-                      {resenasRecientes.map((resena, index) => (
-                        <div key={index} className="p-4 rounded-lg border">
-                          <div className="flex justify-between items-start mb-2">
-                            <div>
-                              <div className="font-medium">{resena.plato}</div>
-                              <div className="text-sm text-muted-foreground">{resena.fecha}</div>
-                            </div>
-                            <div className="flex">
-                              {Array(resena.calificacion)
-                                .fill(null)
-                                .map((_, i) => (
-                                  <Star key={i} className="h-4 w-4 fill-primary text-primary" />
-                                ))}
-                              {Array(5 - resena.calificacion)
-                                .fill(null)
-                                .map((_, i) => (
-                                  <Star key={i} className="h-4 w-4 text-muted-foreground" />
-                                ))}
-                            </div>
-                          </div>
-                          <p className="text-sm">{resena.comentario}</p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-6 text-muted-foreground">No has dejado reseñas todavía</div>
-                  )}
-                </CardContent>
-                {resenasRecientes.length > 0 && (
-                  <CardFooter className="flex justify-center border-t p-4">
-                    <Button variant="outline">Ver todas las reseñas</Button>
-                  </CardFooter>
-                )}
-              </Card>
-            </TabsContent> */}
+            </TabsContent>
           </Tabs>
         </div>
       </main>
