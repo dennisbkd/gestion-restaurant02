@@ -10,9 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Separator } from "@/components/ui/separator"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 
 // Avatares predeterminados
@@ -23,7 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 //   { id: "avatar4", src: "/placeholder.svg?height=40&width=40&text=4", label: "Avatar 4" },
 // ]
 
-export default function EditarPerfilPage() {
+export default function Editar() {
   const navigate = useNavigate()
   const { user, editarUsuario } = useOutletContext()
   const { id, userName, nombre, email, telefono } = user?.user || {}
@@ -88,12 +86,13 @@ export default function EditarPerfilPage() {
       const resultado = await editarUsuario(id, datosActualizacion)
       // 4. Verificar respuesta
       if (resultado?.error) {
-        throw new Error(resultado.error)
+        return console.error("Error al actualizar el perfil:", resultado.error)
       }
       navigate("/perfil")
+
     } catch (error) {
       // Manejo de errores
-      throw new Error("Error al actualizar el perfil", error);
+      console.error("Error al actualizar el perfil:", error);
     } finally {
       setIsLoading(false)
     }
