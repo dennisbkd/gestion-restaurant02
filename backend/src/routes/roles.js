@@ -1,9 +1,9 @@
 import { Router } from 'express'
 import { ControladorRoles } from '../controllers/roles.js'
 
-export const crearRutasRoles = ({ modeloRol }) => {
+export const crearRutasRoles = ({ modeloRol, modeloBitacora }) => {
   const router = Router()
-  const controlador = new ControladorRoles({ modeloRol })
+  const controlador = new ControladorRoles({ modeloRol, modeloBitacora })
 
   router.post('/crear', controlador.crearRol)
   router.put('/editar', controlador.editarRol)

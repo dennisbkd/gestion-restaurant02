@@ -1,9 +1,9 @@
 import { Router } from 'express'
 import { ControladorProveedor } from '../controllers/provider.js'
 
-export const crearProveedorRutas = ({ modeloProveedor }) => {
+export const crearProveedorRutas = ({ modeloProveedor, modeloBitacora }) => {
   const Proveedorruta = Router()
-  const controladorProveedor = new ControladorProveedor({ modeloProveedor })
+  const controladorProveedor = new ControladorProveedor({ modeloProveedor, modeloBitacora })
   // Registrar proveedor
   Proveedorruta.post('/registrar', controladorProveedor.registrarProveedor)
 

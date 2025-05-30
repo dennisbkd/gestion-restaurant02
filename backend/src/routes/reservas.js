@@ -1,9 +1,9 @@
 import { Router } from 'express'
 import { ControladorReservas } from '../controllers/reservas.js'
 
-export const crearRutasReservas = ({ modeloReserva }) => {
+export const crearRutasReservas = ({ modeloReserva, modeloBitacora }) => {
   const router = Router()
-  const controlador = new ControladorReservas({ modeloReserva })
+  const controlador = new ControladorReservas({ modeloReserva, modeloBitacora })
 
   router.post('/crear', controlador.crearReserva)
   router.put('/editar', controlador.editarReserva)

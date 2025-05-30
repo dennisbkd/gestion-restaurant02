@@ -12,7 +12,7 @@ import { ModeloReceta } from './models/receta.js'
 import { ModeloProducto } from './models/producto.js'
 import { ModeloIngrediente } from './models/ingrediente.js'
 import { ModeloPedido } from './models/pedido.js'
-
+import { ModeloBitacora } from './models/bitacora.js'
 CreateApp({
   modeloAuth: ModeloAuth,
   modeloProveedor: ModeloProveedor,
@@ -25,5 +25,6 @@ CreateApp({
   modeloReceta: ModeloReceta,
   modeloProducto: ModeloProducto,
   modeloIngrediente: ModeloIngrediente,
-  modeloPedido: ModeloPedido
+  modeloPedido: ModeloPedido,
+  modeloBitacora: ModeloBitacora
 })
