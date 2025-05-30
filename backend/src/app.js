@@ -65,7 +65,8 @@ export const CreateApp = async ({
   app.use('/reservas', crearRutasReservas({ modeloReserva }))
   app.use('/recetas', crearRutasReceta({ modeloReceta }))
 
-  app.listen(PORT, () => {
-    console.log('servidor activo en el puerto:', PORT)
-  })
+  app.listen(PORT, '0.0.0.0', () => {
+  console.log('servidor activo en el puerto:', PORT)
+})
+
 }
