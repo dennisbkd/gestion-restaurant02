@@ -29,7 +29,7 @@ export const CreateApp = async ({
   modeloPermiso, modeloInventario,
   modeloReserva, modeloReceta,
   modeloProducto, modeloIngrediente,
-  modeloPedido
+  modeloPedido, modeloBitacora
 }) => {
   const app = express()
 
@@ -48,21 +48,21 @@ export const CreateApp = async ({
   db()
 
   app.use('/auth', crearAuthRutas({ modeloAuth }))
-  app.use('/user', crearRutaUsuarios({ modeloUsuario }))
+  app.use('/user', crearRutaUsuarios({ modeloUsuario, modeloBitacora })) // Hecho
   app.use('/admin', crearRutaAdministrador({ modeloAdministrador, token }))
-  app.use('/permisos', crearRutasPermisos({ modeloPermiso }))
-  app.use('/roles', crearRutasRoles({ modeloRol }))
+  app.use('/permisos', crearRutasPermisos({ modeloPermiso, modeloBitacora })) // Hecho
+  app.use('/roles', crearRutasRoles({ modeloRol, modeloBitacora })) // Hecho
 
-  app.use('/inventario', crearRutasInventario({ modeloInventario }))
-  app.use('/proveedor', crearProveedorRutas({ modeloProveedor }))
+  app.use('/inventario', crearRutasInventario({ modeloInventario, modeloBitacora })) // Hecho
+  app.use('/proveedor', crearProveedorRutas({ modeloProveedor, modeloBitacora })) // Hecho
 
-  app.use('/productos', crearRutasProducto({ modeloProducto }))
-  app.use('/ingredientes', crearRutaIngrediente({ modeloIngrediente }))
+  app.use('/productos', crearRutasProducto({ modeloProducto })) // Haciendo, Ciclo 3
+  app.use('/ingredientes', crearRutaIngrediente({ modeloIngrediente, modeloBitacora })) // Hecho
 
-  app.use('/menus', crearMenuRutas({ modeloMenu }))
-  app.use('/pedido', crearRutasPedido({ modeloPedido }))
-  app.use('/reservas', crearRutasReservas({ modeloReserva }))
-  app.use('/recetas', crearRutasReceta({ modeloReceta }))
+  app.use('/menus', crearMenuRutas({ modeloMenu, modeloBitacora })) // Hecho
+  app.use('/pedido', crearRutasPedido({ modeloPedido, modeloBitacora })) // Hecho
+  app.use('/reservas', crearRutasReservas({ modeloReserva, modeloBitacora })) // Hecho
+  app.use('/recetas', crearRutasReceta({ modeloReceta, modeloBitacora })) // Hecho
 
   app.listen(PORT, () => {
     console.log('servidor activo en el puerto:', PORT)

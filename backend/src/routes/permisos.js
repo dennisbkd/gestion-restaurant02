@@ -1,9 +1,9 @@
 import { Router } from 'express'
 import { ControladorPermisos } from '../controllers/permisos.js'
 
-export const crearRutasPermisos = ({ modeloPermiso }) => {
+export const crearRutasPermisos = ({ modeloPermiso, modeloBitacora }) => {
   const router = Router()
-  const controlador = new ControladorPermisos({ modeloPermiso })
+  const controlador = new ControladorPermisos({ modeloPermiso, modeloBitacora })
 
   router.post('/crear', controlador.crearPermiso)
   router.put('/editar', controlador.editarPermiso)

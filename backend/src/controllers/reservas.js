@@ -1,6 +1,8 @@
+import { extraerUsuarioDesdeToken } from '../utils/extraerUsuarioDesdeToken.js'
 export class ControladorReservas {
-  constructor ({ modeloReserva }) {
+  constructor ({ modeloReserva, modeloBitacora }) {
     this.modeloReserva = modeloReserva
+    this.ModeloBitacora = modeloBitacora
   }
 
   // Registrar Reserva
@@ -8,6 +10,15 @@ export class ControladorReservas {
     try {
       const reserva = await this.modeloReserva.crearReserva({ input: req.body })
       if (reserva.error) return res.status(400).json({ error: reserva.error })
+      const autor = extraerUsuarioDesdeToken(req)
+      if (autor) {
+        await this.ModeloBitacora.registrarBitacora({
+          usuario: autor,
+          accion: 'Registrar Reserva',
+          descripcion: 'Registró una reserva',
+          ip: req.ip.replace('::ffff:', '')
+        })
+      }
       return res.status(201).json(reserva)
     } catch (error) {
       return res.status(500).json({ error: 'Error interno del servidor' })
@@ -18,6 +29,15 @@ export class ControladorReservas {
   editarReserva = async (req, res) => {
     const reserva = await this.modeloReserva.editarReserva({ input: req.body })
     if (reserva.error) return res.status(400).json({ error: reserva.error })
+    const autor = extraerUsuarioDesdeToken(req)
+    if (autor) {
+      await this.ModeloBitacora.registrarBitacora({
+        usuario: autor,
+        accion: 'Editar Reserva',
+        descripcion: 'Editó la reserva con id : ' + req.body.id,
+        ip: req.ip.replace('::ffff:', '')
+      })
+    }
     return res.status(200).json(reserva)
   }
 
@@ -26,6 +46,15 @@ export class ControladorReservas {
     if (!req.params.id) return res.status(400).json({ error: 'ID de reserva no proporcionado' })
     const reserva = await this.modeloReserva.eliminarReserva({ id: req.params.id, idMesa: req.body.idMesa })
     if (reserva.error) return res.status(400).json({ error: reserva.error })
+    const autor = extraerUsuarioDesdeToken(req)
+    if (autor) {
+      await this.ModeloBitacora.registrarBitacora({
+        usuario: autor,
+        accion: 'Cancelar Reserva',
+        descripcion: 'Canceló la reserva con id : ' + req.params.id,
+        ip: req.ip.replace('::ffff:', '')
+      })
+    }
     return res.status(200).json(reserva.mensaje)
   }
 

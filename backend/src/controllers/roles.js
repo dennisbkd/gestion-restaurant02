@@ -1,13 +1,24 @@
+import { extraerUsuarioDesdeToken } from '../utils/extraerUsuarioDesdeToken.js'
 // controladores/roles.js
 export class ControladorRoles {
-  constructor ({ modeloRol }) {
+  constructor ({ modeloRol, modeloBitacora }) {
     this.modeloRol = modeloRol
+    this.modeloBitacora = modeloBitacora
   }
 
   crearRol = async (req, res) => {
     try {
       const rol = await this.modeloRol.crearRol({ input: req.body })
       if (rol.error) return res.status(400).json({ error: rol.error })
+      const autor = extraerUsuarioDesdeToken(req)
+      if (autor) {
+        await this.ModeloBitacora.registrarBitacora({
+          usuario: autor,
+          accion: 'Crear Rol',
+          descripcion: 'Creó el rol : ' + rol.nombre,
+          ip: req.ip.replace('::ffff:', '')
+        })
+      }
       return res.status(201).json(rol)
     } catch (error) {
       return res.status(500).json({ error: 'Error interno del servidor' })
@@ -18,6 +29,15 @@ export class ControladorRoles {
     try {
       const rol = await this.modeloRol.editarRol({ input: req.body })
       if (rol.error) return res.status(400).json({ error: rol.error })
+      const autor = extraerUsuarioDesdeToken(req)
+      if (autor) {
+        await this.ModeloBitacora.registrarBitacora({
+          usuario: autor,
+          accion: 'Editar Rol',
+          descripcion: 'Editó el rol : ' + rol.nombre,
+          ip: req.ip.replace('::ffff:', '')
+        })
+      }
       return res.status(200).json(rol)
     } catch (error) {
       return res.status(500).json({ error: 'Error interno del servidor' })
@@ -30,6 +50,15 @@ export class ControladorRoles {
       if (!id || isNaN(Number(id))) return res.status(400).json({ error: 'ID de rol no proporcionado' })
       const rol = await this.modeloRol.eliminarRol(id)
       if (rol.error) return res.status(400).json({ error: rol.error })
+      const autor = extraerUsuarioDesdeToken(req)
+      if (autor) {
+        await this.ModeloBitacora.registrarBitacora({
+          usuario: autor,
+          accion: 'Eliminar Rol',
+          descripcion: 'Eliminó el rol : ' + rol.nombre,
+          ip: req.ip.replace('::ffff:', '')
+        })
+      }
       return res.status(200).json(rol)
     } catch (error) {
       return res.status(500).json({ error: 'Error interno del servidor' })

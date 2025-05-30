@@ -1,9 +1,9 @@
 import { Router } from 'express'
 import { ControladorPedido } from '../controllers/pedido.js'
 
-export const crearRutasPedido = ({ modeloPedido }) => {
+export const crearRutasPedido = ({ modeloPedido, modeloBitacora }) => {
   const crearRutasPedido = Router()
-  const controladorPedido = new ControladorPedido({ modeloPedido })
+  const controladorPedido = new ControladorPedido({ modeloPedido, modeloBitacora })
 
   // Registrar pedido restringido a solo meseros
   crearRutasPedido.post('/registrar/:idMesero', controladorPedido.registrarPedido)
