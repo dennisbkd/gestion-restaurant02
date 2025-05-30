@@ -7,10 +7,6 @@ import Menu from '../components/AdminDashboard/Menu'
 import ProviderTable from '../components/AdminDashboard/Providers'
 import Inventario from '../components/AdminDashboard/Inventario'
 import { RecetaPage } from '@/pages/recetas/RecetaPage'
-<<<<<<< HEAD
-=======
-
->>>>>>> 5f56072163647218cb1b127d223989b17d890ef0
 
 export default function DashboardRoutes() {
   return (
@@ -21,10 +17,7 @@ export default function DashboardRoutes() {
       <Route path='proveedores' element={<ProviderTable />} />
       <Route path='menu' element={<Menu />} />
       <Route path='recetas' element={<RecetaPage />} />
-<<<<<<< HEAD
-=======
       <Route path='inventario' element={<Inventario />} />
->>>>>>> 5f56072163647218cb1b127d223989b17d890ef0
     </Route>
   )
 }
