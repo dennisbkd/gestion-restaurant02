@@ -509,6 +509,16 @@ CREATE TABLE Envio (
 		ON UPDATE NO ACTION
 );
 GO
+CREATE TABLE Bitacora (
+  id INT PRIMARY KEY IDENTITY(1,1),
+  usuario VARCHAR(100) NOT NULL,         -- nombre o id del usuario
+  accion VARCHAR(100) NOT NULL,          -- tipo de acción
+  descripcion VARCHAR(150),
+	fecha DATE DEFAULT CONVERT(DATE, GETDATE()),  -- Solo la fecha actual
+    hora TIME(0) DEFAULT CONVERT(TIME, GETDATE()),   -- Solo la hora actual
+  ip VARCHAR(50)              
+);
+GO
 
 INSERT INTO Rol (nombre) VALUES
 	('Administrador'),
