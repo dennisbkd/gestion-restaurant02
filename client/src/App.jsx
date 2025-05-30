@@ -8,6 +8,7 @@ import { ProtectedRoute } from './ProtectedRoute'
 import { Task } from './pages/task'
 import { ReservaProvider } from './context/Reserva/ReservaProvider'
 import ClienteRoutes from './routes/ClienteRoutes'
+import { RecetaProvider } from './context/Receta/RecetaProvider'
 
 
 export default function App() {
@@ -16,15 +17,17 @@ export default function App() {
     <AuthProvide>
       <BrowserRouter>
         <ReservaProvider>
-          <Routes>
-            <Route path='/register' element={<RegisterPage />} />
-            <Route path='/profile' element={<ProfilePage />} />
-            <Route path='/task' element={<Task />} />
-            <Route element={<ProtectedRoute />}>{DashboardRoutes()}</Route>
+          <RecetaProvider>
+            <Routes>
+              <Route path='/register' element={<RegisterPage />} />
+              <Route path='/profile' element={<ProfilePage />} />
+              <Route path='/task' element={<Task />} />
+              <Route element={<ProtectedRoute />}>{DashboardRoutes()}</Route>
 
-            {ClienteRoutes()}
+              {ClienteRoutes()}
 
-          </Routes>
+            </Routes>
+          </RecetaProvider>
         </ReservaProvider>
       </BrowserRouter>
     </AuthProvide>

@@ -103,10 +103,10 @@ export class ModeloIngrediente {
   // Obtener todos los ingredientes
   static async obtenerIngredientes () {
     try {
-      const ingredientes = await sequelize.query(
-        'EXEC get_MostrarIngredientes',
-        { type: sequelize.QueryTypes.SELECT }
-      )
+      const ingredientes = await this.Ingrediente.findAll()
+      if (!ingredientes) {
+        return { error: 'Error al encontrar todos los ingredientes' }
+      }
       return { ingredientes }
     } catch (error) {
       throw new Error('Error al obtener ingredientes: ' + error.message)
