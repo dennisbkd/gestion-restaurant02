@@ -1,7 +1,7 @@
 import express, { json } from 'express'
+import dotenv from 'dotenv'
 import { PORT } from './config/config.js'
 import { db } from './connection.js'
-
 import { crearAuthRutas } from './routes/auth.js'
 
 import { crearRutasRoles } from './routes/roles.js'
@@ -31,6 +31,7 @@ export const CreateApp = async ({
   modeloProducto, modeloIngrediente,
   modeloPedido, modeloBitacora
 }) => {
+  dotenv.config()
   const app = express()
 
   const token = new Token(PALABRA_SECRETA)
@@ -41,7 +42,7 @@ export const CreateApp = async ({
   app.use(express.json())
 
   app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: 'http://52.90.8.51:5173',
     credentials: true
   }))
 
@@ -64,7 +65,8 @@ export const CreateApp = async ({
   app.use('/reservas', crearRutasReservas({ modeloReserva, modeloBitacora })) // Hecho
   app.use('/recetas', crearRutasReceta({ modeloReceta, modeloBitacora })) // Hecho
 
-  app.listen(PORT, () => {
-    console.log('servidor activo en el puerto:', PORT)
-  })
+  app.listen(PORT, '0.0.0.0', () => {
+  console.log('servidor activo en el puerto:', PORT)
+})
+
 }

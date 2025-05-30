@@ -1,4 +1,3 @@
-import { extraerUsuarioDesdeToken } from '../utils/extraerUsuarioDesdeToken.js'
 // controladores/roles.js
 export class ControladorRoles {
   constructor ({ modeloRol, modeloBitacora }) {
@@ -8,18 +7,10 @@ export class ControladorRoles {
 
   crearRol = async (req, res) => {
     try {
-      const rol = await this.modeloRol.crearRol({ input: req.body })
-      if (rol.error) return res.status(400).json({ error: rol.error })
-      const autor = extraerUsuarioDesdeToken(req)
-      if (autor) {
-        await this.ModeloBitacora.registrarBitacora({
-          usuario: autor,
-          accion: 'Crear Rol',
-          descripcion: 'Creó el rol : ' + rol.nombre,
-          ip: req.ip.replace('::ffff:', '')
-        })
-      }
-      return res.status(201).json(rol)
+      const { nombre, permisos } = req.body
+      const resultado = await this.modeloRol.crearRol(nombre, { permisos })
+      if (resultado.error) return res.status(400).json({ error: resultado.error })
+      return res.status(201).json(resultado)
     } catch (error) {
       return res.status(500).json({ error: 'Error interno del servidor' })
     }
@@ -27,7 +18,8 @@ export class ControladorRoles {
 
   editarRol = async (req, res) => {
     try {
-      const rol = await this.modeloRol.editarRol({ input: req.body })
+      const input = req.body
+      const rol = await this.modeloRol.editarRol(input)
       if (rol.error) return res.status(400).json({ error: rol.error })
       const autor = extraerUsuarioDesdeToken(req)
       if (autor) {
@@ -47,7 +39,6 @@ export class ControladorRoles {
   eliminarRol = async (req, res) => {
     try {
       const { id } = req.params
-      if (!id || isNaN(Number(id))) return res.status(400).json({ error: 'ID de rol no proporcionado' })
       const rol = await this.modeloRol.eliminarRol(id)
       if (rol.error) return res.status(400).json({ error: rol.error })
       const autor = extraerUsuarioDesdeToken(req)

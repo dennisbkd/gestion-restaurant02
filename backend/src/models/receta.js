@@ -139,7 +139,7 @@ export class ModeloReceta {
         include: [
           {
             model: this.Producto,
-            attributes: ['nombre']
+            attributes: ['nombre', 'descripcion', 'tiempoPreparacion']
           },
           {
             model: this.Ingredientes,
@@ -156,6 +156,8 @@ export class ModeloReceta {
           acumulador[productoId] = {
             idProducto: productoId,
             nombre: receta.Producto.nombre,
+            descripcion: receta.Producto.descripcion,
+            tiempoPreparacion: receta.Producto.tiempoPreparacion,
             Ingredientes: []
           }
         }
