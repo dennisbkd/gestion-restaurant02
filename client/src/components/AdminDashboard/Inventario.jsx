@@ -284,11 +284,12 @@ export default function Inventario() {
       {/* Modal para editar stock */}
       {EditModal.isOpen && (
         <ModalEditarStockMinimo
-          onClose={() => {
+          setSuccessModalOpen={() => {
             EditModal.close()
             Success.open() // Abrir modal de éxito al cerrar el modal de edición
             refresh()
           }}
+          onClose={EditModal.close}
           currentItem={currentProduct}
         />
       )}

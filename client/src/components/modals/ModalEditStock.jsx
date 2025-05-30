@@ -1,7 +1,11 @@
 import { useFormHandler } from '@/hooks/useFormHandler'
 import { updateInventarioRequest } from '@/api/inventario'
 
-export default function ModalEditarStockMinimo({ onClose, currentItem }) {
+export default function ModalEditarStockMinimo({
+  onClose,
+  currentItem,
+  setSuccessModalOpen
+}) {
   const { formData, handleInputChange, handleSubmit } = useFormHandler(
     {
       id: currentItem?.id || '',
@@ -20,7 +24,7 @@ export default function ModalEditarStockMinimo({ onClose, currentItem }) {
         <form
           onSubmit={async (e) => {
             await handleSubmit(e)
-            onClose() // <- esto cierra el modal y llama a refresh()
+            setSuccessModalOpen() // <- esto cierra el modal y llama a refresh()
           }}
         >
           <label className='block mb-3'>

@@ -9,5 +9,6 @@ export const crearRutasPermisos = ({ modeloPermiso }) => {
   router.put('/editar', controlador.editarPermiso)
   router.delete('/eliminar/:id', controlador.eliminarPermiso.bind(controlador))
   router.post('/asignar', controlador.asignarPermiso)
+  router.get('/mostrar', controlador.mostrarPermisos)
   return router
 }
