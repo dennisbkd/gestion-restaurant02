@@ -802,8 +802,61 @@ BEGIN
     WHERE id = @id;
 END;
 GO
+-- Registrar Pedido Presencial
+CREATE PROCEDURE set_RegistrarPedidoPresencial
+    @idEmpleado INT = NULL,
+    @NuevoID INT OUTPUT
+AS
+BEGIN
+DECLARE @idEstado INT;
+DECLARE @idTipoPedido INT;
+SELECT @idTipoPedido=id FROM TipoPedido WHERE TipoPedido.descripcion='Presencial';
+SELECT @idEstado=id FROM ESTADO WHERE Estado.descripcion='Pendiente';
+    INSERT INTO Pedido (fecha, hora, idClienteWeb, idEstado, idEmpleado, idTipoPedido, idDescuento, idReserva)
+    VALUES (CAST(GETDATE() AS DATE), CAST(GETDATE() AS TIME) , NULL, @idEstado, @idEmpleado, @idTipoPedido, NULL, NULL);
 
+    SET @NuevoID = SCOPE_IDENTITY();
+END;
+GO
 
+-- Registrar Usuario
+CREATE PROCEDURE registrarUsuario
+    @nombreUsuario VARCHAR(50),
+    @nombre VARCHAR(100),
+    @password VARCHAR(255),
+    @correo VARCHAR(100),
+    @telefono VARCHAR(20) NULL,
+    @idRol INT,
+    @ci VARCHAR(20) NULL ,
+	@tipoUsuario VARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @nuevoId INT;
+	DECLARE @idEstado INT;
+
+	SELECT @idEstado=id FROM ESTADO WHERE Estado.descripcion='Activo'
+    INSERT INTO Usuario (
+        nombreUsuario, nombre, password, correo, telefono,
+        tipoUsuario, idRol, idEstado
+    )
+    VALUES (
+        @nombreUsuario, @nombre, @password, @correo, @telefono,
+        @tipoUsuario, @idRol,@idEstado
+    );
+
+    -- Obtener el ID generado
+    SET @nuevoId = SCOPE_IDENTITY();
+
+    -- Insertar en Empleado
+	IF @tipoUsuario = 'empleado'
+    INSERT INTO Empleado (idUsuario, ci)
+    VALUES (@nuevoId, @ci);
+	ELSE IF @tipoUsuario = 'cliente'
+	INSERT INTO ClienteWeb (idUsuario) VALUES (@nuevoId)
+END;
+GO
 
 
 

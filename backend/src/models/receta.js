@@ -1,40 +1,68 @@
 import sequelize from '../config/db/config.js'
 import { definicionReceta } from '../services/receta.js'
+import { definicionProducto } from '../services/producto.js'
+import { definicionIngrediente } from '../services/ingrediente.js'
 
 export class ModeloReceta {
-  static Receta = sequelize.define('Recetas', definicionReceta, {
+  static Receta = sequelize.define('Receta', definicionReceta, {
     timestamps: false,
     freezeTableName: true
   })
 
-  static async crearReceta ({ input }) {
-    const { idProducto, idIngrediente, cantidad } = input
-    try {
-      const [resultado] = await sequelize.query(
-        `DECLARE @mensaje VARCHAR(200);
-         EXEC set_RegistrarReceta 
-           @idProducto = :idProducto, 
-           @idIngrediente = :idIngrediente, 
-           @cantidad = :cantidad, 
-           @mensaje = @mensaje OUTPUT;
-         SELECT @mensaje AS mensaje;`,
-        {
-          replacements: { idProducto, idIngrediente, cantidad },
-          type: sequelize.QueryTypes.SELECT
-        }
-      )
+  static Producto = sequelize.define('Producto', definicionProducto, {
+    timestamps: false,
+    freezeTableName: true
+  })
 
-      if (resultado.mensaje.includes('Error')) {
-        return { error: resultado.mensaje }
-      }
+  static Ingredientes = sequelize.define('Ingrediente', definicionIngrediente, {
+    timestamps: false,
+    freezeTableName: true
+  })
+
+  static asociar = () => {
+  // Asociaciones Many-to-Many
+    this.Producto.belongsToMany(this.Ingredientes, {
+      through: this.Receta,
+      foreignKey: 'idProducto',
+      otherKey: 'idIngrediente'
+    })
+
+    this.Ingredientes.belongsToMany(this.Producto, {
+      through: this.Receta,
+      foreignKey: 'idIngrediente',
+      otherKey: 'idProducto'
+    })
+
+    // Relaciones desde Receta (IMPORTANTE)
+    this.Receta.belongsTo(this.Producto, {
+      foreignKey: 'idProducto'
+
+    })
+
+    this.Receta.belongsTo(this.Ingredientes, {
+      foreignKey: 'idIngrediente'
+    })
+  }
+
+  static async crearReceta ({ input }) {
+    const { idProducto, Ingrediente } = input
+    try {
+      const datosReceta = Ingrediente.map(({ idIngrediente, cantidad }) => ({
+        idProducto,
+        idIngrediente,
+        cantidad
+      }))
+
+      await this.Receta.bulkCreate(datosReceta)
+
+      const recetaActualizada = await this.Receta.findAll({
+        where: { idProducto },
+        attributes: ['idProducto', 'idIngrediente', 'cantidad']
+      })
 
       return {
-        receta: {
-          idProducto,
-          idIngrediente,
-          cantidad
-        },
-        mensaje: resultado.mensaje
+        mensaje: 'Receta creada exitosamente',
+        receta: recetaActualizada
       }
     } catch (error) {
       return {
@@ -45,33 +73,42 @@ export class ModeloReceta {
   }
 
   static async editarReceta ({ input }) {
-    const { idProducto, idIngrediente, nuevaCantidad } = input
+    const { idProducto, Ingrediente } = input
     try {
-      const [resultado] = await sequelize.query(
-        `DECLARE @mensaje VARCHAR(200);
-         EXEC set_ActualizarReceta 
-           @idProducto = :idProducto, 
-           @idIngrediente = :idIngrediente, 
-           @cantidad = :nuevaCantidad, 
-           @mensaje = @mensaje OUTPUT;
-         SELECT @mensaje AS mensaje;`,
-        {
-          replacements: { idProducto, idIngrediente, nuevaCantidad },
-          type: sequelize.QueryTypes.SELECT
-        }
+      const resultado = await this.Producto.findByPk(idProducto)
+      if (!resultado) {
+        return { error: 'Producto no encontrado' }
+      }
+      await Promise.all(
+        Ingrediente.map(({ idIngrediente, cantidad }) =>
+          this.Receta.upsert({ idProducto, idIngrediente, cantidad })
+        )
       )
 
-      if (resultado.mensaje.includes('Error')) {
-        return { error: resultado.mensaje }
+      const ingredientesActuales = await this.Receta.findAll({
+        where: { idProducto },
+        attributes: ['idIngrediente']
+      })
+
+      const idsActuales = ingredientesActuales.map(i => i.idIngrediente)
+      const idsNuevos = Ingrediente.map(i => i.idIngrediente)
+
+      const ingredientesAEliminar = idsActuales.filter(id => !idsNuevos.includes(id))
+
+      if (ingredientesAEliminar.length > 0) {
+        await this.Receta.destroy({
+          where: { idProducto, idIngrediente: ingredientesAEliminar }
+        })
       }
 
+      const recetaActualizada = await this.Receta.findAll({
+        where: { idProducto },
+        attributes: ['idProducto', 'idIngrediente', 'cantidad']
+      })
+
       return {
-        receta: {
-          idProducto,
-          idIngrediente,
-          cantidad: nuevaCantidad
-        },
-        mensaje: resultado.mensaje
+        mensaje: 'Receta editada exitosamente',
+        receta: recetaActualizada
       }
     } catch (error) {
       return {
@@ -81,45 +118,62 @@ export class ModeloReceta {
     }
   }
 
-  static async eliminarIngredienteDeReceta ({ idProducto, idIngrediente }) {
+  static async eliminarReceta ({ idProducto }) {
     try {
-      const [resultado] = await sequelize.query(
-        `DECLARE @mensaje VARCHAR(200);
-         EXEC set_EliminarIngredienteDeReceta 
-           @idProducto = :idProducto, 
-           @idIngrediente = :idIngrediente, 
-           @mensaje = @mensaje OUTPUT;
-         SELECT @mensaje AS mensaje;`,
-        {
-          replacements: { idProducto, idIngrediente },
-          type: sequelize.QueryTypes.SELECT
-        }
-      )
-
-      if (resultado.mensaje.includes('Error')) {
-        return { error: resultado.mensaje }
+      const resultado = await this.Receta.destroy({ where: { idProducto } })
+      if (resultado === 0) {
+        return { error: 'No se encontró la receta para eliminar' }
       }
-
-      return { mensaje: resultado.mensaje }
+      return { mensaje: 'Receta eliminada exitosamente' }
     } catch (error) {
       return {
-        error: 'Error al eliminar ingrediente de la receta',
+        error: 'Error al eliminar la receta',
         detalles: error.message
       }
     }
   }
 
-  static async mostrarRecetaPorProducto ({ idProducto }) {
+  static async mostrarRecetaPorProducto () {
     try {
-      const receta = await sequelize.query(
-        'EXEC get_ProductoYReceta @idProducto = :idProducto',
-        {
-          replacements: { idProducto },
-          type: sequelize.QueryTypes.SELECT
-        }
-      )
+      const recetas = await this.Receta.findAll({
+        include: [
+          {
+            model: this.Producto,
+            attributes: ['nombre']
+          },
+          {
+            model: this.Ingredientes,
+            attributes: ['nombre']
+          }
+        ],
+        attributes: ['idProducto', 'idIngrediente', 'cantidad']
+      })
+      const productosAgrupados = recetas.reduce((acumulador, receta) => {
+        const productoId = receta.idProducto
 
-      return receta
+        // Si el producto no existe en el acumulador, lo agregamos
+        if (!acumulador[productoId]) {
+          acumulador[productoId] = {
+            idProducto: productoId,
+            nombre: receta.Producto.nombre,
+            Ingredientes: []
+          }
+        }
+
+        // Agregamos el ingrediente a la lista del producto
+        acumulador[productoId].Ingredientes.push({
+          idIngrediente: receta.idIngrediente,
+          nombre: receta.Ingrediente.nombre,
+          cantidad: receta.cantidad
+        })
+
+        return acumulador
+      }, {})
+
+      // 3. Convertimos el objeto a array
+      const resultado = Object.values(productosAgrupados)
+
+      return resultado
     } catch (error) {
       return {
         error: 'Error al mostrar la receta',
@@ -128,3 +182,4 @@ export class ModeloReceta {
     }
   }
 }
+ModeloReceta.asociar()

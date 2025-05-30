@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { CalendarIcon, Clock, Users, MapPin, Check } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -11,8 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/sonner"
 import { toast } from "sonner";
-import { buscarMesasDisponibles, crearReserva } from "@/api/cliente/reserva.js"
+import { crearReserva } from "@/api/cliente/reserva.js"
 import { useAuth } from "@/context/AuthContext"
+import { ReservaContext } from "@/context/Reserva/ReservaContext"
 
 
 // Horarios disponibles
@@ -27,42 +28,22 @@ const horariosDisponibles = [
 
 export default function Reserva() {
   const { user } = useAuth()
+  const { mesasDisponibles, mostrarMesasDisponibles, refrescarDatos } = useContext(ReservaContext)
   const [fecha, setFecha] = useState("")
   const [hora, setHora] = useState("")
-  const [mesas, setMesas] = useState([])
   const [mesaSeleccionada, setMesaSeleccionada] = useState(null)
   const [paso, setPaso] = useState("seleccion")
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    const obtenerMesasDisponibles = async () => {
-
-      if (!fecha || !hora) return
-      const fechaSeleccionada = new Date(fecha)
-      const formatoFecha = fechaSeleccionada.toISOString().split("T")[0]
-      setIsLoading(true)
-      try {
-
-        const response = await buscarMesasDisponibles(formatoFecha, hora)
-        if (response.error) {
-          toast.error(response.error)
-        } else {
-          setMesas(response.data)
-        }
-      } catch (e) {
-        toast.error("Error al obtener mesas disponibles")
-        console.error("Error al obtener mesas disponibles:", e)
-      } finally {
-        setIsLoading(false)
-      }
+    if (fecha && hora) {
+      mostrarMesasDisponibles(fecha, hora)
+      console.log("Mesas disponibles actualizadas")
     }
-
-    obtenerMesasDisponibles()
   }, [fecha, hora])
 
-
   // Filtrar mesas disponibles
-  const mesasDisponibles = mesas
+
 
   // Función para confirmar la reserva
   const confirmarReserva = async () => {
@@ -80,11 +61,12 @@ export default function Reserva() {
         fecha,
         hora,
         idMesa: mesaSeleccionada,
-        idEstado: 7 // Asumiendo que 7 es el ID de "Reservado"
+        idEstado: 10 // Asumiendo que 10 es el ID de "Reservado"
       })
       toast.success("¡Reserva confirmada!", {
         description: `Tu mesa ha sido reservada para el ${fecha?.toLocaleDateString()} a las ${hora}.`,
       })
+      refrescarDatos()
       setFecha(undefined)
       setHora("")
       setMesaSeleccionada(null)
@@ -96,7 +78,7 @@ export default function Reserva() {
   }
 
   // Obtener información de la mesa seleccionada
-  const mesaInfo = mesaSeleccionada ? mesas.find((m) => m.id === mesaSeleccionada) : null
+  const mesaInfo = mesasDisponibles
 
   return (
     <div className="flex container mx-auto min-h-screen flex-col">
