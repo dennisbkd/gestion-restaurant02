@@ -1,5 +1,6 @@
 import sequelize from '../config/db/config.js'
-import { definicionPedido, definicionProducto, definicionDetallePedido, definicionMesa, definicionMesasPedido, definicionIngrediente, definicionExclusionIngrediente, definicionEstado } from '../services/pedido.js'
+import { definicionPedido, definicionDetallePedido, definicionMesa, definicionMesasPedido, definicionIngrediente, definicionExclusionIngrediente, definicionEstado } from '../services/pedido.js'
+import { definicionProducto } from '../services/producto.js'
 
 export class ModeloPedido {
   static Pedido = sequelize.define('Pedido', definicionPedido, {

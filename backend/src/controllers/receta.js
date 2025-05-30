@@ -4,52 +4,27 @@ export class ControladorRecetas {
   }
 
   crearReceta = async (req, res) => {
-    try {
-      const receta = await this.modeloReceta.crearReceta({ input: req.body })
-      if (receta.error) return res.status(400).json({ error: receta.error })
-      return res.status(201).json(receta)
-    } catch (error) {
-      return res.status(500).json({ error: 'Error interno del servidor' })
-    }
+    const receta = await this.modeloReceta.crearReceta({ input: req.body })
+    if (receta.error) return res.status(400).json({ error: receta.error })
+    return res.status(201).json(receta)
   }
 
   editarReceta = async (req, res) => {
-    try {
-      const receta = await this.modeloReceta.editarReceta({ input: req.body })
-      if (receta.error) return res.status(400).json({ error: receta.error })
-      return res.status(200).json(receta)
-    } catch (error) {
-      return res.status(500).json({ error: 'Error interno del servidor' })
-    }
+    const receta = await this.modeloReceta.editarReceta({ input: req.body })
+    if (receta.error) return res.status(400).json({ error: receta.error })
+    return res.status(200).json(receta)
   }
 
-  eliminarIngredienteDeReceta = async (req, res) => {
-    try {
-      const { idProducto, idIngrediente } = req.body
-      if (!idProducto || !idIngrediente) {
-        return res.status(400).json({ error: 'idProducto e idIngrediente son requeridos' })
-      }
-      const resultado = await this.modeloReceta.eliminarIngredienteDeReceta({ idProducto, idIngrediente })
-      if (resultado.error) return res.status(400).json({ error: resultado.error })
-      return res.status(200).json(resultado)
-    } catch (error) {
-      return res.status(500).json({ error: 'Error interno del servidor' })
-    }
+  eliminarReceta = async (req, res) => {
+    const { idProducto } = req.body
+    const receta = await this.modeloReceta.eliminarReceta({ idProducto })
+    if (receta.error) return res.status(400).json({ error: receta.error })
+    return res.status(200).json(receta)
   }
 
   mostrarRecetaPorProducto = async (req, res) => {
-    try {
-      const { idProducto } = req.params
-      if (!idProducto || isNaN(Number(idProducto))) {
-        return res.status(400).json({ error: 'ID de producto inválido' })
-      }
-      const receta = await this.modeloReceta.mostrarRecetaPorProducto({ idProducto })
-      if (!receta || receta.length === 0) {
-        return res.status(404).json({ error: 'No se encontró receta para este producto' })
-      }
-      return res.status(200).json(receta)
-    } catch (error) {
-      return res.status(500).json({ error: 'Error interno del servidor' })
-    }
+    const receta = await this.modeloReceta.mostrarRecetaPorProducto()
+    if (receta.error) return res.status(400).json({ error: receta.detalles })
+    return res.status(200).json(receta)
   }
 }
