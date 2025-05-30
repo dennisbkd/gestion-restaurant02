@@ -101,7 +101,7 @@ const SideBar = ({ setActiveTab }) => {
                   <UserIcon className='w-8 h-8' />
                   Usuarios
                 </NavLink>
-                <h2 className='flex items-center gap-4 text-sm font-medium text-[#b0bec5] hover:text-[#615FFF] cursor-pointer transition-all duration-300 mt-2'>
+                {/* <h2 className='flex items-center gap-4 text-sm font-medium text-[#b0bec5] hover:text-[#615FFF] cursor-pointer transition-all duration-300 mt-2'>
                   <UserIcon className='w-8 h-8' />
                   Empleados
                 </h2>
@@ -109,7 +109,7 @@ const SideBar = ({ setActiveTab }) => {
                 <h2 className='flex items-center gap-4 text-sm font-medium text-[#b0bec5] hover:text-[#615FFF] cursor-pointer transition-all duration-300 mt-2'>
                   <UserIcon className='w-8 h-8' />
                   ClienteWeb
-                </h2>
+                </h2> */}
                 <NavLink
                   to='/dashboard/roles'
                   className={({ isActive }) =>

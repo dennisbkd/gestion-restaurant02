@@ -63,31 +63,20 @@ export class ModeloInventario {
   static async actualizarStock (input) {
     const { id, nuevoStockActual, nuevoStockMinimo } = input
     try {
-      const [result] = await sequelize.query(
-      `DECLARE @mensaje VARCHAR(100);
-       EXEC p_ActualizarStock 
-         @id = :id,
-         @nuevoStockActual = :nuevoStockActual,
-         @nuevoStockMinimo = :nuevoStockMinimo,
-         @mensaje = @mensaje OUTPUT;
-       SELECT @mensaje AS mensaje;`,
-      {
-        replacements: {
-          id,
-          nuevoStockActual,
-          nuevoStockMinimo
-        },
-        type: sequelize.QueryTypes.SELECT
-      }
-      )
+      const producto = await this.Stock.findByPk(id)
 
-      if (result.mensaje.includes('Error') || result.mensaje.includes('no existe')) {
-        return { error: result.mensaje }
+      if (!producto) {
+        return { error: 'Error: el producto no existe' }
       }
+
+      producto.stockActual = nuevoStockActual
+      producto.stockMinimo = nuevoStockMinimo
+
+      await producto.save()
 
       return {
-        producto: { id, nuevoStockActual, nuevoStockMinimo },
-        mensaje: result.mensaje
+        producto,
+        mensaje: 'Stock actualizado correctamente'
       }
     } catch (error) {
       throw new Error('Error al actualizar producto: ' + error.message)
@@ -97,11 +86,7 @@ export class ModeloInventario {
   // Consultar todo el inventario (STOCKS)
   static async mostrarStocks () {
     try {
-      const stock = await sequelize.query(
-        'EXEC get_MostrarStocks',
-        { type: sequelize.QueryTypes.SELECT }
-      )
-
+      const stock = await this.Stock.findAll()
       return { stock }
     } catch (error) {
       throw new Error('Error al consultar inventario: ' + error.message)

@@ -1,9 +1,13 @@
-import { getRolesRequest } from '../../api/rol'
+import {
+  getRolesRequest,
+  editRolRequest,
+  createRolRequest
+} from '../../api/rol'
 import { useFetchData } from '../../hooks/useFetchData'
 import { useState } from 'react'
 import { useModal } from '../../hooks/useModal'
-import ModalCrearRol from '../modals/ModalRol'
-import ModalOneInput from '../modals/ModalOneInput'
+import ModalCrearRol from '../modals/ModalRoles'
+import SuccessModal from '../modals/SuccessModal'
 
 const iconMap = {
   Administrador: (
@@ -76,9 +80,15 @@ const iconMap = {
 const extractRoles = (res) => res.data.roles
 const Rol = () => {
   const { data: roles, refresh } = useFetchData(getRolesRequest, extractRoles)
-  const modalCreate = useModal()
   const modal = useModal()
+  const succes = useModal()
   const [currentRol, setCurrentRol] = useState('')
+  const [accion, setAccion] = useState('')
+  const [expandedRolId, setExpandedRolId] = useState(null)
+
+  const toggleExpanded = (id) => {
+    setExpandedRolId(expandedRolId === id ? null : id)
+  }
 
   return (
     <section className='py-16'>
@@ -96,7 +106,10 @@ const Rol = () => {
           <div>
             <button
               className='inline-block px-4 py-2 text-white duration-150 font-medium bg-indigo-600 rounded-lg hover:bg-indigo-500 active:bg-indigo-700 md:text-sm'
-              onClick={() => modalCreate.open()}
+              onClick={() => {
+                modal.open()
+                setAccion('crear')
+              }}
             >
               Añadir Rol
             </button>
@@ -104,36 +117,57 @@ const Rol = () => {
         </div>
 
         <ul className='mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3'>
-          {roles.map((item, key) => (
-            <li className='border rounded-lg' key={key}>
-              <div className='flex items-start justify-between p-4'>
-                <div className='space-y-2'>
-                  {iconMap[item.nombre] || iconMap.default}
-                  <h4 className='text-gray-800 font-semibold'>{item.nombre}</h4>
-                  <p className='text-gray-600 text-sm'>
-                    {item.permisos?.[0] || 'Sin permisos'}
-                  </p>
+          {roles.map((item, key) => {
+            const isExpanded = expandedRolId === item.id
+
+            return (
+              <li className='border rounded-lg' key={key}>
+                <div className='flex items-start justify-between p-4'>
+                  <div className='space-y-2'>
+                    {iconMap[item.nombre] || iconMap.default}
+                    <h4 className='text-gray-800 font-semibold'>
+                      {item.nombre}
+                    </h4>
+                    {isExpanded ? (
+                      <ul className='text-gray-600 text-sm list-disc ml-5'>
+                        {item.permisos?.length ? (
+                          item.permisos.map((permiso) => (
+                            <li key={permiso.id}>{permiso.descripcion}</li>
+                          ))
+                        ) : (
+                          <li>Sin permisos</li>
+                        )}
+                      </ul>
+                    ) : (
+                      <p className='text-gray-600 text-sm'>
+                        {item.permisos?.[0]?.descripcion || 'Sin permisos'}
+                      </p>
+                    )}
+                  </div>
+
+                  <button
+                    className='text-gray-700 text-sm border rounded-lg px-3 py-2 duration-150 hover:bg-gray-100'
+                    onClick={() => {
+                      modal.open()
+                      setCurrentRol(item)
+                      setAccion('editar')
+                    }}
+                  >
+                    Editar
+                  </button>
                 </div>
-                <button
-                  className='text-gray-700 text-sm border rounded-lg px-3 py-2 duration-150 hover:bg-gray-100'
-                  onClick={() => {
-                    modal.open()
-                    setCurrentRol(item)
-                  }}
-                >
-                  Editar
-                </button>
-              </div>
-              <div className='py-5 px-4 border-t text-right'>
-                <a
-                  href='#'
-                  className='text-indigo-600 hover:text-indigo-500 text-sm font-medium'
-                >
-                  Ver detalles
-                </a>
-              </div>
-            </li>
-          ))}
+
+                <div className='py-5 px-4 border-t text-right'>
+                  <button
+                    className='text-indigo-600 hover:text-indigo-500 text-sm font-medium'
+                    onClick={() => toggleExpanded(item.id)}
+                  >
+                    {isExpanded ? 'Ocultar detalles' : 'Ver detalles'}
+                  </button>
+                </div>
+              </li>
+            )
+          })}
         </ul>
       </div>
 
@@ -147,30 +181,26 @@ const Rol = () => {
           onGuardar={() => {
             refresh()
             modal.close()
-
+            succes.open()
             setCurrentRol('')
           }}
+          list={currentRol?.permisos?.map((p) => p.id) || []}
           rol={currentRol}
           context={{
             title: 'Rol',
             placeholder1: 'Nombre del Rol',
             placeholder2: 'Permisos'
           }}
+          accion={accion}
+          Request={accion === 'crear' ? createRolRequest : editRolRequest}
         />
       )}
 
-      {modalCreate.isOpen && (
-        <ModalOneInput
-          isOpen={modalCreate.isOpen}
-          onClose={modalCreate.close}
-          onGuardar={() => {
-            refresh()
-            modalCreate.close()
-          }}
-          context={{
-            title: 'Rol',
-            placeholder1: 'Nombre del Rol'
-          }}
+      {succes.isOpen && (
+        <SuccessModal
+          setIsOpen={succes.toggle}
+          refresh={refresh}
+          message={'Rol guardado correctamente'}
         />
       )}
     </section>

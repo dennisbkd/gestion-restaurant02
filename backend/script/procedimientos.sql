@@ -1,3 +1,7 @@
+USE Restaurante;
+GO
+
+
 -- Crear Rol
 CREATE PROCEDURE p_CrearRol
     @nombreRol VARCHAR(60),
@@ -27,7 +31,7 @@ BEGIN
         SET @mensaje = 'Error al crear el Rol: ' + ERROR_MESSAGE();
     END CATCH
 END;
-
+GO
 
 
 -- Editar Rol 
@@ -64,7 +68,7 @@ BEGIN
         SET @mensaje = 'Error al actualizar el rol: ' + ERROR_MESSAGE();
     END CATCH
 END;
-
+GO
 
 
 -- Eliminar Rol
@@ -97,7 +101,7 @@ BEGIN
         SET @mensaje = 'Error al eliminar el rol: ' + ERROR_MESSAGE();
     END CATCH
 END;
-
+GO
 
 -- Crear Permiso
 CREATE PROCEDURE p_CrearPermiso
@@ -132,7 +136,7 @@ BEGIN
         SET @mensaje = 'Error al crear el Permiso: ' + ERROR_MESSAGE();
     END CATCH
 END;
-
+GO
 
 -- EDITAR PERMISO
 CREATE PROCEDURE p_EditarPermiso
@@ -173,7 +177,7 @@ BEGIN
         SET @mensaje = 'Error al actualizar el permiso: ' + ERROR_MESSAGE();
     END CATCH
 END;
-
+GO
 -- ELIMINAR PERMISO
 CREATE PROCEDURE p_EliminarPermiso
     @idPermiso INT,
@@ -203,7 +207,7 @@ BEGIN
         SET @mensaje = N'Error al eliminar (cambiar estado) del permiso: ' + ERROR_MESSAGE();
     END CATCH
 END;
-
+GO
 
 
 -- OBTENER PERMISOS DE UN ROL
@@ -221,7 +225,7 @@ SET NOCOUNT ON;
     WHERE 
         id IN (SELECT idPermisos FROM DetallePermiso WHERE idRol = @idRol);
 END;
-
+GO
 
 
 -- MOSTRAR ROLES Y PERMISOS
@@ -257,7 +261,7 @@ BEGIN
             SELECT idRol FROM DetallePermiso
         )
 END;
-
+GO
 
 -- Asignar permiso a un rol
 CREATE PROCEDURE set_AsignarPermiso
@@ -297,7 +301,7 @@ BEGIN
     SET @mensaje = 'Error al asignar permiso: ' + ERROR_MESSAGE();
   END CATCH
 END;
-
+GO
 
 
    -- getionar inventario
@@ -319,7 +323,7 @@ set nocount on;
     VALUES (@descripcion, @stockActual, @stockMinimo)
     set @mensaje= 'Producto agregado al inventario correctamente'
 END;
-
+GO
 -- Actualizar
 CREATE PROCEDURE p_ActualizarStock
     @id INT,
@@ -343,7 +347,7 @@ set nocount on;
     
     set @mensaje = 'Stock actualizado correctamente';
 END;
-
+GO
 
 -- Mostrar Stock
 CREATE PROCEDURE get_MostrarStocks
@@ -352,7 +356,7 @@ BEGIN
 SELECT* 
 FROM Stock;
 END;
-
+GO
 -- mostrar stock id
 CREATE  PROCEDURE get_MostrarStockID
     @id INT
@@ -362,7 +366,7 @@ BEGIN
     FROM Stock
     WHERE ID = @id
 END;
-
+GO
 -- -- Mostrar Reservas
 
 -- Registrar Reserva
@@ -385,7 +389,7 @@ BEGIN
 		return;
     END CATCH
 END;
-
+GO
 -- Actualizar Reserva
 
 CREATE PROCEDURE set_ActualizarReserva
@@ -416,7 +420,7 @@ BEGIN
         SET @mensaje = ERROR_MESSAGE();
     END CATCH
 END;
-
+GO
 -- Cancelar Reserva
 CREATE PROCEDURE set_CancelarReserva
     @id INT,
@@ -440,7 +444,7 @@ BEGIN
         SET @mensaje = ERROR_MESSAGE();
     END CATCH
 END;
-
+GO
 -- Mostrar Reservas
 CREATE PROCEDURE get_MostrarReservas
 AS 
@@ -450,7 +454,7 @@ SELECT
 FROM Usuario u,Reserva r,ClienteWeb c
 where u.id=c.idUsuario AND c.idUsuario=r.idClienteWeb 
 END;
-
+GO
 -- Mostrar Reserva "nombre"
 CREATE PROCEDURE get_MostrarReservasNombre
 @nombre varchar(80)
@@ -461,7 +465,7 @@ SELECT
 FROM Usuario u,Reserva r,ClienteWeb c
 where u.nombre=@nombre AND u.id=c.idUsuario AND c.idUsuario=r.idClienteWeb 
 END;
-
+GO
 
 -- Registrar Producto 
 CREATE PROCEDURE set_ResgistrarProducto
@@ -491,7 +495,7 @@ BEGIN
         SET @mensaje = 'Error al registrar el producto: ' + ERROR_MESSAGE();
     END CATCH
 END;
-
+GO
 -- Actualizar Producto
 CREATE PROCEDURE set_ActualizarProducto
     @idProducto INT,
@@ -530,7 +534,7 @@ BEGIN
         SET @mensaje = 'Error al actualizar el producto: ' + ERROR_MESSAGE();
     END CATCH
 END;
-
+GO
 
 -- Eliminar Producto
 CREATE PROCEDURE set_EliminarProducto
@@ -556,7 +560,7 @@ BEGIN
         SET @mensaje = 'Error al eliminar el producto: ' + ERROR_MESSAGE();
     END CATCH
 END;
-
+GO
 -- Mostrar Productos
 CREATE PROCEDURE get_MostrarProductos
 AS
@@ -564,7 +568,7 @@ BEGIN
     SELECT *
     FROM Producto;
 END;
-
+GO
 -- Mostrar Productos id
 CREATE PROCEDURE get_MostrarProductoPorId
     @idProducto INT,
@@ -584,7 +588,7 @@ BEGIN
 
  SET @mensaje='Producto Encontrado';
 END;
-
+GO
 -- Registrar Receta
 CREATE PROCEDURE set_RegistrarReceta
     @idProducto INT,
@@ -618,7 +622,7 @@ BEGIN
         SET @mensaje = 'Error al registrar la receta: ' + ERROR_MESSAGE();
     END CATCH
 END;
-
+GO
 -- Actualizar Receta
 CREATE PROCEDURE set_ActualizarReceta
     @idProducto INT,
@@ -647,7 +651,7 @@ BEGIN
         SET @mensaje = 'Error al actualizar la receta: ' + ERROR_MESSAGE();
     END CATCH
 END;
-
+GO
 -- Eliminar Ingrediente de una Receta
 CREATE PROCEDURE set_EliminarIngredienteDeReceta
     @idProducto INT,
@@ -674,7 +678,7 @@ BEGIN
         SET @mensaje = 'Error al eliminar el ingrediente de la receta: ' + ERROR_MESSAGE();
     END CATCH
 END;
-
+GO
 -- Mostrar Receta por id producto
 CREATE PROCEDURE get_ProductoYReceta
     @idProducto INT
@@ -706,7 +710,7 @@ BEGIN
     FROM Receta r, Ingrediente i
     WHERE r.idProducto = @idProducto AND r.idIngrediente = i.id;
 END;
-
+GO
 -- Registrar Ingrediente
 CREATE PROCEDURE set_RegistrarIngrediente
     @nombre VARCHAR(100),
@@ -735,7 +739,7 @@ BEGIN
     VALUES (@nombre, @idUnidadMedida, @idStock, @idStado);
 	SET @mensaje='Ingrediente registrado corectamente'
 END;
-
+GO
 -- Editar Ingrediente
 CREATE PROCEDURE set_EditarIngrediente
     @id INT,
@@ -760,7 +764,7 @@ BEGIN
     WHERE id = @id;
   set @mensaje='ingrediente Actualizado Corectamente';
 END;
-
+GO
 -- Eliminar Ingrediente
 CREATE PROCEDURE set_EliminarIngrediente
     @id INT,
@@ -779,7 +783,7 @@ BEGIN
     WHERE id = @id;
 	set @mensaje = 'Ingrediente eliminado corectamente'
 END;
-
+GO
 -- Mostrar Ingredientes
 CREATE PROCEDURE get_MostrarIngredientes
 AS
@@ -787,7 +791,7 @@ BEGIN
     SELECT id, nombre, idUnidadMedida, idStock, idEstado
     FROM Ingrediente;
 END;
-
+GO
 -- Mostrar Ingrediente ID
 CREATE PROCEDURE get_MostrarIngredientePorID
     @id INT
@@ -797,9 +801,62 @@ BEGIN
     FROM Ingrediente
     WHERE id = @id;
 END;
+GO
+-- Registrar Pedido Presencial
+CREATE PROCEDURE set_RegistrarPedidoPresencial
+    @idEmpleado INT = NULL,
+    @NuevoID INT OUTPUT
+AS
+BEGIN
+DECLARE @idEstado INT;
+DECLARE @idTipoPedido INT;
+SELECT @idTipoPedido=id FROM TipoPedido WHERE TipoPedido.descripcion='Presencial';
+SELECT @idEstado=id FROM ESTADO WHERE Estado.descripcion='Pendiente';
+    INSERT INTO Pedido (fecha, hora, idClienteWeb, idEstado, idEmpleado, idTipoPedido, idDescuento, idReserva)
+    VALUES (CAST(GETDATE() AS DATE), CAST(GETDATE() AS TIME) , NULL, @idEstado, @idEmpleado, @idTipoPedido, NULL, NULL);
 
+    SET @NuevoID = SCOPE_IDENTITY();
+END;
+GO
 
+-- Registrar Usuario
+CREATE PROCEDURE registrarUsuario
+    @nombreUsuario VARCHAR(50),
+    @nombre VARCHAR(100),
+    @password VARCHAR(255),
+    @correo VARCHAR(100),
+    @telefono VARCHAR(20) NULL,
+    @idRol INT,
+    @ci VARCHAR(20) NULL ,
+	@tipoUsuario VARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
 
+    DECLARE @nuevoId INT;
+	DECLARE @idEstado INT;
+
+	SELECT @idEstado=id FROM ESTADO WHERE Estado.descripcion='Activo'
+    INSERT INTO Usuario (
+        nombreUsuario, nombre, password, correo, telefono,
+        tipoUsuario, idRol, idEstado
+    )
+    VALUES (
+        @nombreUsuario, @nombre, @password, @correo, @telefono,
+        @tipoUsuario, @idRol,@idEstado
+    );
+
+    -- Obtener el ID generado
+    SET @nuevoId = SCOPE_IDENTITY();
+
+    -- Insertar en Empleado
+	IF @tipoUsuario = 'empleado'
+    INSERT INTO Empleado (idUsuario, ci)
+    VALUES (@nuevoId, @ci);
+	ELSE IF @tipoUsuario = 'cliente'
+	INSERT INTO ClienteWeb (idUsuario) VALUES (@nuevoId)
+END;
+GO
 
 
 

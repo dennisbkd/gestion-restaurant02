@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const instancia = axios.create({
-  baseURL:'http://localhost:3000',
+  baseURL:'http://52.90.8.51:3000',
   withCredentials: true
 })
 

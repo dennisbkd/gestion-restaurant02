@@ -1,0 +1,67 @@
+version: '3.9'
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=MiPassw0rd123!
+    ports:
+      - '1433:1433'
+    volumes:
+      - sql_data:/var/opt/mssql
+    networks:
+      - app-network
+  db-init:
+    image: mcr.microsoft.com/mssql-tools
+    depends_on:
+      - db
+    networks:
+      - app-network
+    volumes:
+      - ./backend/script:/scripts
+    entrypoint: >
+      /bin/bash -c "
+      sleep 25 &&
+      /opt/mssql-tools/bin/sqlcmd -S db -U sa -P 'MiPassw0rd123!' -i /scripts/creardb.sql &&
+      sleep 5 &&
+      /opt/mssql-tools/bin/sqlcmd -S db -U sa -P 'MiPassw0rd123!' -i /scripts/creacion.sql &&
+      /opt/mssql-tools/bin/sqlcmd -S db -U sa -P 'MiPassw0rd123!' -i /scripts/procedimientos.sql
+      "
+
+  backend:
+    build: ./backend
+    container_name: backend
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  client:
+    build: ./client
+    container_name: client
+    ports:
+      - '5173:5173'
+      - '24678:24678'
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  sql_data:
