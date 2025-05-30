@@ -4,6 +4,9 @@ import UserTable from '../components/UserTable'
 import Rol from '../components/Rol'
 import Menu from '../components/Menu'
 import ProviderTable from '../components/Providers'
+import { RecetaPage } from '@/pages/recetas/RecetaPage'
+import { Receta } from '@/pages/recetas/Receta'
+import { EditaReceta } from '@/pages/recetas/EditaReceta'
 
 export default function DashboardRoutes() {
   return (
@@ -13,6 +16,9 @@ export default function DashboardRoutes() {
       <Route path='roles' element={<Rol />} />
       <Route path='proveedores' element={<ProviderTable />} />
       <Route path='menu' element={<Menu />} />
+      <Route path='recetas' element={<RecetaPage />} />
+      <Route path='recetas/:id' element={<EditaReceta />} />
     </Route>
+
   )
 }
