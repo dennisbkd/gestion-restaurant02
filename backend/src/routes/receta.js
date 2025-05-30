@@ -7,8 +7,8 @@ export const crearRutasReceta = ({ modeloReceta }) => {
 
   router.post('/crear', controlador.crearReceta)
   router.put('/editar', controlador.editarReceta)
-  router.delete('/eliminar', controlador.eliminarIngredienteDeReceta)
-  router.get('/mostrar/:idProducto', controlador.mostrarRecetaPorProducto.bind(controlador))
+  router.delete('/eliminar', controlador.eliminarReceta)
+  router.get('/mostrar', controlador.mostrarRecetaPorProducto)
 
   return router
 }

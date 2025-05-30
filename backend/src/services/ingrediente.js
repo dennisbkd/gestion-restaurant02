@@ -1,4 +1,4 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize'
 
 export const definicionIngrediente = {
   id: {
@@ -22,5 +22,5 @@ export const definicionIngrediente = {
   idEstado: {
     type: DataTypes.INTEGER,
     allowNull: false
-  },
-};
+  }
+}

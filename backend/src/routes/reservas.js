@@ -7,9 +7,10 @@ export const crearRutasReservas = ({ modeloReserva }) => {
 
   router.post('/crear', controlador.crearReserva)
   router.put('/editar', controlador.editarReserva)
-  router.delete('/eliminar/:id', controlador.eliminarReserva)
+  router.put('/eliminar/:id', controlador.eliminarReserva)
   router.get('/mostrar', controlador.mostrarReservas)
-  router.get('/mostrar/:nombre', controlador.mostrarReservasNombre)
+  router.get('/mostrar/:idClienteWeb', controlador.mostrarReservasClienteWeb)
+  router.post('/mesas', controlador.mostrarMesasDisponibles)
 
   return router
 }

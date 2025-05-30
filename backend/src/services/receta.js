@@ -1,25 +1,18 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize'
 
 export const definicionReceta = {
-  id: {
+  idProducto: {
     type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
-  nombre: {
-    type: DataTypes.STRING,
+    foreignKey: true,
     allowNull: false
   },
-  descripcion: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  tiempoPreparacion: {
-    type: DataTypes.INTEGER, // en minutos
-    allowNull: false
-  },
-  idCategoria: {
+  idIngrediente: {
     type: DataTypes.INTEGER,
+    foreignKey: true,
+    allowNull: false
+  },
+  cantidad: {
+    type: DataTypes.FLOAT,
     allowNull: false
   }
-};
+}

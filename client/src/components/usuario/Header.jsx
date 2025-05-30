@@ -2,7 +2,7 @@ import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Link } from "react-router"
 import { UtensilsCrossed, Menu } from "lucide-react"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetDescription, SheetTitle } from "@/components/ui/sheet"
 import { CartModal } from "@/components/modals/ModalCarrito"
 import { Button } from "@/components/ui/button"
 //import { Theme } from "../Tema/Theme"
@@ -78,6 +78,10 @@ export function Header({ isAuthenticated, user, signOut }) {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="pr-0">
+              <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
+              <SheetDescription className="sr-only">
+                Menú desplegable con opciones de navegación
+              </SheetDescription>
               <div className="px-7">
                 <Link to="/" className="flex items-center gap-2 font-semibold" onClick={() => setIsMenuOpen(false)}>
                   <UtensilsCrossed className="h-6 w-6" />

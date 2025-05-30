@@ -1,7 +1,6 @@
 import sequelize from '../config/db/config.js'
 import { definicionMesa } from '../services/pedido.js'
-import { definicionReserva } from '../services/reservas.js'
-import { obtenerFechaBolivia } from '../utils/fechaLocal.js'
+import { definicionReserva, definicionReservaMesas } from '../services/reservas.js'
 
 export class ModeloReserva {
   static Reserva = sequelize.define('Reserva', definicionReserva, {
@@ -14,15 +13,20 @@ export class ModeloReserva {
     freezeTableName: true
   })
 
+  static ReservaMesa = sequelize.define('MesasReserva', definicionReservaMesas, {
+    timestamps: false,
+    freezeTableName: true
+  })
+
   static asociar = () => {
     this.Reserva.belongsToMany(this.Mesa, {
-      through: 'ReservasMesas',
+      through: this.ReservaMesa,
       foreignKey: 'idReserva',
       otherKey: 'idMesa'
     })
 
     this.Mesa.belongsToMany(this.Reserva, {
-      through: 'ReservasMesas',
+      through: this.ReservaMesa,
       foreignKey: 'idMesa',
       otherKey: 'idReserva'
     })
@@ -31,22 +35,17 @@ export class ModeloReserva {
   // Registrar Reserva
   static async crearReserva ({ input }) {
     const {
-      fecha, hora, idEstado, idClienteWeb,
-      Mesa: { nro, capacidad, idEstadoMesa }
+      fecha, hora, idEstado, idClienteWeb, idMesa: id
     } = input
-
     try {
       const nuevaReserva = await this.Reserva.create({
-        fecha: obtenerFechaBolivia(fecha),
+        fecha,
         hora,
         idClienteWeb,
         idEstado
       })
-      const nuevaMesa = await this.Mesa.create({
-        nro,
-        capacidad,
-        idEstado: idEstadoMesa
-      })
+      await nuevaReserva.addMesa(id)
+      return { message: 'Reserva Creada' }
     } catch (error) {
       throw new Error('Error al crear la reserva: ' + error.message)
     }
@@ -54,66 +53,46 @@ export class ModeloReserva {
 
   // Actualizar Reserva
   static async editarReserva ({ input }) {
-    const { id, fecha, hora, idClienteWeb, idEstado } = input
-
-    if (!id) {
-      throw new Error('Se requiere el ID de la reserva para editar')
-    }
-
+    const {
+      id, fecha, hora, idEstado, idClienteWeb, idMesa
+    } = input
     try {
-      const result = await sequelize.query(
-        `DECLARE @mensaje VARCHAR(200);
-         EXEC set_ActualizarReserva 
-           @id = :id, 
-           @fecha = :fecha, 
-           @hora = :hora, 
-           @id_Cliente = :idClienteWeb, 
-           @id_Estado = :idEstado, 
-           @mensaje = @mensaje OUTPUT;
-         SELECT @mensaje AS mensaje;`,
-        {
-          replacements: { id, fecha, hora, idClienteWeb, idEstado },
-          type: sequelize.QueryTypes.SELECT
-        }
-      )
+      const reserva = await this.Reserva.findByPk(id)
+      if (!reserva) {
+        return { error: 'Reserva no encontrada' }
+      }
+      reserva.id = id
+      reserva.fecha = fecha
+      reserva.hora = hora
+      reserva.idEstado = idEstado
+      reserva.idClienteWeb = idClienteWeb
 
-      const mensaje = result[0]?.mensaje || 'Sin mensaje'
-      if (mensaje.includes('No se encontró')) {
-        return { error: mensaje }
+      await reserva.save()
+
+      // Actualizar mesas asociadas
+      if (idMesa) {
+        await reserva.setMesas(idMesa)
       }
 
-      return { reserva: { id, fecha, hora, idClienteWeb, idEstado }, mensaje }
+      return reserva
     } catch (error) {
-      throw new Error('Error al editar la reserva: ' + error.message)
+      throw new Error('Error al actualizar la reserva: ' + error.message)
     }
   }
 
   // Cancelar Reserva
-  static async eliminarReserva (id) {
+  static async eliminarReserva ({ id, idMesa }) {
     try {
-      const result = await sequelize.query(
-        `DECLARE @mensaje VARCHAR(200);
-         EXEC set_CancelarReserva 
-           @id = :id, 
-           @mensaje = @mensaje OUTPUT;
-         SELECT @mensaje AS mensaje;`,
-        {
-          replacements: { id },
-          type: sequelize.QueryTypes.SELECT
-        }
-      )
-
-      const mensaje = result[0]?.mensaje || 'Sin mensaje'
-      if (mensaje.includes('No se encontró')) {
-        return { error: mensaje }
+      const reserva = await this.Reserva.findByPk(id)
+      if (!reserva) {
+        return { error: 'Reserva no encontrada' }
       }
-
-      return { mensaje }
+      reserva.idEstado = 6 // Cambiar estado a cancelada
+      await reserva.removeMesas(idMesa) // Eliminar mesas asociadas
+      await reserva.save()
+      return { mensaje: 'Reserva cancelada correctamente' }
     } catch (error) {
-      return {
-        error: 'Error al cancelar la reserva',
-        detalles: error.message
-      }
+      throw new Error('Error al cancelar la reserva: ' + error.message)
     }
   }
 
@@ -130,40 +109,47 @@ export class ModeloReserva {
     }
   }
 
-  // Mostrar reservas por nombre
-  static async mostrarReservasNombre (nombre) {
+  // Mostrar reservas por cliente web
+  static async mostrarReservasClienteWeb ({ idClienteWeb }) {
     try {
-      const reservas = await sequelize.query(
-        'EXEC get_MostrarReservasNombre @nombre = :nombre',
-        {
-          replacements: { nombre },
-          type: sequelize.QueryTypes.SELECT
-        }
-      )
-
-      const zonaHoraria = 'America/La_Paz' // Puedes cambiarla según tu país
-
-      const reserva = reservas.map(r => ({
-        ...r,
-        hora: r.hora instanceof Date
-          ? r.hora.toLocaleTimeString('es-BO', {
-            timeZone: zonaHoraria,
-            hour12: false,
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-          })
-          : r.hora,
-        fecha: r.fecha instanceof Date
-          ? r.fecha.toLocaleDateString('es-BO', {
-            timeZone: zonaHoraria
-          })
-          : r.fecha
-      }))
-
-      return { reserva }
+      const reservasCliente = await this.Reserva.findAll({
+        where: { idClienteWeb },
+        include: [{
+          model: this.Mesa
+        }],
+        order: [['fecha', 'DESC'], ['hora', 'DESC']]
+      })
+      if (reservasCliente.length === 0) {
+        return { error: 'No se encontraron reservas para este cliente' }
+      }
+      return reservasCliente
     } catch (error) {
-      throw new Error('Error al obtener reservas por nombre: ' + error.message)
+      throw new Error('Error al obtener reservas por cliente: ' + error.message)
+    }
+  }
+
+  static async mostrarMesasDisponibles (fecha, hora) {
+    try {
+      return await sequelize.query(`
+      SELECT m.id, m.nro, m.capacidad, m.idEstado
+      FROM Mesa m
+      WHERE m.idEstado = 12
+      AND m.id NOT IN (
+        SELECT mr.idMesa
+        FROM MesasReserva mr
+        JOIN Reserva r ON mr.idReserva = r.id
+        WHERE r.fecha = '${fecha}'
+        AND r.hora = '${hora}'
+        AND r.idEstado = 10
+      )
+    `, {
+        type: sequelize.QueryTypes.SELECT,
+        model: this.Mesa,
+        mapToModel: true
+      })
+    } catch (error) {
+      console.error('Error al obtener mesas disponibles:', error)
+      throw error
     }
   }
 }

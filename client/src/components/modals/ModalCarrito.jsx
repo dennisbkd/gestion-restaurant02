@@ -23,7 +23,13 @@ export function CartModal() {
         <ShoppingBag className="h-5 w-5" />
         <span className="sr-only">Carrito</span>
         {cart.length > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+          <span
+            className="absolute -top-1 -right-1 flex h-4 w-4 items-center 
+            justify-center rounded-full bg-primary text-[10px]
+            font-medium text-primary-foreground animate-bounce"
+
+            key={cart.reduce((sum, item) => sum + item.quantity, 0)}
+          >
             {cart.reduce((sum, item) => sum + item.quantity, 0)}
           </span>
         )}
