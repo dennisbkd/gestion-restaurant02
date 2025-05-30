@@ -1,12 +1,12 @@
-import { getMenuRequest, deleteMenuRequest } from '../api/menu'
-import { useFetchData } from '../hooks/useFetchData'
-import ModalCrearRol from './modals/ModalRol'
-import SuccessModal from './modals/SuccessModal'
-import ModalDelete from './modals/ModalDelete'
+import { getMenuRequest, deleteMenuRequest } from '../../api/menu'
+import { useFetchData } from '../../hooks/useFetchData'
+import ModalCrearRol from '../modals/ModalRol'
+import SuccessModal from '../modals/SuccessModal'
+import ModalDelete from '../modals/ModalDelete'
 import { TrashIcon } from '@heroicons/react/24/outline'
-import { useModal } from '../hooks/useModal'
+import { useModal } from '../../hooks/useModal'
 import { useState } from 'react'
-import { editMenuRequest, createMenuRequest } from '../api/menu'
+import { editMenuRequest, createMenuRequest } from '../../api/menu'
 
 const extracMenus = (res) => res.data.menus
 const Menu = () => {

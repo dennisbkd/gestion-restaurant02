@@ -3,13 +3,13 @@ import {
   getProviderRequest,
   deleteProviderRequest,
   restoreProviderRequest
-} from '../api/proveedor'
-import { useFetchData } from '../hooks/useFetchData'
-import { useModal } from '../hooks/useModal'
-import SuccessModal from './modals/SuccessModal'
-import ModalProv from './modals/ModalProv'
-import ModalAddProv from './modals/ModalAddProv'
-import ModalDelete from './modals/ModalDelete'
+} from '../../api/proveedor'
+import { useFetchData } from '../../hooks/useFetchData'
+import { useModal } from '../../hooks/useModal'
+import SuccessModal from '../modals/SuccessModal'
+import ModalProv from '../modals/ModalProv'
+import ModalAddProv from '../modals/ModalAddProv'
+import ModalDelete from '../modals/ModalDelete'
 
 const extractUsuarios = (res) => res.data.providers
 
