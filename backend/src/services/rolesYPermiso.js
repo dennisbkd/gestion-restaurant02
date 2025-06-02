@@ -1,5 +1,4 @@
-import { DataTypes } from 'sequelize';
-
+import { DataTypes } from 'sequelize'
 
 export const definicionRol = {
   id: {
@@ -97,4 +96,4 @@ export const definicionUsuario = {
       key: 'id'
     }
   }
-};
+}

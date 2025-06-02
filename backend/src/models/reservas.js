@@ -1,6 +1,6 @@
 import sequelize from '../config/db/config.js'
-import { definicionReserva,definicionMesa,mesasReserva } from '../services/reservas.js'
-import { definicionEstado } from '../services/pedido.js'
+import { definicionMesa } from '../services/pedido.js'
+import { definicionReserva, definicionReservaMesas } from '../services/reservas.js'
 
 export class ModeloReserva {
   static Reserva = sequelize.define('Reserva', definicionReserva, {
@@ -13,160 +13,86 @@ export class ModeloReserva {
     freezeTableName: true
   })
 
-  static MesasReservas = sequelize.define('MesasReserva', mesasReserva, {
+  static ReservaMesa = sequelize.define('MesasReserva', definicionReservaMesas, {
     timestamps: false,
     freezeTableName: true
   })
 
-  static Estado = sequelize.define('Estado', definicionEstado, {
-    timestamps: false,
-    freezeTableName: true
-  })
-
-  // Asociaciones
-  static asociar () {
-    this.Reserva.belongsTo(this.Estado, { foreignKey: 'idEstado' })
-    this.Estado.hasMany(this.Reserva, { foreignKey: 'idEstado' })
-
+  static asociar = () => {
     this.Reserva.belongsToMany(this.Mesa, {
-      through: this.MesasReservas,
+      through: this.ReservaMesa,
       foreignKey: 'idReserva',
       otherKey: 'idMesa'
     })
 
     this.Mesa.belongsToMany(this.Reserva, {
-      through: this.MesasReservas,
+      through: this.ReservaMesa,
       foreignKey: 'idMesa',
       otherKey: 'idReserva'
     })
   }
 
-  // Crear reserva
- static async crearReserva(id, { input }) {
-  try {
-    const { fecha, hora, idMesas } = input
-
-    const estadoReserva = await this.Estado.findOne({
-      where: { descripcion: 'Pendiente' }
-    })
-
-    const estadoMesa = await this.Estado.findOne({
-      where: { descripcion: 'NO Disponible' }
-    })
-
-    // Crear la reserva
-    const nuevaReserva = await this.Reserva.create({
-      fecha,
-      hora,
-      idClienteWeb: id,
-      idEstado: estadoReserva.id
-    })
-
-    for (const { id: idMesa } of idMesas) {
-      await this.MesasReservas.create({
-        idReserva: nuevaReserva.id,
-        idMesa
+  // Registrar Reserva
+  static async crearReserva ({ input }) {
+    const {
+      fecha, hora, idEstado, idClienteWeb, idMesa: id
+    } = input
+    try {
+      const nuevaReserva = await this.Reserva.create({
+        fecha,
+        hora,
+        idClienteWeb,
+        idEstado
       })
-
-      await this.Mesa.update(
-        { idEstado: estadoMesa.id },
-        { where: { id: idMesa } }
-      )
+      await nuevaReserva.addMesa(id)
+      return { message: 'Reserva Creada' }
+    } catch (error) {
+      throw new Error('Error al crear la reserva: ' + error.message)
     }
-
-    return {
-      mensaje: 'Reserva creada correctamente',
-      reserva: nuevaReserva
-    }
-  } catch (error) {
-    throw new Error('Error al crear reserva: ' + error.message)
   }
-}
 
-
-
-  // Editar reserva
-  static async editarReserva(id, { input }) {
-  try {
-    const { idReserva, fecha, hora, idMesas } = input
-
-    const reserva = await this.Reserva.findByPk(idReserva)
-    if (!reserva) return { error: 'Reserva no encontrada' }
-
-    const estadoReserva = await this.Estado.findOne({ where: { descripcion: 'pendiente' } })
-    const estadoNoDisponible = await this.Estado.findOne({ where: { descripcion: 'NO Disponible' } })
-    const estadoDisponible = await this.Estado.findOne({ where: { descripcion: 'disponible' } })
-
-    await reserva.update({
-      fecha,
-      hora,
-      idClienteWeb: id,
-      idEstado: estadoReserva.id
-    })
-
-    const mesasAnteriores = await this.MesasReservas.findAll({ where: { idReserva } })
-    for (const mesa of mesasAnteriores) {
-      await this.Mesa.update(
-        { idEstado: estadoDisponible.id },
-        { where: { id: mesa.idMesa } }
-      )
-    }
-
-    await this.MesasReservas.destroy({ where: { idReserva } })
-
-    for (const { id: idMesa } of idMesas) {
-      await this.MesasReservas.create({
-        idReserva,
-        idMesa
-      })
-
-      await this.Mesa.update(
-        { idEstado: estadoNoDisponible.id },
-        { where: { id: idMesa } }
-      )
-    }
-
-    return {
-      mensaje: 'Reserva actualizada correctamente',
-      reserva
-    }
-  } catch (error) {
-    throw new Error('Error al editar reserva: ' + error.message)
-  }
-}
-
-
-
-  // Eliminar reserva
-  static async eliminarReserva (id) {
+  // Actualizar Reserva
+  static async editarReserva ({ input }) {
+    const {
+      id, fecha, hora, idEstado, idClienteWeb, idMesa
+    } = input
     try {
       const reserva = await this.Reserva.findByPk(id)
-      if (!reserva) return { error: 'Reserva no encontrada' }
+      if (!reserva) {
+        return { error: 'Reserva no encontrada' }
+      }
+      reserva.id = id
+      reserva.fecha = fecha
+      reserva.hora = hora
+      reserva.idEstado = idEstado
+      reserva.idClienteWeb = idClienteWeb
 
-      const estado = await this.Estado.findOne({
-      where: { descripcion: 'cancelado' }
-    })
+      await reserva.save()
 
-        const estadoDisponible = await this.Estado.findOne({
-      where: { descripcion: 'disponible' }
-    })
+      // Actualizar mesas asociadas
+      if (idMesa) {
+        await reserva.setMesas(idMesa)
+      }
 
-    const mesasAsociadas = await this.MesasReservas.findAll({
-      where: { idReserva: id }
-    })
-
-       for (const mesaReserva of mesasAsociadas) {
-      await this.Mesa.update(
-        { idEstado: estadoDisponible.id },
-        { where: { id: mesaReserva.idMesa } }
-      )
-    }
-
-      await reserva.update({ idEstado: estado.id })
-
-      return { mensaje: 'Reserva eliminada correctamente' }
+      return reserva
     } catch (error) {
-      throw new Error('Error al eliminar reserva: ' + error.message)
+      throw new Error('Error al actualizar la reserva: ' + error.message)
+    }
+  }
+
+  // Cancelar Reserva
+  static async eliminarReserva ({ id, idMesa }) {
+    try {
+      const reserva = await this.Reserva.findByPk(id)
+      if (!reserva) {
+        return { error: 'Reserva no encontrada' }
+      }
+      reserva.idEstado = 6 // Cambiar estado a cancelada
+      await reserva.removeMesas(idMesa) // Eliminar mesas asociadas
+      await reserva.save()
+      return { mensaje: 'Reserva cancelada correctamente' }
+    } catch (error) {
+      throw new Error('Error al cancelar la reserva: ' + error.message)
     }
   }
 
@@ -185,19 +111,48 @@ export class ModeloReserva {
     }
   }
 
-  // Buscar por nombre 
-  static async mostrarReservasFecha (fecha) {
+  // Mostrar reservas por cliente web
+  static async mostrarReservasClienteWeb ({ idClienteWeb }) {
     try {
-      const reservas = await sequelize.query(
-        `SELECT * FROM Reserva WHERE fecha = :fecha`,
-        {
-          replacements: { fecha },
-          type: sequelize.QueryTypes.SELECT
-        }
-      )
-      return { reservas }
+      const reservasCliente = await this.Reserva.findAll({
+        where: { idClienteWeb },
+        include: [{
+          model: this.Mesa
+        }],
+        order: [['fecha', 'DESC'], ['hora', 'DESC']]
+      })
+      if (reservasCliente.length === 0) {
+        return { error: 'No se encontraron reservas para este cliente' }
+      }
+      return reservasCliente
     } catch (error) {
-      throw new Error('Error al buscar reservas por nombre: ' + error.message)
+      throw new Error('Error al obtener reservas por cliente: ' + error.message)
+    }
+  }
+
+  static async mostrarMesasDisponibles (fecha, hora) {
+    try {
+      return await sequelize.query(`
+      SELECT m.id, m.nro, m.capacidad, m.idEstado
+      FROM Mesa m
+      WHERE m.idEstado = 12
+      AND m.id NOT IN (
+        SELECT mr.idMesa
+        FROM MesasReserva mr
+        JOIN Reserva r ON mr.idReserva = r.id
+        WHERE r.fecha = '${fecha}'
+        AND r.hora = '${hora}'
+        AND r.idEstado = 10
+      )
+    `, {
+        type: sequelize.QueryTypes.SELECT,
+        model: this.Mesa,
+        mapToModel: true
+      })
+    } catch (error) {
+      console.error('Error al obtener mesas disponibles:', error)
+      throw error
     }
   }
 }
+ModeloReserva.asociar()

@@ -1,4 +1,4 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize'
 
 export const definicionReserva = {
   id: {
@@ -22,43 +22,15 @@ export const definicionReserva = {
     type: DataTypes.INTEGER,
     allowNull: false
   }
-};
+}
 
-export const definicionMesa = {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
-  nro: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  capacidad: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  idEstado: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  }
-};
-
-export const mesasReserva = {
+export const definicionReservaMesas = {
   idReserva: {
     type: DataTypes.INTEGER,
-    primaryKey: true,
-    references: {
-      model: 'Reserva',
-      key: 'id'
-    }
+    allowNull: false
   },
   idMesa: {
     type: DataTypes.INTEGER,
-    primaryKey: true,
-    references: {
-      model: 'Mesas',
-      key: 'id'
-    }
+    allowNull: false
   }
-};
+}

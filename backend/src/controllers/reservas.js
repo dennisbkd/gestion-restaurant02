@@ -18,26 +18,17 @@ crearReserva = async (req, res) => {
 
   // Actualizar Reserva
   editarReserva = async (req, res) => {
-    try {
-      const  { id } = req.params
-      const reserva = await this.modeloReserva.editarReserva(id , { input: req.body })
-      if (reserva.error) return res.status(400).json({ error: reserva.error })
-      return res.status(200).json(reserva)
-    } catch (error) {
-      return res.status(500).json({ error: 'Error interno del servidor' })
-    }
+    const reserva = await this.modeloReserva.editarReserva({ input: req.body })
+    if (reserva.error) return res.status(400).json({ error: reserva.error })
+    return res.status(200).json(reserva)
   }
 
   // Cancelar Reserva
   eliminarReserva = async (req, res) => {
-    try {
-      const  { id } = req.body
-      const reserva = await this.modeloReserva.eliminarReserva(id)
-      if (reserva.error) return res.status(400).json({ error: reserva.error })
-      return res.status(200).json(reserva)
-    } catch (error) {
-      return res.status(500).json({ error: 'Error interno del servidor' })
-    }
+    if (!req.params.id) return res.status(400).json({ error: 'ID de reserva no proporcionado' })
+    const reserva = await this.modeloReserva.eliminarReserva({ id: req.params.id, idMesa: req.body.idMesa })
+    if (reserva.error) return res.status(400).json({ error: reserva.error })
+    return res.status(200).json(reserva.mensaje)
   }
 
   // Mostrar todas las reservas
@@ -51,14 +42,24 @@ crearReserva = async (req, res) => {
     }
   }
 
-  // mostrar Reserva por fecha
-  mostrarReservasFecha = async (req, res) => {
+  // mostrar Reserva por Cliente Web
+  mostrarReservasClienteWeb = async (req, res) => {
+    const { idClienteWeb } = req.params
+    if (!idClienteWeb) return res.status(400).json({ error: 'ID de cliente no proporcionado' })
+    const reservas = await this.modeloReserva.mostrarReservasClienteWeb({ idClienteWeb })
+    if (reservas.error) return res.status(400).json({ error: reservas.error })
+    return res.status(200).json(reservas)
+  }
+
+  mostrarMesasDisponibles = async (req, res) => {
     try {
-      const { fecha } = req.body
-      const reservas = await this.modeloReserva.mostrarReservasFecha(fecha)
-      if (reservas.error) return res.status(400).json({ error: reservas.error })
-      return res.status(200).json(reservas)
+      const { fecha, hora } = req.body
+      if (!fecha || !hora) return res.status(400).json({ error: 'Fecha y hora no proporcionadas' })
+      const mesas = await this.modeloReserva.mostrarMesasDisponibles(fecha, hora)
+      if (mesas.error) return res.status(400).json({ error: mesas.error })
+      return res.status(200).json(mesas)
     } catch (error) {
+      console.error('Error en mostrarMesasDisponibles:', error)
       return res.status(500).json({ error: error.message || 'Error interno del servidor' })
     }
   }

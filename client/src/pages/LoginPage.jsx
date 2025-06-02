@@ -1,5 +1,9 @@
 import { useForm } from "react-hook-form"
 import { useAuth } from "../context/AuthContext"
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Link, useNavigate } from "react-router"
 import { useEffect } from "react"
 
@@ -10,75 +14,81 @@ export default function LoginPage() {
   const { register, handleSubmit, formState: { errors } } = useForm()
   const { signIn, errors: LoginErrors, isAuthenticated } = useAuth()
 
-  useEffect(() => {
-    if (isAuthenticated) navigate("/dashboard")
-  }, [isAuthenticated, navigate])
 
   const onSubmit = handleSubmit(data => {
     signIn(data)
   })
+  useEffect(() => {
+    if (isAuthenticated) navigate("/")
+  }, [isAuthenticated, navigate])
+
   return (
-    <div className="flex items-center justify-center min-h-screen w-screen bg-gradient-to-r from-blue-500 to-purple-600">
-      <form
-        onSubmit={onSubmit}
-        className="bg-amber-100 p-8 rounded-lg shadow-lg w-full max-w-md"
-      >
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-          Login
-        </h2>
-        {
-          LoginErrors.map((error, i) => (
-            <div key={i} className="bg-red-500 p-2 text-white">
-              {error.msg}
+    <div className="flex items-center justify-center min-h-screen w-screen  bg-gray-100">
+      <Card className="mb-100 w-full max-w-md bg-white shadow-lg rounded-lg p-6">
+        <CardHeader>
+          <CardTitle className="text-2xl text-center text-gray-800">
+            Bienvenido
+          </CardTitle>
+          <p className="text-center text-gray-600">Por favor inicia sesión para continuar</p>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={onSubmit} className="space-y-4">
+            {LoginErrors.map((error, i) => (
+              <div key={i} className="bg-red-500 p-2 text-white rounded-md">
+                {error.msg}
+              </div>
+            ))}
+
+            <div className="space-y-2">
+              <Label htmlFor="nombreUsuario" className="text-gray-700">
+                Usuario
+              </Label>
+              <Input
+                type="text"
+                id="nombreUsuario"
+                {...register("nombreUsuario", { required: true })}
+                placeholder="Enter your userName"
+                className="focus-visible:ring-blue-500"
+              />
+              {errors.nombreUsuario && (
+                <p className="text-red-500 text-sm">Usuario es requerido</p>
+              )}
             </div>
-          ))
-        }
-        <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-2" htmlFor="email">
-            Usuario
-          </label>
-          <input
-            type="text"
-            id="nombreUsuario"
-            {...register("nombreUsuario", { required: true })}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter your userName"
-          />
-          {errors.nombreUsuario && (
-            <p className="text-red-500">Usuario es requerido</p>
-          )}
-        </div>
-        <div className="mb-6">
-          <label className="block text-gray-700 font-medium mb-2" htmlFor="password">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            {...register("password", { required: true })}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter your password"
-          />
-          {errors.password && (
-            <p className="text-red-500">Password es requerido</p>
-          )}
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300"
-        >
-          Login
-        </button>
-        <p className="flex gap-x-2 justify-between m-2">
-          ¿No tienes una cuenta?{" "}
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-gray-700">
+                Password
+              </Label>
+              <Input
+                type="password"
+                id="password"
+                {...register("password", { required: true })}
+                placeholder="Enter your password"
+                className="focus-visible:bgring-black"
+              />
+              {errors.password && (
+                <p className="text-red-500 text-sm">Password es requerido</p>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-black text-white hover:bg-gray-800 transition duration-300"
+            >
+              Login
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter className="flex justify-between">
+          <p className="text-sm text-gray-700">¿No tienes una cuenta?</p>
           <Link
             to="/register"
-            className="text-blue-500 hover:underline "
+            className="text-sm text-black hover:underline"
           >
             Regístrate aquí
           </Link>
-        </p>
-      </form>
+        </CardFooter>
+      </Card>
     </div>
   )
 }

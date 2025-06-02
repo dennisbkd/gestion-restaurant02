@@ -1,17 +1,15 @@
-import sequelize from '../config/db/config.js';
-import { definicionIngrediente } from '../services/receta.js';
+import sequelize from '../config/db/config.js'
+import { definicionIngrediente } from '../services/ingrediente.js'
 
 export class ModeloIngrediente {
   static Ingrediente = sequelize.define('Ingrediente', definicionIngrediente, {
     timestamps: false,
     freezeTableName: true
-  });
-
-  // ciclo 3
+  })
 
   // Crear ingrediente
-  static async crearIngrediente({ input }) {
-    const { nombre, idUnidadMedida, idStock, idEstado } = input;
+  static async crearIngrediente ({ input }) {
+    const { nombre, idUnidadMedida, idStock, idEstado } = input
     try {
       const [resultado] = await sequelize.query(
         `DECLARE @mensaje VARCHAR(200);
@@ -26,26 +24,26 @@ export class ModeloIngrediente {
           replacements: { nombre, idUnidadMedida, idStock, idEstado },
           type: sequelize.QueryTypes.SELECT
         }
-      );
+      )
 
       if (resultado.mensaje.includes('Error')) {
-        return { error: resultado.mensaje };
+        return { error: resultado.mensaje }
       }
 
-      return { mensaje: resultado.mensaje };
+      return { mensaje: resultado.mensaje }
     } catch (error) {
       return {
         error: 'Error al crear el ingrediente',
         detalles: error.message
-      };
+      }
     }
   }
 
   // Editar ingrediente
-  static async editarIngrediente({ input }) {
-  const { id, nombre, idUnidadMedida, idStock, idEstado } = input;
-  try {
-    const [resultado] = await sequelize.query(
+  static async editarIngrediente ({ input }) {
+    const { id, nombre, idUnidadMedida, idStock, idEstado } = input
+    try {
+      const [resultado] = await sequelize.query(
       `DECLARE @mensaje VARCHAR(200);
        EXEC set_EditarIngrediente 
           @id = :id, 
@@ -59,27 +57,26 @@ export class ModeloIngrediente {
         replacements: { id, nombre, idUnidadMedida, idStock, idStado: idEstado }, // <- aquí está el truco
         type: sequelize.QueryTypes.SELECT
       }
-    );
+      )
 
-    if (resultado.mensaje.includes('Error')) {
-      return { error: resultado.mensaje };
+      if (resultado.mensaje.includes('Error')) {
+        return { error: resultado.mensaje }
+      }
+
+      return {
+        ingrediente: { id, nombre, idUnidadMedida, idStock, idEstado },
+        mensaje: resultado.mensaje
+      }
+    } catch (error) {
+      return {
+        error: 'Error al editar el ingrediente',
+        detalles: error.message
+      }
     }
-
-    return {
-      ingrediente: { id, nombre, idUnidadMedida, idStock, idEstado },
-      mensaje: resultado.mensaje
-    };
-  } catch (error) {
-    return {
-      error: 'Error al editar el ingrediente',
-      detalles: error.message
-    };
   }
-}
-
 
   // Eliminar ingrediente
-  static async eliminarIngrediente(id) {
+  static async eliminarIngrediente (id) {
     try {
       const result = await sequelize.query(
         `DECLARE @mensaje VARCHAR(200);
@@ -91,41 +88,44 @@ export class ModeloIngrediente {
           replacements: { id: Number(id) },
           type: sequelize.QueryTypes.SELECT
         }
-      );
+      )
 
-      const mensaje = result[result.length - 1].mensaje;
-      return { message: mensaje };
+      const mensaje = result[result.length - 1].mensaje
+      return { message: mensaje }
     } catch (error) {
       return {
         error: 'Error al eliminar el ingrediente',
         detalles: error.message
-      };
+      }
     }
   }
 
   // Obtener todos los ingredientes
-  static async obtenerIngredientes() {
+  static async obtenerIngredientes () {
     try {
-      const ingredientes = await sequelize.query(
-        'EXEC get_MostrarIngredientes',
-        { type: sequelize.QueryTypes.SELECT }
-      );
-      return { ingredientes };
+      const ingredientes = await this.Ingrediente.findAll()
+      if (!ingredientes) {
+        return { error: 'Error al encontrar todos los ingredientes' }
+      }
+      return { ingredientes }
     } catch (error) {
-      throw new Error('Error al obtener ingredientes: ' + error.message);
+      throw new Error('Error al obtener ingredientes: ' + error.message)
     }
   }
 
   // Obtener ingrediente por ID
   static async obtenerIngredientePorId(id) {
-    try {
-      const ingrediente = await sequelize.query(
-        'EXEC get_MostrarIngredientePorID @id = :id',
-        { replacements: { id }, type: sequelize.QueryTypes.SELECT }
-      );
-      return { ingrediente };
-    } catch (error) {
-      throw new Error('Error al obtener el ingrediente por ID: ' + error.message);
+  try {
+    const ingrediente = await this.Ingrediente.findOne({
+      where: { id }, // Sequelize automáticamente busca por PK
+    });
+
+    if (!ingrediente) {
+      return { error: 'Ingrediente no encontrado' };
     }
+    return { ingrediente };
+  } catch (error) {
+    throw new Error('Error al obtener el ingrediente por ID: ' + error.message);
   }
+}
 }

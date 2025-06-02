@@ -1,40 +1,33 @@
-import { BrowserRouter, Routes, Route } from "react-router"
-import RegisterPage from "./pages/RegisterPage"
-import LoginPage from "./pages/LoginPage"
-import { AuthProvide } from "./context/AuthContext"
-import { DashboardPage } from "./pages/DashboardPage"
-import { ProfilePage } from "./pages/ProfilePage"
-import { HomePage } from "./pages/HomePage"
-import { ProtectedRoute } from "./ProtectedRoute"
-import { Task } from "./pages/task"
-import Menu from "./components/usuario/Menu"
-import { CartLayout } from "./Layouts/CartLayout"
-
+import { BrowserRouter, Routes, Route } from 'react-router'
+import RegisterPage from './pages/RegisterPage.jsx'
+import { AuthProvide } from './context/AuthContext'
+import DashboardRoutes from './routes/AdminRoutes'
+import { ProfilePage } from './pages/ProfilePage.jsx'
+import { ProtectedRoute } from './ProtectedRoute.jsx'
+import { ReservaProvider } from './context/Reserva/ReservaProvider'
+import ClienteRoutes from './routes/ClienteRoutes.jsx'
+import MeseroPedidos from '@/components/Mesero/Pedido.jsx'
+import { RecetaProvider } from './context/Receta/RecetaProvider'
 
 export default function App() {
   // todas las rutas hijas tendran el contexto
   return (
     <AuthProvide>
       <BrowserRouter>
+        <ReservaProvider>
+          <RecetaProvider>
+            <Routes>
+              <Route path='/register' element={<RegisterPage />} />
+              <Route path='/profile' element={<ProfilePage />} />
+              <Route path='/mesero/pedidos' element={<MeseroPedidos />} />
 
-        {/* CartSidebar fuera de Routes pero dentro del Router */}
+              <Route element={<ProtectedRoute />}>{DashboardRoutes()}</Route>
 
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/task" element={<Task />} />
-
-
-          <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
-          </Route>
-          <Route element={<CartLayout />}>
-            <Route path="/menu" element={<Menu />} />
-          </Route>
-        </Routes>
+              {ClienteRoutes()}
+            </Routes>
+          </RecetaProvider>
+        </ReservaProvider>
       </BrowserRouter>
     </AuthProvide>
-  );
+  )
 }

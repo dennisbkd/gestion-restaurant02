@@ -1,12 +1,12 @@
- export class ControladorRoles {
+export class ControladorRoles {
   constructor ({ modeloRol }) {
     this.modeloRol = modeloRol
   }
 
   crearRol = async (req, res) => {
     try {
-      const  {nombre,permisos}  = req.body
-      const resultado = await this.modeloRol.crearRol(nombre,{permisos})  
+      const { nombre, permisos } = req.body
+      const resultado = await this.modeloRol.crearRol(nombre, { permisos })
       if (resultado.error) return res.status(400).json({ error: resultado.error })
       return res.status(201).json(resultado)
     } catch (error) {
@@ -27,7 +27,7 @@
 
   eliminarRol = async (req, res) => {
     try {
-      const  { id }  = req.params
+      const { id } = req.params
       const rol = await this.modeloRol.eliminarRol(id)
       if (rol.error) return res.status(400).json({ error: rol.error })
       return res.status(200).json(rol)

@@ -5,20 +5,20 @@ export const crearRutasPedido = ({ modeloPedido }) => {
   const crearRutasPedido = Router()
   const controladorPedido = new ControladorPedido({ modeloPedido })
 
-  // Registrar pedido
+  // Registrar pedido restringido a solo meseros
   crearRutasPedido.post('/registrar/:idMesero', controladorPedido.registrarPedido)
-  /*
+
   // Obtener pedidos por cliente
-  crearRutasPedido.get('/cliente/:idCliente', controladorPedido.obtenerPedidosPorCliente)
+  crearRutasPedido.get('/cliente/:idCliente', controladorPedido.obtenerPedidoClienteWeb)
 
-  // Obtener pedidos por estado
-  crearRutasPedido.get('/estado/:estado', controladorPedido.obtenerPedidosPorEstado)
+  // Obtener pedidos a realizar, restringido a cocineros
+  crearRutasPedido.get('/pendientes', controladorPedido.obtenerPedidosPendientes)
 
-  // Editar pedido
+  /* // Editar pedido
   crearRutasPedido.patch('/editar/:id', controladorPedido.editarPedido)
-
-  // Eliminar pedido
-  crearRutasPedido.delete('/eliminar/:id', controladorPedido.eliminarPedido)
 */
+  // Completar pedido, restringido al cocinero
+  // crearRutasPedido.patch('/completar/:id', controladorPedido.completarPedido)
+
   return crearRutasPedido
 }

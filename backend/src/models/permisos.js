@@ -1,35 +1,39 @@
 import sequelize from '../config/db/config.js'
-import { definicionPermiso, DetallePermiso } from '../services/rolesYPermiso.js'
+import { definicionPermiso } from '../services/permisos.js'
 
 export class ModeloPermiso {
   static Permiso = sequelize.define('Permisos', definicionPermiso, {
     timestamps: false,
     freezeTableName: true
   })
-  static DetallePermiso = sequelize.define('DetallePermiso', DetallePermiso, {
-    timestamps: false,
-    freezeTableName: true
-  })
 
-  // Crear un nuevo permiso 
+  // Crear un nuevo permiso
   static async crearPermiso ({ input }) {
     const { descripcion } = input
     try {
-      const existe = await this.Permiso.findOne({ where: { descripcion } })
-      if (existe) {
-        return { error: 'Ya existe un permiso con esa descripción' }
-      }
+      const [resultado] = await sequelize.query(
+        'DECLARE @newID INT, @mensaje VARCHAR(200); ' +
+      'EXEC p_CrearPermiso @descripcion = :descripcion, @newID = @newID OUTPUT, @mensaje = @mensaje OUTPUT; ' +
+      'SELECT @newID AS newID, @mensaje AS mensaje;',
+        {
+          replacements: { descripcion },
+          type: sequelize.QueryTypes.SELECT
+        }
+      )
 
-      const nuevoPermiso = await this.Permiso.create({ descripcion })
+      if (resultado.newID === -1) {
+        return { error: resultado.mensaje }
+      }
 
       return {
         permiso: {
-          id: nuevoPermiso.id,
-          descripcion: nuevoPermiso.descripcion
+          id: resultado.newID,
+          descripcion
         },
-        mensaje: 'Permiso creado correctamente'
+        mensaje: resultado.mensaje
       }
     } catch (error) {
+      console.error('Error detallado:', error)
       return {
         error: 'Error al crear el permiso',
         detalles: error.message
@@ -37,35 +41,36 @@ export class ModeloPermiso {
     }
   }
 
-  // Editar o actualizar un permiso sin procedimiento almacenado
+  // Editar o actualizar un permiso
   static async editarPermiso ({ input }) {
     const { idPermiso, newDescripcion } = input
     try {
-      const permiso = await this.Permiso.findByPk(idPermiso)
-      if (!permiso) {
-        return { error: 'El permiso no existe' }
+      const [resultado] = await sequelize.query(
+      `DECLARE @mensaje VARCHAR(200);
+       EXEC p_EditarPermiso 
+          @idPermiso = :idPermiso, 
+          @newDescripcion = :newDescripcion, 
+          @mensaje = @mensaje OUTPUT;
+       SELECT @mensaje AS mensaje;`,
+      {
+        replacements: {
+          idPermiso,
+          newDescripcion
+        },
+        type: sequelize.QueryTypes.SELECT
       }
+      )
 
-      const existe = await this.Permiso.findOne({
-        where: {
-          descripcion: newDescripcion,
-          id: { [sequelize.Sequelize.Op.ne]: idPermiso }
-        }
-      })
-
-      if (existe) {
-        return { error: 'Ya existe un permiso con esa descripción' }
+      if (resultado.mensaje.includes('Error') || resultado.mensaje.includes('No existe')) {
+        return { error: resultado.mensaje }
       }
-
-      permiso.descripcion = newDescripcion
-      await permiso.save()
 
       return {
         permiso: {
-          id: permiso.id,
-          descripcion: permiso.descripcion
+          id: idPermiso,
+          descripcion: newDescripcion
         },
-        mensaje: 'Permiso actualizado correctamente'
+        mensaje: resultado.mensaje
       }
     } catch (error) {
       return {
@@ -75,17 +80,22 @@ export class ModeloPermiso {
     }
   }
 
-  // Eliminar un permiso sin procedimiento almacenado
+  // Eliminar un permiso
   static async eliminarPermiso (id) {
     try {
-      const permiso = await this.Permiso.findByPk(id)
-      if (!permiso) {
-        return { error: 'El permiso no existe' }
+      const result = await sequelize.query(
+      `DECLARE @mensaje VARCHAR(200);
+       EXEC p_EliminarPermiso @idPermiso = :idPermiso, @mensaje = @mensaje OUTPUT;
+       SELECT @mensaje AS mensaje;`,
+      {
+        replacements: { idPermiso: Number(id) },
+        type: sequelize.QueryTypes.SELECT
       }
+      )
 
-      await permiso.destroy()
+      const mensaje = result[result.length - 1].mensaje
 
-      return { message: 'Permiso eliminado correctamente' }
+      return { message: mensaje }
     } catch (error) {
       return {
         error: 'Error al eliminar el permiso',
@@ -94,24 +104,53 @@ export class ModeloPermiso {
     }
   }
 
-  // Asignar un permiso a un rol sin procedimiento almacenado
-static async asignarPermiso({ input }) {
-  const { idRol, idPermisos } = input;
-  try {
-    const existe = await this.DetallePermiso.findOne({
-      where: { idRol, idPermisos }
-    });
+  // Asignar un permiso a un rol
+  static async asignarPermiso (input) {
+    const { idRol, idPermiso } = input
+    try {
+      const [resultado] = await sequelize.query(
+        `DECLARE @mensaje VARCHAR(200);
+         EXEC set_AsignarPermiso 
+            @idRol = :idRol, 
+            @idPermiso = :idPermiso, 
+            @mensaje = @mensaje OUTPUT;
+         SELECT @mensaje AS mensaje;`,
+        {
+          replacements: { idRol, idPermiso },
+          type: sequelize.QueryTypes.SELECT
+        }
+      )
 
-    if (existe) {
-      return { mensaje: 'La relación permiso-rol ya existe' };
+      if (resultado.mensaje.includes('Error') || resultado.mensaje.includes('No existe')) {
+        return { error: resultado.mensaje }
+      }
+
+      return {
+        mensaje: resultado.mensaje
+      }
+    } catch (error) {
+      return {
+        error: 'Error al asignar el permiso',
+        detalles: error.message
+      }
     }
-
-    await this.DetallePermiso.create({ idRol, idPermisos });
-
-    return { mensaje: 'Permiso asignado correctamente' };
-  } catch (error) {
-    return { error: 'Error al asignar el permiso', detalles: error.message };
   }
-}
 
+  // Obtener todos los permisos
+  static async mostrarPermisos () {
+    try {
+      const permisos = await ModeloPermiso.Permiso.findAll({
+        attributes: ['id', 'descripcion'],
+        order: [['id', 'ASC']]
+      })
+
+      return permisos
+    } catch (error) {
+      console.error('Error al mostrar permisos:', error)
+      return {
+        error: 'Error al obtener los permisos',
+        detalles: error.message
+      }
+    }
+  }
 }

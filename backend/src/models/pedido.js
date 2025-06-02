@@ -1,5 +1,6 @@
 import sequelize from '../config/db/config.js'
-import { definicionPedido, definicionProducto, definicionDetallePedido, definicionMesa, definicionMesasPedido, definicionIngrediente, definicionExclusionIngrediente, definicionEstado } from '../services/pedido.js'
+import { definicionPedido, definicionDetallePedido, definicionMesa, definicionMesasPedido, definicionIngrediente, definicionExclusionIngrediente, definicionEstado } from '../services/pedido.js'
+import { definicionProducto } from '../services/producto.js'
 
 export class ModeloPedido {
   static Pedido = sequelize.define('Pedido', definicionPedido, {
@@ -70,6 +71,32 @@ export class ModeloPedido {
     this.Estado.hasMany(this.Mesa, {
       foreignKey: 'idEstado'
     })
+    this.Producto.belongsToMany(this.Ingrediente, {
+      through: this.ExclusionIngrediente,
+      foreignKey: 'idProducto',
+      otherKey: 'idIngrediente'
+    })
+    this.Ingrediente.belongsToMany(this.Producto, {
+      through: this.ExclusionIngrediente,
+      foreignKey: 'idIngrediente',
+      otherKey: 'idProducto'
+    })
+    this.ExclusionIngrediente.belongsTo(this.Producto, { foreignKey: 'idProducto' })
+    this.ExclusionIngrediente.belongsTo(this.Ingrediente, { foreignKey: 'idIngrediente' })
+
+    this.Producto.hasMany(this.ExclusionIngrediente, { foreignKey: 'idProducto' })
+    this.Ingrediente.hasMany(this.ExclusionIngrediente, { foreignKey: 'idIngrediente' })
+    this.DetallePedido.hasMany(this.ExclusionIngrediente, {
+      foreignKey: 'idPedido',
+      sourceKey: 'idPedido',
+      constraints: false // evitar conflictos por clave compuesta
+    })
+
+    this.ExclusionIngrediente.belongsTo(this.DetallePedido, {
+      foreignKey: 'idPedido',
+      targetKey: 'idPedido',
+      constraints: false
+    })
   }
 
   static async registrarPedido (idMesero, { mesas }, { productos }) {
@@ -116,6 +143,80 @@ export class ModeloPedido {
       console.error('Error detallado:', error) // Para debug
       return {
         error: 'Error al registrar el pedido',
+        detalles: error.message
+      }
+    }
+  }
+
+  static async obtenerPedidosPendientes () {
+    this.asociar()
+    try {
+      const estado = await this.Estado.findOne({
+        where: {
+          descripcion: 'Cancelado'
+        }
+      })
+      const pedidos = await this.Pedido.findAll({
+        where: {
+          idEstado: estado.id
+        },
+        attributes: ['id', 'hora'],
+        include: [
+          {
+            model: this.DetallePedido,
+            attributes: ['cantidad'],
+            include: {
+              model: this.Producto,
+              attributes: ['nombre']
+            }
+          },
+          {
+            model: this.DetallePedido,
+            attributes: [],
+            include: {
+              model: this.ExclusionIngrediente,
+              attributes: ['idIngrediente'],
+              include: {
+                model: this.Ingrediente,
+                attributes: ['nombre']
+              }
+            }
+          }
+        ]
+      })
+      return { pedidos }
+    } catch (error) {
+      console.error('Error detallado:', error) // Para debug
+      return {
+        error: 'Error al obtener los pedidos pendientes',
+        detalles: error.message
+      }
+    }
+  }
+
+  static async obtenerPedidoClienteWeb (id) {
+    this.asociar()
+    try {
+      const { count: totalPedidos, rows: pedidos } = await this.Pedido.findAndCountAll({
+        where: { idClienteWeb: id },
+        include: [
+          {
+            model: this.DetallePedido,
+            include: {
+              model: this.Producto
+            }
+          }
+        ],
+        distinct: true
+      })
+      if (!pedidos) {
+        return { error: 'Pedido no encontrado' }
+      }
+      return { pedidos, totalPedidos }
+    } catch (error) {
+      console.error('Error detallado:', error) // Para debug
+      return {
+        error: 'Error al obtener el pedido',
         detalles: error.message
       }
     }

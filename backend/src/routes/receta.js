@@ -5,10 +5,11 @@ export const crearRutasReceta = ({ modeloReceta }) => {
   const router = Router()
   const controlador = new ControladorRecetas({ modeloReceta })
 
-  router.post('/crear', controlador.crearProductoReceta)
+  router.post('/crear', controlador.crearReceta)
   router.put('/editar', controlador.editarReceta)
-  router.delete('/eliminar/:idProducto', controlador.eliminarproductoReceta)
-  router.get('/mostrar/:idProducto', controlador.mostrarRecetaPorProducto.bind(controlador))
+  router.delete('/eliminar', controlador.eliminarReceta)
+  router.get('/mostrar', controlador.mostrarRecetaPorProducto)
+  router.get('/mostrarID', controlador.mostrarRecetaPorProductoID)
 
   return router
 }
