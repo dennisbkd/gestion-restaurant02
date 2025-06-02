@@ -1,6 +1,8 @@
+import { extraerUsuarioDesdeToken } from '../utils/extraerUsuarioDesdeToken.js'
 export class ControladorPedido {
-  constructor ({ modeloPedido }) {
+  constructor ({ modeloPedido, modeloBitacora }) {
     this.ModeloPedido = modeloPedido
+    this.ModeloBitacora = modeloBitacora
   }
 
   // registrarPedido
@@ -8,6 +10,15 @@ export class ControladorPedido {
     const { idMesero } = req.params
     const resultado = await this.ModeloPedido.registrarPedido(idMesero, { mesas: req.body.mesas }, { productos: req.body.productos })
     if (resultado.error) return res.status(400).json({ error: resultado.error, detalles: resultado.detalles })
+    const autor = extraerUsuarioDesdeToken(req)
+    if (autor) {
+      await this.ModeloBitacora.registrarBitacora({
+        usuario: autor,
+        accion: 'Registrar Pedido',
+        descripcion: 'Registró un pedido',
+        ip: req.ip.replace('::ffff:', '')
+      })
+    }
     return res.status(201).json(resultado)
   }
 

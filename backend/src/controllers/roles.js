@@ -1,6 +1,8 @@
+// controladores/roles.js
 export class ControladorRoles {
-  constructor ({ modeloRol }) {
+  constructor ({ modeloRol, modeloBitacora }) {
     this.modeloRol = modeloRol
+    this.modeloBitacora = modeloBitacora
   }
 
   crearRol = async (req, res) => {
@@ -19,6 +21,15 @@ export class ControladorRoles {
       const input = req.body
       const rol = await this.modeloRol.editarRol(input)
       if (rol.error) return res.status(400).json({ error: rol.error })
+      const autor = extraerUsuarioDesdeToken(req)
+      if (autor) {
+        await this.ModeloBitacora.registrarBitacora({
+          usuario: autor,
+          accion: 'Editar Rol',
+          descripcion: 'Editó el rol : ' + rol.nombre,
+          ip: req.ip.replace('::ffff:', '')
+        })
+      }
       return res.status(200).json(rol)
     } catch (error) {
       return res.status(500).json({ error: 'Error interno del servidor' })
@@ -30,6 +41,15 @@ export class ControladorRoles {
       const { id } = req.params
       const rol = await this.modeloRol.eliminarRol(id)
       if (rol.error) return res.status(400).json({ error: rol.error })
+      const autor = extraerUsuarioDesdeToken(req)
+      if (autor) {
+        await this.ModeloBitacora.registrarBitacora({
+          usuario: autor,
+          accion: 'Eliminar Rol',
+          descripcion: 'Eliminó el rol : ' + rol.nombre,
+          ip: req.ip.replace('::ffff:', '')
+        })
+      }
       return res.status(200).json(rol)
     } catch (error) {
       return res.status(500).json({ error: 'Error interno del servidor' })

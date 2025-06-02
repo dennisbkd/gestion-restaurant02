@@ -1,12 +1,23 @@
+import { extraerUsuarioDesdeToken } from '../utils/extraerUsuarioDesdeToken.js'
 export class ControladorMenu {
-  constructor ({ modeloMenu }) {
+  constructor ({ modeloMenu, modeloBitacora }) {
     this.ModeloMenu = modeloMenu
+    this.ModeloBitacora = modeloBitacora
   }
 
   // Crear un nuevo menú
   crearMenu = async (req, res) => {
     const resultado = await this.ModeloMenu.crearMenu({ input: req.body })
     if (resultado.error) return res.status(400).json({ error: resultado.error, detalles: resultado.detalles })
+    const autor = extraerUsuarioDesdeToken(req)
+    if (autor) {
+      await this.ModeloBitacora.registrarBitacora({
+        usuario: autor,
+        accion: 'Crear Menú',
+        descripcion: 'Se agregó un menú para el día : ' + req.body.dia,
+        ip: req.ip.replace('::ffff:', '')
+      })
+    }
     return res.status(201).json(resultado)
   }
 
@@ -16,6 +27,15 @@ export class ControladorMenu {
     const { id } = req.params
     const resultado = await this.ModeloMenu.editarMenu({ id, input: req.body })
     if (resultado.error) return res.status(400).json({ error: resultado.error, detalles: resultado.detalles })
+    const autor = extraerUsuarioDesdeToken(req)
+    if (autor) {
+      await this.ModeloBitacora.registrarBitacora({
+        usuario: autor,
+        accion: 'Editar Menú',
+        descripcion: 'Se editó el menú con id : ' + id,
+        ip: req.ip.replace('::ffff:', '')
+      })
+    }
     return res.status(200).json(resultado)
   }
 
@@ -24,6 +44,15 @@ export class ControladorMenu {
     const { id } = req.params
     const resultado = await this.ModeloMenu.eliminarMenu(id)
     if (resultado.error) return res.status(400).json({ error: resultado.error, detalles: resultado.detalles })
+    const autor = extraerUsuarioDesdeToken(req)
+    if (autor) {
+      await this.ModeloBitacora.registrarBitacora({
+        usuario: autor,
+        accion: 'Elminar Menú',
+        descripcion: 'Se eliminó el menú con id : ' + id,
+        ip: req.ip.replace('::ffff:', '')
+      })
+    }
     return res.status(200).json(resultado)
   }
 

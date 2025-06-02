@@ -1,6 +1,8 @@
+import { extraerUsuarioDesdeToken } from '../utils/extraerUsuarioDesdeToken.js'
 export class ControladorReservas {
-  constructor ({ modeloReserva }) {
+  constructor ({ modeloReserva, modeloBitacora }) {
     this.modeloReserva = modeloReserva
+    this.ModeloBitacora = modeloBitacora
   }
 
   // Registrar Reserva
@@ -20,6 +22,15 @@ crearReserva = async (req, res) => {
   editarReserva = async (req, res) => {
     const reserva = await this.modeloReserva.editarReserva({ input: req.body })
     if (reserva.error) return res.status(400).json({ error: reserva.error })
+    const autor = extraerUsuarioDesdeToken(req)
+    if (autor) {
+      await this.ModeloBitacora.registrarBitacora({
+        usuario: autor,
+        accion: 'Editar Reserva',
+        descripcion: 'Editó la reserva con id : ' + req.body.id,
+        ip: req.ip.replace('::ffff:', '')
+      })
+    }
     return res.status(200).json(reserva)
   }
 
@@ -28,6 +39,15 @@ crearReserva = async (req, res) => {
     if (!req.params.id) return res.status(400).json({ error: 'ID de reserva no proporcionado' })
     const reserva = await this.modeloReserva.eliminarReserva({ id: req.params.id, idMesa: req.body.idMesa })
     if (reserva.error) return res.status(400).json({ error: reserva.error })
+    const autor = extraerUsuarioDesdeToken(req)
+    if (autor) {
+      await this.ModeloBitacora.registrarBitacora({
+        usuario: autor,
+        accion: 'Cancelar Reserva',
+        descripcion: 'Canceló la reserva con id : ' + req.params.id,
+        ip: req.ip.replace('::ffff:', '')
+      })
+    }
     return res.status(200).json(reserva.mensaje)
   }
 

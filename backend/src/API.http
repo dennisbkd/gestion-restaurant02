@@ -4,13 +4,13 @@ POST http://localhost:3000/user/register
 Content-Type: application/json
 
 {
-    "nombreUsuario" : "prueba7",
-    "nombre" : "prueba7",
+    "nombreUsuario" : "cocinero2",
+    "nombre" : "cocinero2",
     "password" : "123",
-    "correo" : "prueba7@example.com",
-    "telefono" : "00000000",
-    "idRol" : 4 ,
-    "ci" : "0000000",
+    "correo" : "cocinero2@example.com",
+    "telefono" : "11111112",
+    "idRol" : 2 ,
+    "ci" : "1111112",
     "tipoUsuario" : "empleado"
 }
 
@@ -40,7 +40,7 @@ Content-Type: application/json
 
 {
     // --cuenta admin--
-    "nombreUsuario": "marta321",	
+    "nombreUsuario": "admin",	
     "password": "123"
 } 
 
@@ -81,7 +81,7 @@ POST http://localhost:3000/menus/crear
 Content-Type: application/json
 
 {
-     "dia": "Lunes",
+     "dia": "Domingo",
      "productos": [
         {"id": 2},
         {"id": 3}

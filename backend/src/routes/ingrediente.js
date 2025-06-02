@@ -1,9 +1,9 @@
 import { Router } from 'express'
 import { ControladorIngrediente } from '../controllers/ingrediente.js'
 
-export const crearRutaIngrediente = ({ modeloIngrediente }) => {
+export const crearRutaIngrediente = ({ modeloIngrediente, modeloBitacora }) => {
   const router = Router()
-  const controlador = new ControladorIngrediente({ modeloIngrediente })
+  const controlador = new ControladorIngrediente({ modeloIngrediente, modeloBitacora })
 
   router.post('/crear', controlador.crearIngrediente)
   router.put('/editar', controlador.editarIngrediente)

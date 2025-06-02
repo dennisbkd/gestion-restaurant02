@@ -8,6 +8,8 @@ import { ReservaProvider } from './context/Reserva/ReservaProvider'
 import ClienteRoutes from './routes/ClienteRoutes.jsx'
 import MeseroPedidos from '@/components/Mesero/Pedido.jsx'
 import { RecetaProvider } from './context/Receta/RecetaProvider'
+// import MeseroPedidos from './components/mesero/Pedido'
+
 
 export default function App() {
   // todas las rutas hijas tendran el contexto
@@ -20,7 +22,6 @@ export default function App() {
               <Route path='/register' element={<RegisterPage />} />
               <Route path='/profile' element={<ProfilePage />} />
               <Route path='/mesero/pedidos' element={<MeseroPedidos />} />
-
               <Route element={<ProtectedRoute />}>{DashboardRoutes()}</Route>
 
               {ClienteRoutes()}

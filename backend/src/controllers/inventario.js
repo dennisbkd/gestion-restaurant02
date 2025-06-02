@@ -1,6 +1,8 @@
+import { extraerUsuarioDesdeToken } from '../utils/extraerUsuarioDesdeToken.js'
 export class ControladorInventario {
-  constructor ({ modeloInventario }) {
+  constructor ({ modeloInventario, modeloBitacora }) {
     this.ModeloInventario = modeloInventario
+    this.ModeloBitacora = modeloBitacora
   }
 
   // Agregar Stock
@@ -8,6 +10,15 @@ export class ControladorInventario {
     try {
       const stock = await this.ModeloInventario.agregarStock( { input: req.body })
       if (stock.error) return res.status(400).json({ error: stock.error })
+      const autor = extraerUsuarioDesdeToken(req)
+      if (autor) {
+        await this.ModeloBitacora.registrarBitacora({
+          usuario: autor,
+          accion: 'Agregar Stock',
+          descripcion: 'Agregó Stock al producto : ' + stock.descripcion,
+          ip: req.ip.replace('::ffff:', '')
+        })
+      }
       return res.status(200).json(stock)
     } catch (error) {
       return res.status(500).json({ error: 'Error interno del servidor' })
@@ -19,6 +30,15 @@ export class ControladorInventario {
     try {
       const resultado = await this.ModeloInventario.disminuirStock({ input : req.body})
       if (resultado.error) return res.status(400).json({ error: resultado.error })
+      const autor = extraerUsuarioDesdeToken(req)
+      if (autor) {
+        await this.ModeloBitacora.registrarBitacora({
+          usuario: autor,
+          accion: 'Disminuir Stock',
+          descripcion: 'Disminuyó Stock ',
+          ip: req.ip.replace('::ffff:', '')
+        })
+      }
       return res.status(200).json(resultado)
     } catch (error) {
       return res.status(500).json({ error: 'Error interno del servidor' })
@@ -30,6 +50,15 @@ export class ControladorInventario {
     try {
       const stock = await this.ModeloInventario.actualizarStock({ input: req.body })
       if (stock.error) return res.status(400).json({ error: stock.error })
+      const autor = extraerUsuarioDesdeToken(req)
+      if (autor) {
+        await this.ModeloBitacora.registrarBitacora({
+          usuario: autor,
+          accion: 'Actualizar Stock',
+          descripcion: 'Actualizó Stock',
+          ip: req.ip.replace('::ffff:', '')
+        })
+      }
       return res.status(200).json(stock)
     } catch (error) {
       return res.status(500).json({ error: 'Error interno del servidor' })

@@ -2,7 +2,6 @@ import sequelize from '../config/db/config.js'
 import bcrypt from 'bcrypt'
 
 import { definicionUsuario, definicionEmpleado, definicionClienteWeb } from '../services/user.js'
-
 export class ModeloUsuario {
   static Usuario = sequelize.define('Usuario', definicionUsuario, {
     timestamps: false,
