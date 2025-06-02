@@ -7,14 +7,18 @@ import { TrashIcon } from '@heroicons/react/24/outline'
 import { useModal } from '../../hooks/useModal'
 import { useState } from 'react'
 import { editMenuRequest, createMenuRequest } from '../../api/menu'
-
+import { CargaDeEspera } from '../loading/CargaDeEspera'
 const extracMenus = (res) => res.data.menus
 const Menu = () => {
   const editModal = useModal()
   const creatModal = useModal()
   const successModal = useModal()
   const deleteModal = useModal()
-  const { data: menus, refresh } = useFetchData(getMenuRequest, extracMenus)
+  const {
+    data: menus,
+    refresh,
+    loading
+  } = useFetchData(getMenuRequest, extracMenus)
   const [currentMenu, setCurrentMenu] = useState(null)
   const [currentlist, setCurrentList] = useState([])
   const [showEliminados, setShowEliminados] = useState(false)
@@ -24,7 +28,13 @@ const Menu = () => {
     successModal.open()
     refresh()
   }
-
+  if (loading) {
+    return (
+      <div className='w-full h-full flex items-center justify-center'>
+        <CargaDeEspera text={'El menú se esta cargando'} text2={'Cagando...'} />
+      </div>
+    )
+  }
   return (
     <div className='w-full px-4 py-6'>
       <div className='flex items-center justify-between mb-4'>

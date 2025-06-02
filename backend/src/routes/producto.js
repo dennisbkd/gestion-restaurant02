@@ -1,9 +1,9 @@
 import { Router } from 'express'
 import { ControladorProducto } from '../controllers/producto.js'
 
-export const crearRutasProducto = ({ modeloProducto }) => {
+export const crearRutasProducto = ({ modeloProducto, modeloBitacora }) => {
   const ProductoRuta = Router()
-  const controlador = new ControladorProducto({ modeloProducto })
+  const controlador = new ControladorProducto({ modeloProducto, modeloBitacora })
 
   ProductoRuta.post('/crear', controlador.crearProducto)
   ProductoRuta.put('/editar', controlador.editarProducto)

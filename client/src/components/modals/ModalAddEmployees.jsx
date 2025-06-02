@@ -8,8 +8,9 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
     password: '',
     correo: '',
     telefono: '',
+    idRol: '',
     ci: '',
-    idRol: ''
+    tipoUsuario: 'empleado'
   }
 
   const { errors, validate } = useFormValidator()
@@ -166,9 +167,7 @@ const ModalEmployees = ({ onClose, setIsSuccessModalOpen }) => {
                 className='mt-1 w-full p-2 border rounded-md bg-white text-gray-700 dark:bg-gray-600 dark:text-white'
               >
                 <option value=''>Selecciona un rol</option>
-                <option value='1'>Administrador</option>
                 <option value='5'>Cajero</option>
-                <option value='4'>Cliente</option>
                 <option value='2'>Cocinero</option>
                 <option value='3'>Mesero</option>
               </select>

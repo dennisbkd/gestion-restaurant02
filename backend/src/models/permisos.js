@@ -135,4 +135,22 @@ export class ModeloPermiso {
       }
     }
   }
+
+  // Obtener todos los permisos
+  static async mostrarPermisos () {
+    try {
+      const permisos = await ModeloPermiso.Permiso.findAll({
+        attributes: ['id', 'descripcion'],
+        order: [['id', 'ASC']]
+      })
+
+      return permisos
+    } catch (error) {
+      console.error('Error al mostrar permisos:', error)
+      return {
+        error: 'Error al obtener los permisos',
+        detalles: error.message
+      }
+    }
+  }
 }
