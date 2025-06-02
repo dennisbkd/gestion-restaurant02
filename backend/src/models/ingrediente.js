@@ -114,15 +114,18 @@ export class ModeloIngrediente {
   }
 
   // Obtener ingrediente por ID
-  static async obtenerIngredientePorId (id) {
-    try {
-      const ingrediente = await sequelize.query(
-        'EXEC get_MostrarIngredientePorID @id = :id',
-        { replacements: { id }, type: sequelize.QueryTypes.SELECT }
-      )
-      return { ingrediente }
-    } catch (error) {
-      throw new Error('Error al obtener el ingrediente por ID: ' + error.message)
+  static async obtenerIngredientePorId(id) {
+  try {
+    const ingrediente = await this.Ingrediente.findOne({
+      where: { id }, // Sequelize automáticamente busca por PK
+    });
+
+    if (!ingrediente) {
+      return { error: 'Ingrediente no encontrado' };
     }
+    return { ingrediente };
+  } catch (error) {
+    throw new Error('Error al obtener el ingrediente por ID: ' + error.message);
   }
+}
 }

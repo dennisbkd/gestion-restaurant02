@@ -46,7 +46,6 @@ export class ControladorIngrediente {
   eliminarIngrediente = async (req, res) => {
     try {
       const { id } = req.params
-      if (!id || isNaN(Number(id))) return res.status(400).json({ error: 'ID de ingrediente no válido' })
       const resultado = await this.modeloIngrediente.eliminarIngrediente(id)
       if (resultado.error) return res.status(400).json({ error: resultado.error })
       const autor = extraerUsuarioDesdeToken(req)
@@ -73,22 +72,16 @@ export class ControladorIngrediente {
     }
   }
 
-  obtenerIngredientePorId = async (req, res) => {
-    try {
-      const { id } = req.params
-      if (!id || isNaN(Number(id))) {
-        return res.status(400).json({ error: 'ID de ingrediente no válido' })
-      }
-
-      const resultado = await this.modeloIngrediente.obtenerIngredientePorId(id)
-
-      if (!resultado || resultado.ingrediente.length === 0) {
-        return res.status(404).json({ error: 'Ingrediente no encontrado' })
-      }
-
-      return res.status(200).json(resultado)
-    } catch (error) {
-      return res.status(500).json({ error: 'Error al obtener el ingrediente' })
+obtenerIngredientePorId = async (req, res) => {
+  try {
+    const { id } = req.body;
+    const resultado = await this.modeloIngrediente.obtenerIngredientePorId(id);
+    if (!resultado || resultado.ingrediente.length === 0) {
+      return res.status(404).json({ error: 'Ingrediente no encontrado' });
     }
+    return res.status(200).json(resultado);
+  } catch (error) {
+    return res.status(500).json({ error: 'Error al obtener el ingrediente' });
   }
+}
 }

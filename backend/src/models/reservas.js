@@ -99,10 +99,12 @@ export class ModeloReserva {
   // Mostrar todas las reservas
   static async mostrarReservas () {
     try {
-      const reservas = await sequelize.query(
-        'EXEC get_Reservas',
-        { type: sequelize.QueryTypes.SELECT }
-      )
+      const reservas = await this.Reserva.findAll({
+        include: [
+          { model: this.Mesa, through: { attributes: [] } },
+          { model: this.Estado }
+        ]
+      })
       return { reservas }
     } catch (error) {
       throw new Error('Error al obtener reservas: ' + error.message)

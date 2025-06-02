@@ -56,4 +56,11 @@ export class ControladorRecetas {
     if (receta.error) return res.status(400).json({ error: receta.detalles })
     return res.status(200).json(receta)
   }
+
+  mostrarRecetaPorProductoID = async (req, res) => {
+    const { idProducto } = req.body
+    const receta = await this.modeloReceta.mostrarRecetaPorProductoID( idProducto)
+    if (receta.error) return res.status(400).json({ error: receta.error })
+    return res.status(200).json(receta)
+  }
 }

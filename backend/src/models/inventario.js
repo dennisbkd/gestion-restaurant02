@@ -7,26 +7,20 @@ export class ModeloInventario {
     freezeTableName: true
   })
 
-  static async agregarStock ({ descripcion, stockActual, stockMinimo }) {
+  // Agregar nuevo producto al inventario
+  static async agregarStock({ input }) {
+    const { descripcion, stockActual, stockMinimo } = input
     try {
-      const [result] = await sequelize.query(
-        'DECLARE @mensaje VARCHAR(100); ' +
-                'EXEC p_AgregarStock @descripcion = :descripcion, @stockActual = :stockActual, ' +
-                '@stockMinimo = :stockMinimo, @mensaje = @mensaje OUTPUT; ' +
-                'SELECT @mensaje AS mensaje;',
-        {
-          replacements: { descripcion, stockActual, stockMinimo },
-          type: sequelize.QueryTypes.SELECT
-        }
-      )
-
-      if (result.mensaje.includes('Error') || result.mensaje.includes('ya existe')) {
-        return { error: result.mensaje }
+      const existente = await this.Stock.findOne({ where: { descripcion } })
+      if (existente) {
+        return { error: 'Error: ya existe un producto con esa descripción' }
       }
 
+      const producto = await this.Stock.create({ descripcion, stockActual, stockMinimo })
+
       return {
-        producto: { descripcion, stockActual, stockMinimo },
-        mensaje: result.mensaje
+        producto,
+        mensaje: 'Producto agregado correctamente'
       }
     } catch (error) {
       throw new Error('Error al agregar producto: ' + error.message)
@@ -34,33 +28,33 @@ export class ModeloInventario {
   }
 
   // Disminuir stock
-  static async disminuirStock ({ id, cantidad }) {
+  static async disminuirStock({ input }) {
+    const { id, cantidad } = input
     try {
-      const [result] = await sequelize.query(
-        'DECLARE @mensaje VARCHAR(100); ' +
-                'EXEC p_DisminuirStock @id = :id, @cantidad = :cantidad, @mensaje = @mensaje OUTPUT; ' +
-                'SELECT @mensaje AS mensaje;',
-        {
-          replacements: { id, cantidad },
-          type: sequelize.QueryTypes.SELECT
-        }
-      )
+      const producto = await this.Stock.findByPk(id)
 
-      if (result.mensaje.includes('Error') || result.mensaje.includes('no existe')) {
-        return { error: result.mensaje }
+      if (!producto) {
+        return { error: 'Error: el producto no existe' }
       }
 
+      if (producto.stockActual < cantidad) {
+        return { error: 'Error: no hay suficiente stock disponible' }
+      }
+
+      producto.stockActual -= cantidad
+      await producto.save()
+
       return {
-        producto: { id, cantidad },
-        mensaje: result.mensaje
+        producto,
+        mensaje: 'Stock disminuido correctamente'
       }
     } catch (error) {
       throw new Error('Error al disminuir stock: ' + error.message)
     }
   }
 
-  // Actualizar producto en el inventario
-  static async actualizarStock (input) {
+  // Actualizar stock
+  static async actualizarStock({ input }) {
     const { id, nuevoStockActual, nuevoStockMinimo } = input
     try {
       const producto = await this.Stock.findByPk(id)
@@ -83,8 +77,8 @@ export class ModeloInventario {
     }
   }
 
-  // Consultar todo el inventario (STOCKS)
-  static async mostrarStocks () {
+  // Mostrar todos los productos del inventario
+  static async mostrarStocks() {
     try {
       const stock = await this.Stock.findAll()
       return { stock }
@@ -93,22 +87,15 @@ export class ModeloInventario {
     }
   }
 
-  // mostrar stock por id
-  static async mostrarStockPorId (id) {
+  // Mostrar un producto del inventario por ID
+  static async mostrarStockPorId(id) {
     try {
-      const stock = await sequelize.query(
-        'exec get_MostrarStockID @id = :id',
-        {
-          replacements: { id },
-          type: sequelize.QueryTypes.SELECT
-        }
-      )
+      const producto = await this.Stock.findByPk(id)
 
-      if (!stock) {
+      if (!producto) {
         return { error: `No se encontró producto con ID ${id}` }
       }
-
-      return { stock }
+      return { stock: producto }
     } catch (error) {
       throw new Error('Error al consultar stock por ID: ' + error.message)
     }

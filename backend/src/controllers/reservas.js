@@ -6,24 +6,17 @@ export class ControladorReservas {
   }
 
   // Registrar Reserva
-  crearReserva = async (req, res) => {
-    try {
-      const reserva = await this.modeloReserva.crearReserva({ input: req.body })
-      if (reserva.error) return res.status(400).json({ error: reserva.error })
-      const autor = extraerUsuarioDesdeToken(req)
-      if (autor) {
-        await this.ModeloBitacora.registrarBitacora({
-          usuario: autor,
-          accion: 'Registrar Reserva',
-          descripcion: 'Registró una reserva',
-          ip: req.ip.replace('::ffff:', '')
-        })
-      }
-      return res.status(201).json(reserva)
-    } catch (error) {
-      return res.status(500).json({ error: 'Error interno del servidor' })
-    }
+crearReserva = async (req, res) => {
+  try {
+    const { id } = req.params
+    const reserva = await this.modeloReserva.crearReserva(id , { input: req.body })
+
+    if (reserva.error) return res.status(400).json({ error: reserva.error })
+    return res.status(201).json(reserva)
+  } catch (error) {
+    return res.status(500).json({ error: 'Error interno del servidor' })
   }
+}
 
   // Actualizar Reserva
   editarReserva = async (req, res) => {

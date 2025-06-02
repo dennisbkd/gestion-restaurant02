@@ -12,9 +12,8 @@ import { crearRutaAdministrador } from './routes/administrador.js'
 import { crearRutaUsuarios } from './routes/usuario.js'
 import { crearRutasPedido } from './routes/pedido.js'
 import { crearRutasReservas } from './routes/reservas.js'
-import { crearMenuRutas } from './routes/menu.js' //
+import { crearMenuRutas } from './routes/menu.js' 
 import { crearRutasReceta } from './routes/receta.js'
-import { crearRutasProducto } from './routes/producto.js'
 import { crearRutaIngrediente } from './routes/ingrediente.js'
 
 import cookieParser from 'cookie-parser'
