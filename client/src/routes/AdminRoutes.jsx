@@ -8,7 +8,6 @@ import ProviderTable from '../components/AdminDashboard/Providers'
 import Inventario from '../components/AdminDashboard/Inventario'
 import { RecetaPage } from '@/pages/recetas/RecetaPage'
 
-
 export default function DashboardRoutes() {
   return (
     <Route path='dashboard' element={<DashboardPage />}>
