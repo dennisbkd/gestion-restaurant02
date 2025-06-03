@@ -56,7 +56,7 @@ export const CreateApp = async ({
   app.use('/inventario', crearRutasInventario({ modeloInventario, modeloBitacora })) // Hecho
   app.use('/proveedor', crearProveedorRutas({ modeloProveedor, modeloBitacora })) // Hecho
 
-  app.use('/productos', crearRutasProducto({ modeloProducto })) // Haciendo, Ciclo 3
+  // app.use('/productos', crearRutasProducto({ modeloProducto })) // Haciendo, Ciclo 3
   app.use('/ingredientes', crearRutaIngrediente({ modeloIngrediente, modeloBitacora })) // Hecho
 
   app.use('/menus', crearMenuRutas({ modeloMenu, modeloBitacora })) // Hecho

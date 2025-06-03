@@ -1,0 +1,4 @@
+#ignorar archivos 
+.env
+node_modules
+.gitignore

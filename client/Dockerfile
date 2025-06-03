@@ -1,22 +1,18 @@
-FROM node:20
-
+# Etapa 1: Build
+FROM node:20 AS build
 WORKDIR /app
-
-# Instalar dependencias
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
-
-# Copiar el código fuente
 COPY . .
-
-# Construir la app para producción
 RUN npm run build
 
-# Instalar un servidor estático (serve)
+# Etapa 2: Producción
+FROM node:20-alpine AS production
+WORKDIR /app
 RUN npm install -g serve
 
-# Exponer puerto
-EXPOSE 5173
+# Copia los archivos de la etapa de build
+COPY --from=build /app/dist ./dist
 
-# Servir la app construida desde dist/
+EXPOSE 5173
 CMD ["serve", "-s", "dist", "-l", "5173"]

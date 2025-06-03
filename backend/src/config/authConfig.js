@@ -1,5 +1,5 @@
 export const {
-  PALABRA_SECRETA = 'clave_Secreta_para_el_restaurante_de_la_universidad',
+  PALABRA_SECRETA ='hola',  //'clave_Secreta_para_el_restaurante_de_la_universidad',
   expiresIn = '1h',
   cookieOptions = {
     httpOnly: false,
