@@ -66,7 +66,7 @@ export class ControladorPermisos {
 
   asignarPermiso = async (req, res) => {
     try {
-      const permiso = await this.modeloPermiso.asignarPermiso(req.body)
+      const permiso = await this.modeloPermiso.asignarPermiso({input: req.body})
       if (permiso.error) return res.status(400).json({ error: permiso.error })
       return res.status(200).json(permiso)
     } catch (error) {

@@ -9,6 +9,6 @@ export const crearRutasInventario = ({ modeloInventario, modeloBitacora }) => {
   InventarioRuta.put('/actualizar', controladorInventario.actualizarStock)
   InventarioRuta.get('/mostrarStocks', controladorInventario.mostrarStocks)
   InventarioRuta.get('/mostrarStock/:id', controladorInventario.mostrarStockPorId)
-  InventarioRuta.get('/disminuir', controladorInventario.disminuirStock) // es igual que actualizarStock
+  InventarioRuta.post('/disminuir', controladorInventario.disminuirStock) 
   return InventarioRuta
 }

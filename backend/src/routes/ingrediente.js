@@ -9,7 +9,7 @@ export const crearRutaIngrediente = ({ modeloIngrediente, modeloBitacora }) => {
   router.put('/editar', controlador.editarIngrediente)
   router.delete('/eliminar/:id', controlador.eliminarIngrediente.bind(controlador))
   router.get('/mostrar', controlador.obtenerIngredientes)
-  router.get('/mostrar/:id', controlador.obtenerIngredientePorId)
+  router.get('/mostrarID', controlador.obtenerIngredientePorId)
 
   return router
 }

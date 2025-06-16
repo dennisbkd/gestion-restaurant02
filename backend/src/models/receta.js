@@ -183,5 +183,49 @@ export class ModeloReceta {
       }
     }
   }
+
+  static async mostrarRecetaPorProductoID ( idProducto ) {
+  try {
+
+    const producto = await this.Producto.findByPk(idProducto, {
+      attributes: ['nombre', 'descripcion', 'tiempoPreparacion']
+    })
+
+    if (!producto) {
+      return { error: 'Producto no encontrado' }
+    }
+
+    const receta = await this.Receta.findAll({
+      where: { idProducto },
+      attributes: ['cantidad'],
+      include: [
+        {
+          model: this.Ingredientes,
+          attributes: ['nombre']
+        }
+      ]
+    })
+
+    const ingredientes = receta.map(item => ({
+      nombre: item.Ingrediente?.nombre,
+      cantidad: item.cantidad
+    }))
+
+    return {
+      producto: {
+        nombre: producto.nombre,
+        descripcion: producto.descripcion,
+        tiempoPreparacion: producto.tiempoPreparacion
+      },
+      ingredientes
+    }
+  } catch (error) {
+    return {
+      error: 'Error al obtener la receta',
+      detalles: error.message
+    }
+  }
+}
+
 }
 ModeloReceta.asociar()

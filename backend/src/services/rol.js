@@ -1,4 +1,5 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize'
+
 export const definicionRol = {
   id: {
     type: DataTypes.INTEGER,
@@ -11,6 +12,3 @@ export const definicionRol = {
     unique: true
   }
 }
-
- 
-

@@ -16,3 +16,5 @@ export const definicionReceta = {
     allowNull: false
   }
 }
+
+
